@@ -9,9 +9,10 @@ import (
 func StartWebServer(port int) {
 
 	app := f.CreateApp()
+    zilla := CreateZilla(&MockPort{})
 
 	app.Get("/", func(req *f.Request, res *f.Response, next func()) {
-		res.Send(CreateZilla(&MockPort{}))
+		res.Send(zilla)
 	})
 
 	fmt.Printf("The Manzanita Micro Zilla interface is now running on port '%d'.\n", port)
