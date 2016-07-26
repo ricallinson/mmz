@@ -1,0 +1,9 @@
+Special Menu: W) Reset
+c) Clear Error p) Precharge
+Q) DAQ <1-4> D) Defaults
+Errors, Old-New:
+1111 1111 1111 1111 1111
+Error Count: 0
+Esc) Cancel
+State: 1311
+How may I help you?

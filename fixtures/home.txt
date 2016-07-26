@@ -1,0 +1,9 @@
+d) Display settings
+b) Battery Menu
+m) Motor Menu
+s) Speed Menu
+o) Options Menu
+p) Special Menu
+Esc) Cancel
+State: 1311
+How may I help you?

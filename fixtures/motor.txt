@@ -1,0 +1,8 @@
+Motor Settings:
+a) Amp, v) Volt, i) RA
+ 1600 429 700
+r) RV, c) PA, p) PV
+ 106 2000 180
+Esc) Cancel
+State: 1311
+How may I help you?

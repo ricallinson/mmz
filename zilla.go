@@ -1,8 +1,18 @@
 package main
 
 import (
-// "fmt"
+	"bytes"
+	// "fmt"
+	"strconv"
+	"strings"
 )
+
+type Port interface {
+	Read([]byte) (int, error)
+	Write([]byte) (int, error)
+	Flush() error
+	Close() error
+}
 
 type Zilla struct {
 	BatteryAmpLimit               int  // a)BA
@@ -35,75 +45,99 @@ type Zilla struct {
 	IsZ2k                         bool // p) Off
 	CurrentState                  int
 	Errors                        []int
-	LastZillaOutput               []byte // byte array of the last Zilla output
+	buffer                        []byte // byte array of the last Zilla output
+	port                          Port
 }
 
-type Port interface {
-	Read([]byte) (int, error)
-	Write([]byte) (int, error)
-	Flush() error
-	Close() error
-}
-
-func CreateZilla() *Zilla {
-	z := &Zilla{}
-	z.LastZillaOutput = make([]byte, 256)
+func CreateZilla(p Port) *Zilla {
+	z := &Zilla{port: p}
 	z.Refresh()
 	return z
 }
 
+func (this *Zilla) sendString(command, check string) bool {
+	return this.sendBytes([]byte(command), check)
+}
+
+func (this *Zilla) sendBytes(b []byte, check string) bool {
+	var e error
+	_, e = this.port.Write(b)
+	if e != nil {
+		return false
+	}
+	this.buffer = make([]byte, 1024)
+	_, e = this.port.Read(this.buffer)
+	if e != nil {
+		return false
+	}
+	return bytes.Index(this.buffer, []byte(check)) > -1
+}
+
 func (this *Zilla) menuHome() bool {
-	return false
+	this.sendBytes([]byte{27}, "")
+	this.sendBytes([]byte{27}, "")
+	return this.sendBytes([]byte{27}, "d) Display settings")
 }
 
 func (this *Zilla) menuSettings() bool {
-	if !this.menuHome() {
+	this.menuHome()
+	if this.sendString("d", "Display only, change with menu") == false {
 		return false
 	}
-	return false
+	// Read all the settings in this struct.
+	lines := bytes.Split(this.buffer, []byte{10})
+	// Get values for BA, LBV and LBVI
+    var values []string
+	values = strings.Split(strings.TrimSpace(string(lines[2])), " ")
+	this.BatteryAmpLimit, _ = strconv.Atoi(values[0])
+	this.LowBatteryVoltageLimit, _ = strconv.Atoi(values[1])
+	this.LowBatteryVoltageIndicator, _ = strconv.Atoi(values[2])
+    // Values for Amp, Volt and RA
+    values = strings.Split(strings.TrimSpace(string(lines[4])), " ")
+    this.NormalMotorAmpLimit, _ = strconv.Atoi(values[0])
+    this.SeriesMotorVoltageLimit, _ = strconv.Atoi(values[1])
+    this.ReverseMotorAmpLimit, _ = strconv.Atoi(values[2])
+    // Values for RV, PA and PV
+    values = strings.Split(strings.TrimSpace(string(lines[6])), " ")
+    this.ReverseMotorVoltageLimit, _ = strconv.Atoi(values[0])
+    this.ParallelMotorAmpLimit, _ = strconv.Atoi(values[1])
+    this.ParallelMotorVoltageLimit, _ = strconv.Atoi(values[2])
+    // Values for Norm, Rev and Max
+    values = strings.Split(strings.TrimSpace(string(lines[8])), " ")
+    this.ForwardRpmLimit, _ = strconv.Atoi(values[0])
+    this.ReverseRpmLimit, _ = strconv.Atoi(values[1])
+    this.MaxRpmLimit, _ = strconv.Atoi(values[2])
+	return true
 }
 
 func (this *Zilla) menuBattery() bool {
-	if !this.menuHome() {
-		return false
-	}
-	return false
+	this.menuHome()
+	return this.sendString("b", "a)BA, v)LBV, i)LBVI")
 }
 
 func (this *Zilla) menuMotor() bool {
-	if !this.menuHome() {
-		return false
-	}
-	return false
+	this.menuHome()
+	return this.sendString("m", "Motor Settings:")
 }
 
 func (this *Zilla) menuSpeed() bool {
-	if !this.menuHome() {
-		return false
-	}
-	return false
+	this.menuHome()
+	return this.sendString("s", "Rev limits")
 }
 
 func (this *Zilla) menuOptions() bool {
-	if !this.menuHome() {
-		return false
-	}
-	return false
+	this.menuHome()
+	return this.sendString("o", "Options: Enter letter to change")
 }
 
 func (this *Zilla) menuSpecial() bool {
-	if !this.menuHome() {
-		return false
-	}
-	return false
+	this.menuHome()
+	return this.sendString("p", "Special Menu:")
 }
 
 // Refreshes all attributes by reading them from the Zilla Controller.
 func (this *Zilla) Refresh() bool {
-	if !this.menuSettings() {
-		return false
-	}
-	return false
+	return this.menuSettings()
 }
 
 func (this *Zilla) SetBatteryAmpLimit(val int) bool {
