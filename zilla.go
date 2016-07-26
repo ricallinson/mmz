@@ -42,8 +42,8 @@ type Zilla struct {
 	ActivateHEPI                  bool // n) Off
 	notUsed                       bool // o) Off
 	IsZ2k                         bool // p) Off
-	CurrentState                  int
-	Errors                        []string
+	CurrentState                  string // 1311
+	Errors                        []string // 1111, 1111, ...
 	buffer                        []byte // byte array of the last Zilla output
 	port                          Port
 }
@@ -139,7 +139,7 @@ func (this *Zilla) menuSettings() bool {
     this.Errors = strings.Split(strings.TrimSpace(string(lines[14])), " ")
     // Values for current state
     values = strings.Split(strings.TrimSpace(string(lines[15])), " ")
-    this.CurrentState, _ = strconv.Atoi(values[1])
+    this.CurrentState = values[1]
 	return true
 }
 

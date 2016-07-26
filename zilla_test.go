@@ -75,7 +75,7 @@ func TestZilla(t *testing.T) {
 			AssertEqual(z.ActivateHEPI, false)
 			AssertEqual(z.notUsed, false)
 			AssertEqual(z.IsZ2k, true)
-			AssertEqual(z.CurrentState, 1311)
+			AssertEqual(z.CurrentState, "1311")
 			AssertEqual(z.Errors[0], "1111")
 			AssertEqual(z.Errors[1], "1111")
 			AssertEqual(z.Errors[2], "1111")
