@@ -114,14 +114,14 @@ func (this *Zilla) menuSpecial() bool {
 }
 
 func (this *Zilla) writeIntValue(id string, val int) bool {
-	if this.sendString(id, "") && this.sendString(strconv.Itoa(val), strconv.Itoa(val)) {
+	if this.sendString(id, "XXX") && this.sendString(strconv.Itoa(val), strconv.Itoa(val)) {
 		return this.Refresh()
 	}
 	return false
 }
 
 func (this *Zilla) writeToggleValue(id string) bool {
-	if this.sendString(id, "") {
+	if this.sendString(id, "XXX") {
 		return this.Refresh()
 	}
 	return false
