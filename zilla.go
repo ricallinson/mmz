@@ -14,37 +14,37 @@ type Port interface {
 }
 
 type Zilla struct {
-	BatteryAmpLimit               int  // a)BA
-	LowBatteryVoltageLimit        int  // v)LBV
-	LowBatteryVoltageIndicator    int  // i)LBVI
-	NormalMotorAmpLimit           int  // a) Amp
-	SeriesMotorVoltageLimit       int  // v) Volt
-	ReverseMotorAmpLimit          int  // i) RA
-	ReverseMotorVoltageLimit      int  // r) RV
-	ParallelMotorAmpLimit         int  // c) PA
-	ParallelMotorVoltageLimit     int  // p) PV
-	ForwardRpmLimit               int  // l)Norm
-	ReverseRpmLimit               int  // r)Rev
-	MaxRpmLimit                   int  // x)Max
-	RpmSensorMotorOne             bool // a) On
-	RpmSensorMotorTwo             bool // b) On
-	AutoShiftingSeriesToParallel  bool // c) On
-	StallDetectOn                 bool // d) On
-	BatteryLightPolarity          bool // e) Off
-	CheckEngineLightPolarity      bool // f) On
-	ReversingContactors           bool // g) On
-	SeriesParallelContactors      bool // h) On
-	ForceParallelInReverse        bool // i) Off
-	InhibitSeriesParallelShifting bool // j) Off
-	TachometerDisplayMotorAmps    bool // k) Off
-	TachometerSixCylinders        bool // l) Off
-	ReversesPlugInInputPolarity   bool // m) Off
-	ActivateHEPI                  bool // n) Off
-	notUsed                       bool // o) Off
-	IsZ2k                         bool // p) Off
-	CurrentState                  string // 1311
+	BatteryAmpLimit               int      // a)BA
+	LowBatteryVoltageLimit        int      // v)LBV
+	LowBatteryVoltageIndicator    int      // i)LBVI
+	NormalMotorAmpLimit           int      // a) Amp
+	SeriesMotorVoltageLimit       int      // v) Volt
+	ReverseMotorAmpLimit          int      // i) RA
+	ReverseMotorVoltageLimit      int      // r) RV
+	ParallelMotorAmpLimit         int      // c) PA
+	ParallelMotorVoltageLimit     int      // p) PV
+	ForwardRpmLimit               int      // l)Norm
+	ReverseRpmLimit               int      // r)Rev
+	MaxRpmLimit                   int      // x)Max
+	RpmSensorMotorOne             bool     // a) On
+	RpmSensorMotorTwo             bool     // b) On
+	AutoShiftingSeriesToParallel  bool     // c) On
+	StallDetectOn                 bool     // d) On
+	BatteryLightPolarity          bool     // e) Off
+	CheckEngineLightPolarity      bool     // f) On
+	ReversingContactors           bool     // g) On
+	SeriesParallelContactors      bool     // h) On
+	ForceParallelInReverse        bool     // i) Off
+	InhibitSeriesParallelShifting bool     // j) Off
+	TachometerDisplayMotorAmps    bool     // k) Off
+	TachometerSixCylinders        bool     // l) Off
+	ReversesPlugInInputPolarity   bool     // m) Off
+	ActivateHEPI                  bool     // n) Off
+	notUsed                       bool     // o) Off
+	IsZ2k                         bool     // p) Off
+	CurrentState                  string   // 1311
 	Errors                        []string // 1111, 1111, ...
-	buffer                        []byte // byte array of the last Zilla output
+	buffer                        []byte   // byte array of the last Zilla output
 	port                          Port
 }
 
@@ -54,7 +54,7 @@ func truthy(s string) bool {
 
 func CreateZilla(p Port) *Zilla {
 	z := &Zilla{port: p}
-    z.Errors = make([]string, 0)
+	z.Errors = make([]string, 0)
 	z.Refresh()
 	return z
 }
@@ -114,83 +114,83 @@ func (this *Zilla) menuSpecial() bool {
 }
 
 func (this *Zilla) writeIntValue(id string, val int) bool {
-    if this.sendString(id, "") && this.sendString(strconv.Itoa(val), strconv.Itoa(val)) {
-        return this.Refresh()
-    }
-    return false
+	if this.sendString(id, "") && this.sendString(strconv.Itoa(val), strconv.Itoa(val)) {
+		return this.Refresh()
+	}
+	return false
 }
 
 func (this *Zilla) writeToggleValue(id string) bool {
-    if this.sendString(id, "") {
-        return this.Refresh()
-    }
-    return false
+	if this.sendString(id, "") {
+		return this.Refresh()
+	}
+	return false
 }
 
 // Refreshes all attributes by reading them from the Zilla Controller.
 func (this *Zilla) Refresh() bool {
 	if this.menuSettings() == false {
-        return false
-    }
-    // Read all the settings in this struct.
-    lines := bytes.Split(this.buffer, []byte{10})
-    // Get values for BA, LBV, LBVI
-    var values []string
-    values = strings.Split(strings.TrimSpace(string(lines[2])), " ")
-    this.BatteryAmpLimit, _ = strconv.Atoi(values[0])
-    this.LowBatteryVoltageLimit, _ = strconv.Atoi(values[1])
-    this.LowBatteryVoltageIndicator, _ = strconv.Atoi(values[2])
-    // Values for Amp, Volt, RA
-    values = strings.Split(strings.TrimSpace(string(lines[4])), " ")
-    this.NormalMotorAmpLimit, _ = strconv.Atoi(values[0])
-    this.SeriesMotorVoltageLimit, _ = strconv.Atoi(values[1])
-    this.ReverseMotorAmpLimit, _ = strconv.Atoi(values[2])
-    // Values for RV, PA, PV
-    values = strings.Split(strings.TrimSpace(string(lines[6])), " ")
-    this.ReverseMotorVoltageLimit, _ = strconv.Atoi(values[0])
-    this.ParallelMotorAmpLimit, _ = strconv.Atoi(values[1])
-    this.ParallelMotorVoltageLimit, _ = strconv.Atoi(values[2])
-    // Values for Norm, Rev, Max
-    values = strings.Split(strings.TrimSpace(string(lines[8])), " ")
-    this.ForwardRpmLimit, _ = strconv.Atoi(values[0])
-    this.ReverseRpmLimit, _ = strconv.Atoi(values[1])
-    this.MaxRpmLimit, _ = strconv.Atoi(values[2])
-    // Values for a, b, c, d
-    values = strings.Split(strings.TrimSpace(string(lines[9])), " ")
-    this.RpmSensorMotorOne = truthy(values[1])
-    this.RpmSensorMotorTwo = truthy(values[3])
-    this.AutoShiftingSeriesToParallel = truthy(values[5])
-    this.StallDetectOn = truthy(values[7])
-    // Values for e, f, g, h
-    values = strings.Split(strings.TrimSpace(string(lines[10])), " ")
-    this.BatteryLightPolarity = truthy(values[1])
-    this.CheckEngineLightPolarity = truthy(values[3])
-    this.ReversingContactors = truthy(values[5])
-    this.SeriesParallelContactors = truthy(values[7])
-    // Values for i, j, k, l
-    values = strings.Split(strings.TrimSpace(string(lines[11])), " ")
-    this.ForceParallelInReverse = truthy(values[1])
-    this.InhibitSeriesParallelShifting = truthy(values[3])
-    this.TachometerDisplayMotorAmps = truthy(values[5])
-    this.TachometerSixCylinders = truthy(values[7])
-    // Values for m, n, o, p
-    values = strings.Split(strings.TrimSpace(string(lines[12])), " ")
-    this.ReversesPlugInInputPolarity = truthy(values[1])
-    this.ActivateHEPI = truthy(values[3])
-    this.notUsed = truthy(values[5])
-    this.IsZ2k = truthy(values[7])
-    // Values for errors
-    this.Errors = strings.Split(strings.TrimSpace(string(lines[14])), " ")
-    // Values for current state
-    values = strings.Split(strings.TrimSpace(string(lines[15])), " ")
-    this.CurrentState = values[1]
-    return true
+		return false
+	}
+	// Read all the settings in this struct.
+	lines := bytes.Split(this.buffer, []byte{10})
+	// Get values for BA, LBV, LBVI
+	var values []string
+	values = strings.Split(strings.TrimSpace(string(lines[2])), " ")
+	this.BatteryAmpLimit, _ = strconv.Atoi(values[0])
+	this.LowBatteryVoltageLimit, _ = strconv.Atoi(values[1])
+	this.LowBatteryVoltageIndicator, _ = strconv.Atoi(values[2])
+	// Values for Amp, Volt, RA
+	values = strings.Split(strings.TrimSpace(string(lines[4])), " ")
+	this.NormalMotorAmpLimit, _ = strconv.Atoi(values[0])
+	this.SeriesMotorVoltageLimit, _ = strconv.Atoi(values[1])
+	this.ReverseMotorAmpLimit, _ = strconv.Atoi(values[2])
+	// Values for RV, PA, PV
+	values = strings.Split(strings.TrimSpace(string(lines[6])), " ")
+	this.ReverseMotorVoltageLimit, _ = strconv.Atoi(values[0])
+	this.ParallelMotorAmpLimit, _ = strconv.Atoi(values[1])
+	this.ParallelMotorVoltageLimit, _ = strconv.Atoi(values[2])
+	// Values for Norm, Rev, Max
+	values = strings.Split(strings.TrimSpace(string(lines[8])), " ")
+	this.ForwardRpmLimit, _ = strconv.Atoi(values[0])
+	this.ReverseRpmLimit, _ = strconv.Atoi(values[1])
+	this.MaxRpmLimit, _ = strconv.Atoi(values[2])
+	// Values for a, b, c, d
+	values = strings.Split(strings.TrimSpace(string(lines[9])), " ")
+	this.RpmSensorMotorOne = truthy(values[1])
+	this.RpmSensorMotorTwo = truthy(values[3])
+	this.AutoShiftingSeriesToParallel = truthy(values[5])
+	this.StallDetectOn = truthy(values[7])
+	// Values for e, f, g, h
+	values = strings.Split(strings.TrimSpace(string(lines[10])), " ")
+	this.BatteryLightPolarity = truthy(values[1])
+	this.CheckEngineLightPolarity = truthy(values[3])
+	this.ReversingContactors = truthy(values[5])
+	this.SeriesParallelContactors = truthy(values[7])
+	// Values for i, j, k, l
+	values = strings.Split(strings.TrimSpace(string(lines[11])), " ")
+	this.ForceParallelInReverse = truthy(values[1])
+	this.InhibitSeriesParallelShifting = truthy(values[3])
+	this.TachometerDisplayMotorAmps = truthy(values[5])
+	this.TachometerSixCylinders = truthy(values[7])
+	// Values for m, n, o, p
+	values = strings.Split(strings.TrimSpace(string(lines[12])), " ")
+	this.ReversesPlugInInputPolarity = truthy(values[1])
+	this.ActivateHEPI = truthy(values[3])
+	this.notUsed = truthy(values[5])
+	this.IsZ2k = truthy(values[7])
+	// Values for errors
+	this.Errors = strings.Split(strings.TrimSpace(string(lines[14])), " ")
+	// Values for current state
+	values = strings.Split(strings.TrimSpace(string(lines[15])), " ")
+	this.CurrentState = values[1]
+	return true
 }
 
 func (this *Zilla) SetBatteryAmpLimit(val int) bool {
-    this.menuBattery()
-    this.writeIntValue("a", val);
-    return this.BatteryAmpLimit == val
+	this.menuBattery()
+	this.writeIntValue("a", val)
+	return this.BatteryAmpLimit == val
 }
 
 func (this *Zilla) SetLowBatteryVoltageLimit(val int) bool {

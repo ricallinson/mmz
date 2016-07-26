@@ -9,7 +9,7 @@ import (
 func StartWebServer(port int) {
 
 	app := f.CreateApp()
-    zilla := CreateZilla(&MockPort{})
+	zilla := CreateZilla(&MockPort{})
 
 	app.Get("/", func(req *f.Request, res *f.Response, next func()) {
 		res.Send(zilla)
