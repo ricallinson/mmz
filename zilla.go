@@ -1,7 +1,7 @@
 package main
 
-import(
-    // "fmt"
+import (
+// "fmt"
 )
 
 type Zilla struct {
@@ -35,66 +35,74 @@ type Zilla struct {
 	IsZ2k                         bool // p) Off
 	CurrentState                  int
 	Errors                        []int
-    LastZillaOutput               []byte // byte array of the last Zilla output
+	LastZillaOutput               []byte // byte array of the last Zilla output
+}
+
+type Port interface {
+	Read([]byte) (int, error)
+	Write([]byte) (int, error)
+	Flush() error
+	Close() error
 }
 
 func CreateZilla() *Zilla {
 	z := &Zilla{}
+	z.LastZillaOutput = make([]byte, 256)
 	z.Refresh()
 	return z
 }
 
 func (this *Zilla) menuHome() bool {
-    return false
+	return false
 }
 
 func (this *Zilla) menuSettings() bool {
-    if (!this.menuHome()) {
-        return false
-    }
-    return false
+	if !this.menuHome() {
+		return false
+	}
+	return false
 }
 
 func (this *Zilla) menuBattery() bool {
-    if (!this.menuHome()) {
-        return false
-    }
-    return false
+	if !this.menuHome() {
+		return false
+	}
+	return false
 }
 
 func (this *Zilla) menuMotor() bool {
-    if (!this.menuHome()) {
-        return false
-    }
-    return false
+	if !this.menuHome() {
+		return false
+	}
+	return false
 }
 
 func (this *Zilla) menuSpeed() bool {
-    if (!this.menuHome()) {
-        return false
-    }
-    return false
+	if !this.menuHome() {
+		return false
+	}
+	return false
 }
 
 func (this *Zilla) menuOptions() bool {
-    if (!this.menuHome()) {
-        return false
-    }
-    return false
+	if !this.menuHome() {
+		return false
+	}
+	return false
 }
 
 func (this *Zilla) menuSpecial() bool {
-    if (!this.menuHome()) {
-        return false
-    }
-    return false
+	if !this.menuHome() {
+		return false
+	}
+	return false
 }
 
 // Refreshes all attributes by reading them from the Zilla Controller.
 func (this *Zilla) Refresh() bool {
-    if (!this.menuSettings()) {
-        return false
-    }
+	if !this.menuSettings() {
+		return false
+	}
 	return false
 }
 
