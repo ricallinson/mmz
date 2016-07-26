@@ -59,8 +59,8 @@ func CreateZilla(p Port) *Zilla {
 	return z
 }
 
-func (this *Zilla) sendString(command, check string) bool {
-	return this.sendBytes([]byte(command), check)
+func (this *Zilla) sendString(s, check string) bool {
+	return this.sendBytes([]byte(s), check)
 }
 
 func (this *Zilla) sendBytes(b []byte, check string) bool {
@@ -168,13 +168,29 @@ func (this *Zilla) menuSpecial() bool {
 	return this.sendString("p", "Special Menu:")
 }
 
+func (this *Zilla) writeIntValue(id string, val int) bool {
+    if this.sendString(id, "") && this.sendString(strconv.Itoa(val), strconv.Itoa(val)) {
+        return this.Refresh()
+    }
+    return false
+}
+
+func (this *Zilla) writeToggleValue(id string) bool {
+    if this.sendString(id, "") {
+        return this.Refresh()
+    }
+    return false
+}
+
 // Refreshes all attributes by reading them from the Zilla Controller.
 func (this *Zilla) Refresh() bool {
 	return this.menuSettings()
 }
 
 func (this *Zilla) SetBatteryAmpLimit(val int) bool {
-	return this.Refresh()
+    this.menuBattery()
+    this.writeIntValue("a", val);
+    return this.BatteryAmpLimit == val
 }
 
 func (this *Zilla) SetLowBatteryVoltageLimit(val int) bool {
