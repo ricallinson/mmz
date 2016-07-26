@@ -44,13 +44,18 @@ type Zilla struct {
 	notUsed                       bool // o) Off
 	IsZ2k                         bool // p) Off
 	CurrentState                  int
-	Errors                        []int
+	Errors                        []string
 	buffer                        []byte // byte array of the last Zilla output
 	port                          Port
 }
 
+func truthy(s string) bool {
+	return strings.Contains(s, "On")
+}
+
 func CreateZilla(p Port) *Zilla {
 	z := &Zilla{port: p}
+    z.Errors = make([]string, 0)
 	z.Refresh()
 	return z
 }
@@ -86,27 +91,56 @@ func (this *Zilla) menuSettings() bool {
 	}
 	// Read all the settings in this struct.
 	lines := bytes.Split(this.buffer, []byte{10})
-	// Get values for BA, LBV and LBVI
-    var values []string
+	// Get values for BA, LBV, LBVI
+	var values []string
 	values = strings.Split(strings.TrimSpace(string(lines[2])), " ")
 	this.BatteryAmpLimit, _ = strconv.Atoi(values[0])
 	this.LowBatteryVoltageLimit, _ = strconv.Atoi(values[1])
 	this.LowBatteryVoltageIndicator, _ = strconv.Atoi(values[2])
-    // Values for Amp, Volt and RA
-    values = strings.Split(strings.TrimSpace(string(lines[4])), " ")
-    this.NormalMotorAmpLimit, _ = strconv.Atoi(values[0])
-    this.SeriesMotorVoltageLimit, _ = strconv.Atoi(values[1])
-    this.ReverseMotorAmpLimit, _ = strconv.Atoi(values[2])
-    // Values for RV, PA and PV
-    values = strings.Split(strings.TrimSpace(string(lines[6])), " ")
-    this.ReverseMotorVoltageLimit, _ = strconv.Atoi(values[0])
-    this.ParallelMotorAmpLimit, _ = strconv.Atoi(values[1])
-    this.ParallelMotorVoltageLimit, _ = strconv.Atoi(values[2])
-    // Values for Norm, Rev and Max
-    values = strings.Split(strings.TrimSpace(string(lines[8])), " ")
-    this.ForwardRpmLimit, _ = strconv.Atoi(values[0])
-    this.ReverseRpmLimit, _ = strconv.Atoi(values[1])
-    this.MaxRpmLimit, _ = strconv.Atoi(values[2])
+	// Values for Amp, Volt, RA
+	values = strings.Split(strings.TrimSpace(string(lines[4])), " ")
+	this.NormalMotorAmpLimit, _ = strconv.Atoi(values[0])
+	this.SeriesMotorVoltageLimit, _ = strconv.Atoi(values[1])
+	this.ReverseMotorAmpLimit, _ = strconv.Atoi(values[2])
+	// Values for RV, PA, PV
+	values = strings.Split(strings.TrimSpace(string(lines[6])), " ")
+	this.ReverseMotorVoltageLimit, _ = strconv.Atoi(values[0])
+	this.ParallelMotorAmpLimit, _ = strconv.Atoi(values[1])
+	this.ParallelMotorVoltageLimit, _ = strconv.Atoi(values[2])
+	// Values for Norm, Rev, Max
+	values = strings.Split(strings.TrimSpace(string(lines[8])), " ")
+	this.ForwardRpmLimit, _ = strconv.Atoi(values[0])
+	this.ReverseRpmLimit, _ = strconv.Atoi(values[1])
+	this.MaxRpmLimit, _ = strconv.Atoi(values[2])
+	// Values for a, b, c, d
+	values = strings.Split(strings.TrimSpace(string(lines[9])), " ")
+	this.RpmSensorMotorOne = truthy(values[1])
+    this.RpmSensorMotorTwo = truthy(values[3])
+    this.AutoShiftingSeriesToParallel = truthy(values[5])
+    this.StallDetectOn = truthy(values[7])
+    // Values for e, f, g, h
+    values = strings.Split(strings.TrimSpace(string(lines[10])), " ")
+    this.BatteryLightPolarity = truthy(values[1])
+    this.CheckEngineLightPolarity = truthy(values[3])
+    this.ReversingContactors = truthy(values[5])
+    this.SeriesParallelContactors = truthy(values[7])
+    // Values for i, j, k, l
+    values = strings.Split(strings.TrimSpace(string(lines[11])), " ")
+    this.ForceParallelInReverse = truthy(values[1])
+    this.InhibitSeriesParallelShifting = truthy(values[3])
+    this.TachometerDisplayMotorAmps = truthy(values[5])
+    this.TachometerSixCylinders = truthy(values[7])
+    // Values for m, n, o, p
+    values = strings.Split(strings.TrimSpace(string(lines[12])), " ")
+    this.ReversesPlugInInputPolarity = truthy(values[1])
+    this.ActivateHEPI = truthy(values[3])
+    this.notUsed = truthy(values[5])
+    this.IsZ2k = truthy(values[7])
+    // Values for errors
+    this.Errors = strings.Split(strings.TrimSpace(string(lines[14])), " ")
+    // Values for current state
+    values = strings.Split(strings.TrimSpace(string(lines[15])), " ")
+    this.CurrentState, _ = strconv.Atoi(values[1])
 	return true
 }
 

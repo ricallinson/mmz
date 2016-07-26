@@ -10,7 +10,7 @@ l)Norm, r)Rev, x)Max
 a) On b) On c) On d) On
 e) Off f) On g) On h) On
 i) Off j) Off k) Off l) Off
-m) Off n) Off o) Off p) Off
+m) Off n) Off o) Off p) On
 Errors, Old-New:
 1111 1111 1111 1111 1111
 State: 1311 Return for menu
