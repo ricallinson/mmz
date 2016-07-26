@@ -1,5 +1,7 @@
 # mmz
 
+[![Build Status](https://travis-ci.org/ricallinson/mmz.svg?branch=master)](https://travis-ci.org/ricallinson/mmz)
+
 __UNSTABLE__
 
 Interface for configuring, displaying and logging data for a Manzanita Micro Zilla controller.
