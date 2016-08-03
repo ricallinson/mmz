@@ -16,6 +16,10 @@ func StartWebServer(port int) {
 
 	zilla := CreateZilla(&MockPort{})
 
+    app.Get("/", func(req *f.Request, res *f.Response, next func()) {
+        res.Render("index.html", zilla)
+    })
+
 	app.Get("/settings", func(req *f.Request, res *f.Response, next func()) {
 		res.Render("settings.html", zilla)
 	})
