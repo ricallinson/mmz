@@ -3,9 +3,9 @@ package main
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
-	"fmt"
 )
 
 type SerialPort interface {
@@ -48,6 +48,7 @@ type Zilla struct {
 	Errors                        []string // 1111, 1111, ...
 	buffer                        []byte   // byte array of the last Zilla output
 	serialPort                    SerialPort
+	writeLog                      bool
 }
 
 func truthy(s string) bool {
@@ -60,9 +61,7 @@ func CreateZilla(p SerialPort) (error, *Zilla) {
 	if z.Refresh() == false {
 		return errors.New("Could not get data from Hairball."), nil
 	}
-	if z.Log("./log.dat") == false {
-		return errors.New("Could not log data from Hairball."), nil
-	}
+	z.startLogging()
 	return nil, z
 }
 
@@ -71,6 +70,8 @@ func (this *Zilla) sendString(s, check string) bool {
 }
 
 func (this *Zilla) sendBytes(b []byte, check string) bool {
+	this.stopLogging()
+	defer this.startLogging()
 	var e error
 	_, e = this.serialPort.Write(b)
 	if e != nil {
@@ -84,25 +85,35 @@ func (this *Zilla) sendBytes(b []byte, check string) bool {
 	return bytes.Index(this.buffer, []byte(check)) > -1
 }
 
-func (this *Zilla) Log(filePath string) bool {
+func (this *Zilla) startLogging() {
+	// Start logging in a go routine that stops and starts around other function calls into Zilla.
+	this.writeLog = true
+	go this.log("./log.dat")
+}
+
+func (this *Zilla) stopLogging() {
+	this.writeLog = false
+}
+
+func (this *Zilla) log(filePath string) bool {
 	if this.menuSpecial() == false {
 		return false
 	}
 	var e error
-	_, e = this.serialPort.Write([]byte("Q1"))
+	_, e = this.serialPort.Write([]byte("Q1")) // The first logging screen.
 	if e != nil {
 		fmt.Println(e)
 		return false
 	}
-	// While something keep writing bytes to a file.
-	// for {
-	// 	buffer := make([]byte, 1024)
-	// 	_, e = this.serialPort.Read(buffer)
-	// 	if e != nil {
-	// 		fmt.Println(e)
-	// 		return false
-	// 	}
-	// }
+	// While "something" keep writing bytes to the file.
+	for this.writeLog == false {
+		buffer := make([]byte, 1024)
+		_, e = this.serialPort.Read(buffer)
+		if e != nil {
+			fmt.Println(e)
+			return false
+		}
+	}
 	return true
 }
 
@@ -118,16 +129,19 @@ func (this *Zilla) menuSettings() bool {
 }
 
 func (this *Zilla) menuBattery() bool {
+	defer this.startLogging()
 	this.menuHome()
 	return this.sendString("b", "a)BA, v)LBV, i)LBVI")
 }
 
 func (this *Zilla) menuMotor() bool {
+	defer this.startLogging()
 	this.menuHome()
 	return this.sendString("m", "Motor Settings:")
 }
 
 func (this *Zilla) menuSpeed() bool {
+	defer this.startLogging()
 	this.menuHome()
 	return this.sendString("s", "Rev limits")
 }
