@@ -26,6 +26,8 @@ func (this *MockPort) Read(b []byte) (int, error) {
 		file, err = os.Open("./fixtures/special.txt")
 	case 0, 27: // Home Menu
 		file, err = os.Open("./fixtures/home.txt")
+	case 'Q':
+		return 0, nil
 	}
 	if err != nil {
 		return 0, err
@@ -35,7 +37,7 @@ func (this *MockPort) Read(b []byte) (int, error) {
 
 func (this *MockPort) Write(b []byte) (int, error) {
 	switch b[0] {
-	case 'd', 'b', 'm', 's', 'o', 'p', 27:
+	case 'd', 'b', 'm', 's', 'o', 'p', 'Q', 27:
 		this.history = b[0]
 	}
 	return 0, nil

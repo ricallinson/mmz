@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strconv"
 	"strings"
+	"fmt"
 )
 
 type SerialPort interface {
@@ -46,7 +47,7 @@ type Zilla struct {
 	CurrentState                  string   // 1311
 	Errors                        []string // 1111, 1111, ...
 	buffer                        []byte   // byte array of the last Zilla output
-	port                          SerialPort
+	serialPort                    SerialPort
 }
 
 func truthy(s string) bool {
@@ -54,10 +55,13 @@ func truthy(s string) bool {
 }
 
 func CreateZilla(p SerialPort) (error, *Zilla) {
-	z := &Zilla{port: p}
+	z := &Zilla{serialPort: p}
 	z.Errors = make([]string, 0)
 	if z.Refresh() == false {
-		return errors.New("No go."), nil
+		return errors.New("Could not get data from Hairball."), nil
+	}
+	if z.Log("./log.dat") == false {
+		return errors.New("Could not log data from Hairball."), nil
 	}
 	return nil, z
 }
@@ -68,16 +72,38 @@ func (this *Zilla) sendString(s, check string) bool {
 
 func (this *Zilla) sendBytes(b []byte, check string) bool {
 	var e error
-	_, e = this.port.Write(b)
+	_, e = this.serialPort.Write(b)
 	if e != nil {
 		return false
 	}
 	this.buffer = make([]byte, 1024)
-	_, e = this.port.Read(this.buffer)
+	_, e = this.serialPort.Read(this.buffer)
 	if e != nil {
 		return false
 	}
 	return bytes.Index(this.buffer, []byte(check)) > -1
+}
+
+func (this *Zilla) Log(filePath string) bool {
+	if this.menuSpecial() == false {
+		return false
+	}
+	var e error
+	_, e = this.serialPort.Write([]byte("Q1"))
+	if e != nil {
+		fmt.Println(e)
+		return false
+	}
+	// While something keep writing bytes to a file.
+	// for {
+	// 	buffer := make([]byte, 1024)
+	// 	_, e = this.serialPort.Read(buffer)
+	// 	if e != nil {
+	// 		fmt.Println(e)
+	// 		return false
+	// 	}
+	// }
+	return true
 }
 
 func (this *Zilla) menuHome() bool {
