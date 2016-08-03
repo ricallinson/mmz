@@ -21,7 +21,7 @@ var Codes map[int]string = map[int]string{
     1211: "Controller still not off. Motor contactors trying to turn off.",
     1212: "Motor contactors did not turn off.",
     1213: "Motor contactors did not turn on.",
-    1214: "OPen pot wire.",
+    1214: "Open pot wire.",
     1221: "Major over-speed, either motor over red line.",
     1222: "Unused.",
     1223: "SLI battery below warning threshold.",
