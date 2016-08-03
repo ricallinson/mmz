@@ -25,7 +25,7 @@ var Codes map[string]string = map[string]string{
     "1221": "Major over-speed, either motor over red line.",
     "1222": "Unused.",
     "1223": "SLI battery below warning threshold.",
-    "1224": "SLI battery too low and caused shutdown of controller."
+    "1224": "SLI battery too low and caused shutdown of controller.",
     "1231": "Propulsion pack open, no contactor drop and controller is not responding.",
     "1232": "This should never happen. Contact the factory.",
     "1233": "Hall effect pedal input invalid.",
@@ -35,7 +35,7 @@ var Codes map[string]string = map[string]string{
     "1311": "Waiting for key.",
     "1312": "Waiting for start signal.",
     "1313": "Waiting for zero pot.",
-    "1214": "Waiting for throttle input.",
+    "1314": "Waiting for throttle input.",
     "1321": "Waiting for go button.", // Drag race mode only.
     "1322": "Direction selected not allowed (rolling too fast or inactive state).",
     "1323": "Battery voltage limit active.",
@@ -45,15 +45,14 @@ var Codes map[string]string = map[string]string{
     "1333": "SPI packet error in controller.",
     "1334": "Controller waiting for enable signal.",
     "1411": "Normal driving.",
-    "1414": "Waiting for the vehicle to be unplugged."
+    "1414": "Waiting for the vehicle to be unplugged.",
     // Operating states.
-    "S": "Stopped state.",
     "G": "Shifting in progress.",
     "O": "Main contactor is on OK.",
-    "M": "Motor contactors are on OK."
+    "M": "Motor contactors are on OK.",
     "R": "Direction is reverse.",
     "F": "Direction is forward.",
     "P": "Motors are in parallel.",
-    "S": "Motors are in series.",
+    "S": "Stopped state or motors are in series.",
     "V": "Main contactor has voltage drop (>5V) across power terminals.",
 }
