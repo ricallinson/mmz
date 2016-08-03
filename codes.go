@@ -1,6 +1,7 @@
 package main
 
 var Codes map[int]string = map[int]string{
+    // Error states.
     1111: "Unknown mode, no error.",
     1112: "Hairball watchdog reset.",
     1113: "Hairball EEPROM CRC error.",
@@ -30,5 +31,19 @@ var Codes map[int]string = map[int]string{
     1233: "Hall effect pedal input invalid.",
     1234: "Motor voltage is high on startup.",
     1241: "Key input not on while start is asserted.",
-    
+    // Operating state.
+    1311: "Waiting for key.",
+    1312: "Waiting for start signal.",
+    1313: "Waiting for zero pot.",
+    1214: "Waiting for throttle input.",
+    1321: "Waiting for go button.", // Drag race mode only.
+    1322: "Direction selected not allowed (rolling too fast or inactive state).",
+    1323: "Battery voltage limit active.",
+    1324: "Motor current limit active.",
+    1331: "Battery current limit active.",
+    1332: "Temperature current limit active",
+    1333: "SPI packet error in controller.",
+    1334: "Controller waiting for enable signal.",
+    1411: "Normal driving.",
+    1414: "Waiting for the vehicle to be unplugged."
 }
