@@ -1,5 +1,17 @@
 package main
 
+var States map[string]string = map[string]string{
+    "S": "Stopped state.",
+    "G": "Shifting in progress.",
+    "O": "Main contactor is on OK.",
+    "M": "Motor contactors are on OK."
+    "R": "Direction is reverse.",
+    "F": "Direction is forward.",
+    "P": "Motors are in parallel.",
+    "S": "Motors are in series.",
+    "V": "Main contactor has voltage drop (>5V) across power terminals.",
+}
+
 var Codes map[int]string = map[int]string{
     // Error states.
     1111: "Unknown mode, no error.",
