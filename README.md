@@ -4,9 +4,11 @@
 
 __UNSTABLE__
 
-Interface for configuring, displaying and logging data for a Manzanita Micro Zilla controller.
+Interface for configuring, logging and visualizing data for a Manzanita Micro Zilla controller.
 
 ## Install
+
+Requires a [Go](https://golang.org/dl/) environment.
 
     go get github.com/ricallinson/mmz
     go get github.com/goforgery/forgery2
@@ -16,7 +18,11 @@ Interface for configuring, displaying and logging data for a Manzanita Micro Zil
 
 ## Usage
 
-    mmz
+Start the application with the following command;
+
+    mmz -serial /path/to/zilla/serial
+
+Then open a browser to http://localhost:8080/.
 
 ## Test
 

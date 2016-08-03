@@ -2,11 +2,12 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"strconv"
 	"strings"
 )
 
-type Port interface {
+type SerialPort interface {
 	Read([]byte) (int, error)
 	Write([]byte) (int, error)
 	Flush() error
@@ -45,18 +46,20 @@ type Zilla struct {
 	CurrentState                  string   // 1311
 	Errors                        []string // 1111, 1111, ...
 	buffer                        []byte   // byte array of the last Zilla output
-	port                          Port
+	port                          SerialPort
 }
 
 func truthy(s string) bool {
 	return strings.Contains(s, "On")
 }
 
-func CreateZilla(p Port) *Zilla {
+func CreateZilla(p SerialPort) (error, *Zilla) {
 	z := &Zilla{port: p}
 	z.Errors = make([]string, 0)
-	z.Refresh()
-	return z
+	if z.Refresh() == false {
+		return errors.New("No go."), nil
+	}
+	return nil, z
 }
 
 func (this *Zilla) sendString(s, check string) bool {
