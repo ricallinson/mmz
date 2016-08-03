@@ -7,6 +7,7 @@
     <title>Zilla Controller</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-toggle.min.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
   </head>
   <body>
     <nav class="navbar navbar-default">
@@ -20,173 +21,190 @@
         </ul>
       </div>
     </nav>
-    <div class="row">
-      <div class="col-md-6">
-        <div class="form-horizontal">
-          <div class="form-group">
-            <label for="BatteryAmpLimit" class="col-sm-10 control-label">BatteryAmpLimit</label>
-            <div class="col-sm-2">
-              <input type="number" class="form-control" id="BatteryAmpLimit" value="{{BatteryAmpLimit}}">
+    <div class="main">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Control Values</h3>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="LowBatteryVoltageLimit" class="col-sm-10 control-label">LowBatteryVoltageLimit</label>
-            <div class="col-sm-2">
-              <input type="number" class="form-control" id="LowBatteryVoltageLimit" value="{{LowBatteryVoltageLimit}}">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="LowBatteryVoltageIndicator" class="col-sm-10 control-label">LowBatteryVoltageIndicator</label>
-            <div class="col-sm-2">
-              <input type="number" class="form-control" id="LowBatteryVoltageIndicator" value="{{LowBatteryVoltageIndicator}}">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="NormalMotorAmpLimit" class="col-sm-10 control-label">NormalMotorAmpLimit</label>
-            <div class="col-sm-2">
-              <input type="number" class="form-control" id="NormalMotorAmpLimit" value="{{NormalMotorAmpLimit}}">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="SeriesMotorVoltageLimit" class="col-sm-10 control-label">SeriesMotorVoltageLimit</label>
-            <div class="col-sm-2">
-              <input type="number" class="form-control" id="SeriesMotorVoltageLimit" value="{{SeriesMotorVoltageLimit}}">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="ReverseMotorAmpLimit" class="col-sm-10 control-label">ReverseMotorAmpLimit</label>
-            <div class="col-sm-2">
-              <input type="number" class="form-control" id="ReverseMotorAmpLimit" value="{{ReverseMotorAmpLimit}}">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="ReverseMotorVoltageLimit" class="col-sm-10 control-label">ReverseMotorVoltageLimit</label>
-            <div class="col-sm-2">
-              <input type="number" class="form-control" id="ReverseMotorVoltageLimit" value="{{ReverseMotorVoltageLimit}}">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="ParallelMotorAmpLimit" class="col-sm-10 control-label">ParallelMotorAmpLimit</label>
-            <div class="col-sm-2">
-              <input type="number" class="form-control" id="ParallelMotorAmpLimit" value="{{ParallelMotorAmpLimit}}">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="ParallelMotorVoltageLimit" class="col-sm-10 control-label">ParallelMotorVoltageLimit</label>
-            <div class="col-sm-2">
-            <input type="number" class="form-control" id="ParallelMotorVoltageLimit" value="{{ParallelMotorVoltageLimit}}">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="ForwardRpmLimit" class="col-sm-10 control-label">ForwardRpmLimit</label>
-            <div class="col-sm-2">
-              <input type="number" class="form-control" id="ForwardRpmLimit" value="{{ForwardRpmLimit}}">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="ReverseRpmLimit" class="col-sm-10 control-label">ReverseRpmLimit</label>
-            <div class="col-sm-2">
-              <input type="number" class="form-control" id="ReverseRpmLimit" value="{{ReverseRpmLimit}}">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="MaxRpmLimit" class="col-sm-10 control-label">MaxRpmLimit</label>
-            <div class="col-sm-2">
-              <input type="number" class="form-control" id="MaxRpmLimit" value="{{MaxRpmLimit}}">
+            <div class="panel-body">
+              <div class="form-horizontal">
+                <div class="form-group">
+                  <label for="BatteryAmpLimit" class="col-sm-10 control-label">BatteryAmpLimit</label>
+                  <div class="col-sm-2">
+                    <input type="number" class="form-control" id="BatteryAmpLimit" value="{{BatteryAmpLimit}}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="LowBatteryVoltageLimit" class="col-sm-10 control-label">LowBatteryVoltageLimit</label>
+                  <div class="col-sm-2">
+                    <input type="number" class="form-control" id="LowBatteryVoltageLimit" value="{{LowBatteryVoltageLimit}}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="LowBatteryVoltageIndicator" class="col-sm-10 control-label">LowBatteryVoltageIndicator</label>
+                  <div class="col-sm-2">
+                    <input type="number" class="form-control" id="LowBatteryVoltageIndicator" value="{{LowBatteryVoltageIndicator}}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="NormalMotorAmpLimit" class="col-sm-10 control-label">NormalMotorAmpLimit</label>
+                  <div class="col-sm-2">
+                    <input type="number" class="form-control" id="NormalMotorAmpLimit" value="{{NormalMotorAmpLimit}}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="SeriesMotorVoltageLimit" class="col-sm-10 control-label">SeriesMotorVoltageLimit</label>
+                  <div class="col-sm-2">
+                    <input type="number" class="form-control" id="SeriesMotorVoltageLimit" value="{{SeriesMotorVoltageLimit}}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="ReverseMotorAmpLimit" class="col-sm-10 control-label">ReverseMotorAmpLimit</label>
+                  <div class="col-sm-2">
+                    <input type="number" class="form-control" id="ReverseMotorAmpLimit" value="{{ReverseMotorAmpLimit}}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="ReverseMotorVoltageLimit" class="col-sm-10 control-label">ReverseMotorVoltageLimit</label>
+                  <div class="col-sm-2">
+                    <input type="number" class="form-control" id="ReverseMotorVoltageLimit" value="{{ReverseMotorVoltageLimit}}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="ParallelMotorAmpLimit" class="col-sm-10 control-label">ParallelMotorAmpLimit</label>
+                  <div class="col-sm-2">
+                    <input type="number" class="form-control" id="ParallelMotorAmpLimit" value="{{ParallelMotorAmpLimit}}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="ParallelMotorVoltageLimit" class="col-sm-10 control-label">ParallelMotorVoltageLimit</label>
+                  <div class="col-sm-2">
+                  <input type="number" class="form-control" id="ParallelMotorVoltageLimit" value="{{ParallelMotorVoltageLimit}}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="ForwardRpmLimit" class="col-sm-10 control-label">ForwardRpmLimit</label>
+                  <div class="col-sm-2">
+                    <input type="number" class="form-control" id="ForwardRpmLimit" value="{{ForwardRpmLimit}}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="ReverseRpmLimit" class="col-sm-10 control-label">ReverseRpmLimit</label>
+                  <div class="col-sm-2">
+                    <input type="number" class="form-control" id="ReverseRpmLimit" value="{{ReverseRpmLimit}}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="MaxRpmLimit" class="col-sm-10 control-label">MaxRpmLimit</label>
+                  <div class="col-sm-2">
+                    <input type="number" class="form-control" id="MaxRpmLimit" value="{{MaxRpmLimit}}">
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="col-md-6">
-        <div class="form-horizontal">
-          <div class="form-group">
-            <label for="RpmSensorMotorOne" class="col-sm-10 control-label">RpmSensorMotorOne</label>
-            <div class="col-sm-2">
-              <input type="checkbox"  data-toggle="toggle" id="RpmSensorMotorOne" {{#RpmSensorMotorOne}}checked{{/RpmSensorMotorOne}}>
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Control Options</h3>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="RpmSensorMotorTwo" class="col-sm-10 control-label">RpmSensorMotorTwo</label>
-            <div class="col-sm-2">
-              <input type="checkbox"  data-toggle="toggle" id="RpmSensorMotorTwo" {{#RpmSensorMotorTwo}}checked{{/RpmSensorMotorTwo}}>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="AutoShiftingSeriesToParallel" class="col-sm-10 control-label">AutoShiftingSeriesToParallel</label>
-            <div class="col-sm-2">
-              <input type="checkbox"  data-toggle="toggle" id="AutoShiftingSeriesToParallel" {{#AutoShiftingSeriesToParallel}}checked{{/AutoShiftingSeriesToParallel}}>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="StallDetectOn" class="col-sm-10 control-label">StallDetectOn</label>
-            <div class="col-sm-2">
-              <input type="checkbox"  data-toggle="toggle" id="StallDetectOn" {{#StallDetectOn}}checked{{/StallDetectOn}}>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="BatteryLightPolarity" class="col-sm-10 control-label">BatteryLightPolarity</label>
-            <div class="col-sm-2">
-              <input type="checkbox"  data-toggle="toggle" id="BatteryLightPolarity" {{#BatteryLightPolarity}}checked{{/BatteryLightPolarity}}>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="CheckEngineLightPolarity" class="col-sm-10 control-label">CheckEngineLightPolarity</label>
-            <div class="col-sm-2">
-              <input type="checkbox"  data-toggle="toggle" id="CheckEngineLightPolarity" {{#CheckEngineLightPolarity}}checked{{/CheckEngineLightPolarity}}>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="ReversingContactors" class="col-sm-10 control-label">ReversingContactors</label>
-            <div class="col-sm-2">
-              <input type="checkbox"  data-toggle="toggle" id="ReversingContactors" {{#ReversingContactors}}checked{{/ReversingContactors}}>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="SeriesParallelContactors" class="col-sm-10 control-label">SeriesParallelContactors</label>
-            <div class="col-sm-2">
-              <input type="checkbox"  data-toggle="toggle" id="SeriesParallelContactors" {{#SeriesParallelContactors}}checked{{/SeriesParallelContactors}}>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="ForceParallelInReverse" class="col-sm-10 control-label">ForceParallelInReverse</label>
-            <div class="col-sm-2">
-              <input type="checkbox"  data-toggle="toggle" id="ForceParallelInReverse" {{#ForceParallelInReverse}}checked{{/ForceParallelInReverse}}>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="InhibitSeriesParallelShifting" class="col-sm-10 control-label">InhibitSeriesParallelShifting</label>
-            <div class="col-sm-2">
-              <input type="checkbox"  data-toggle="toggle" id="InhibitSeriesParallelShifting" {{#InhibitSeriesParallelShifting}}checked{{/InhibitSeriesParallelShifting}}>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="TachometerDisplayMotorAmps" class="col-sm-10 control-label">TachometerDisplayMotorAmps</label>
-            <div class="col-sm-2">
-              <input type="checkbox"  data-toggle="toggle" id="TachometerDisplayMotorAmps" {{#TachometerDisplayMotorAmps}}checked{{/TachometerDisplayMotorAmps}}>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="TachometerSixCylinders" class="col-sm-10 control-label">TachometerSixCylinders</label>
-            <div class="col-sm-2">
-              <input type="checkbox"  data-toggle="toggle" id="TachometerSixCylinders" {{#TachometerSixCylinders}}checked{{/TachometerSixCylinders}}>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="ReversesPlugInInputPolarity" class="col-sm-10 control-label">ReversesPlugInInputPolarity</label>
-            <div class="col-sm-2">
-              <input type="checkbox"  data-toggle="toggle" id="ReversesPlugInInputPolarity" {{#ReversesPlugInInputPolarity}}checked{{/ReversesPlugInInputPolarity}}>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="ActivateHEPI" class="col-sm-10 control-label">ActivateHEPI</label>
-            <div class="col-sm-2">
-              <input type="checkbox"  data-toggle="toggle" id="ActivateHEPI" {{#ActivateHEPI}}checked{{/ActivateHEPI}}>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="IsZ2k" class="col-sm-10 control-label">IsZ2k</label>
-            <div class="col-sm-2">
-              <input type="checkbox"  data-toggle="toggle" id="IsZ2k" {{#IsZ2k}}checked{{/IsZ2k}}>
+            <div class="panel-body">
+
+              <div class="form-horizontal">
+                <div class="form-group">
+                  <label for="RpmSensorMotorOne" class="col-sm-10 control-label">RpmSensorMotorOne</label>
+                  <div class="col-sm-2">
+                    <input type="checkbox"  data-toggle="toggle" id="RpmSensorMotorOne" {{#RpmSensorMotorOne}}checked{{/RpmSensorMotorOne}}>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="RpmSensorMotorTwo" class="col-sm-10 control-label">RpmSensorMotorTwo</label>
+                  <div class="col-sm-2">
+                    <input type="checkbox"  data-toggle="toggle" id="RpmSensorMotorTwo" {{#RpmSensorMotorTwo}}checked{{/RpmSensorMotorTwo}}>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="AutoShiftingSeriesToParallel" class="col-sm-10 control-label">AutoShiftingSeriesToParallel</label>
+                  <div class="col-sm-2">
+                    <input type="checkbox"  data-toggle="toggle" id="AutoShiftingSeriesToParallel" {{#AutoShiftingSeriesToParallel}}checked{{/AutoShiftingSeriesToParallel}}>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="StallDetectOn" class="col-sm-10 control-label">StallDetectOn</label>
+                  <div class="col-sm-2">
+                    <input type="checkbox"  data-toggle="toggle" id="StallDetectOn" {{#StallDetectOn}}checked{{/StallDetectOn}}>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="BatteryLightPolarity" class="col-sm-10 control-label">BatteryLightPolarity</label>
+                  <div class="col-sm-2">
+                    <input type="checkbox"  data-toggle="toggle" id="BatteryLightPolarity" {{#BatteryLightPolarity}}checked{{/BatteryLightPolarity}}>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="CheckEngineLightPolarity" class="col-sm-10 control-label">CheckEngineLightPolarity</label>
+                  <div class="col-sm-2">
+                    <input type="checkbox"  data-toggle="toggle" id="CheckEngineLightPolarity" {{#CheckEngineLightPolarity}}checked{{/CheckEngineLightPolarity}}>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="ReversingContactors" class="col-sm-10 control-label">ReversingContactors</label>
+                  <div class="col-sm-2">
+                    <input type="checkbox"  data-toggle="toggle" id="ReversingContactors" {{#ReversingContactors}}checked{{/ReversingContactors}}>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="SeriesParallelContactors" class="col-sm-10 control-label">SeriesParallelContactors</label>
+                  <div class="col-sm-2">
+                    <input type="checkbox"  data-toggle="toggle" id="SeriesParallelContactors" {{#SeriesParallelContactors}}checked{{/SeriesParallelContactors}}>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="ForceParallelInReverse" class="col-sm-10 control-label">ForceParallelInReverse</label>
+                  <div class="col-sm-2">
+                    <input type="checkbox"  data-toggle="toggle" id="ForceParallelInReverse" {{#ForceParallelInReverse}}checked{{/ForceParallelInReverse}}>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="InhibitSeriesParallelShifting" class="col-sm-10 control-label">InhibitSeriesParallelShifting</label>
+                  <div class="col-sm-2">
+                    <input type="checkbox"  data-toggle="toggle" id="InhibitSeriesParallelShifting" {{#InhibitSeriesParallelShifting}}checked{{/InhibitSeriesParallelShifting}}>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="TachometerDisplayMotorAmps" class="col-sm-10 control-label">TachometerDisplayMotorAmps</label>
+                  <div class="col-sm-2">
+                    <input type="checkbox"  data-toggle="toggle" id="TachometerDisplayMotorAmps" {{#TachometerDisplayMotorAmps}}checked{{/TachometerDisplayMotorAmps}}>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="TachometerSixCylinders" class="col-sm-10 control-label">TachometerSixCylinders</label>
+                  <div class="col-sm-2">
+                    <input type="checkbox"  data-toggle="toggle" id="TachometerSixCylinders" {{#TachometerSixCylinders}}checked{{/TachometerSixCylinders}}>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="ReversesPlugInInputPolarity" class="col-sm-10 control-label">ReversesPlugInInputPolarity</label>
+                  <div class="col-sm-2">
+                    <input type="checkbox"  data-toggle="toggle" id="ReversesPlugInInputPolarity" {{#ReversesPlugInInputPolarity}}checked{{/ReversesPlugInInputPolarity}}>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="ActivateHEPI" class="col-sm-10 control-label">ActivateHEPI</label>
+                  <div class="col-sm-2">
+                    <input type="checkbox"  data-toggle="toggle" id="ActivateHEPI" {{#ActivateHEPI}}checked{{/ActivateHEPI}}>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="IsZ2k" class="col-sm-10 control-label">IsZ2k</label>
+                  <div class="col-sm-2">
+                    <input type="checkbox"  data-toggle="toggle" id="IsZ2k" {{#IsZ2k}}checked{{/IsZ2k}}>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

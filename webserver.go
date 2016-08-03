@@ -17,7 +17,11 @@ func StartWebServer(port int) {
 	zilla := CreateZilla(&MockPort{})
 
     app.Get("/", func(req *f.Request, res *f.Response, next func()) {
-        res.Render("index.html", zilla)
+        res.Render("index.html", ReadLatestFromDataStream())
+    })
+
+    app.Get("/datastream", func(req *f.Request, res *f.Response, next func()) {
+        res.Send(ReadLatestFromDataStream())
     })
 
 	app.Get("/settings", func(req *f.Request, res *f.Response, next func()) {

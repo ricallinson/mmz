@@ -7,6 +7,7 @@
     <title>Zilla Controller</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-toggle.min.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
   </head>
   <body>
     <nav class="navbar navbar-default">
@@ -20,79 +21,85 @@
         </ul>
       </div>
     </nav>
-    <div class="row">
-      <div class="col-md-6">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Motor Kilowatts</h3>
+    <div class="main">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Motor Kilowatts</h3>
+            </div>
+            <div class="panel-body">
+              <h2>{{MotorKilowatts}} kw</h2>
+            </div>
           </div>
-          <div class="panel-body">
-            <h2>14 kw</h2>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Motor Voltage</h3>
+            </div>
+            <div class="panel-body">
+              <h2>{{MotorVoltage}} volts</h2>
+            </div>
           </div>
-        </div>
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Motor Voltage</h3>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Battery Voltage</h3>
+            </div>
+            <div class="panel-body">
+              <h2>{{BatteryVoltage}} volts</h2>
+            </div>
           </div>
-          <div class="panel-body">
-            <h2>48 volts</h2>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Average Current on Motor</h3>
+            </div>
+            <div class="panel-body">
+              <h2>{{AverageCurrentOnMotor}} amps</h2>
+            </div>
           </div>
-        </div>
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Battery Voltage</h3>
-          </div>
-          <div class="panel-body">
-            <h2>48 volts</h2>
-          </div>
-        </div>
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Average Current on Motor</h3>
-          </div>
-          <div class="panel-body">
-            <h2>50 amps</h2>
-          </div>
-        </div>
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Available Current from Controller</h3>
-          </div>
-          <div class="panel-body">
-            <h2>1000 amps</h2>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Operating Status</h3>
-          </div>
-          <div class="panel-body">
-            <div>
-              <p>Main contactor is on OK.</p>
-              <p>Motor contactors are on OK.</p>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Available Current from Controller</h3>
+            </div>
+            <div class="panel-body">
+              <h2>{{AvailableCurrentFromController}} amps</h2>
             </div>
           </div>
         </div>
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Current Controller Temp</h3>
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Operating Status</h3>
+            </div>
+            <div class="panel-body">
+              <div>
+                {{#StoppedState}}<p>Stopped state.</p>{{/StoppedState}}
+                {{#ShiftingInProgress}}<p>Shifting in progress.</p>{{/ShiftingInProgress}}
+                {{#MainContactorIsOn}}<p>Main contactor is on OK.</p>{{/MainContactorIsOn}}
+                {{#MotorContactorsAreOn}}<p>Motor contactors are on OK.</p>{{/MotorContactorsAreOn}}
+                {{#DirectionIsReverse}}<p>Direction is reverse.</p>{{/DirectionIsReverse}}
+                {{#DirectionIsForward}}<p>Direction is forward.</p>{{/DirectionIsForward}}
+                {{#MotorsAreInParallel}}<p>Motors are in parallel.</p>{{/MotorsAreInParallel}}
+                {{#MotorsAreInSeries}}<p>Motors are in series.</p>{{/MotorsAreInSeries}}
+                {{#MainContactorHasVoltageDrop}}<p>Main contactor has voltage drop (>5V) across power terminals.</p>{{/MainContactorHasVoltageDrop}}
+              </div>
+            </div>
           </div>
-          <div class="panel-body">
-            <h2>72 &deg;F</h2>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Current Controller Temp</h3>
+            </div>
+            <div class="panel-body">
+              <h2>{{ControllerTemp}} &deg;F</h2>
+            </div>
           </div>
-        </div>
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Latest Operations</h3>
-          </div>
-          <div class="panel-body">
-            <div>
-              <div class="alert alert-info" role="alert">{{CurrentState}}</div>
-              {{#Errors}}
-              <div class="alert alert-warning" role="alert">{{.}}</div>
-              {{/Errors}}
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Latest Operations</h3>
+            </div>
+            <div class="panel-body">
+              <div>
+                <div class="alert alert-info" role="alert">{{LatestOperation}}</div>
+              </div>
             </div>
           </div>
         </div>
