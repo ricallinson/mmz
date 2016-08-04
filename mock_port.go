@@ -8,6 +8,15 @@ import (
 
 type MockPort struct {
 	history byte
+	averageCurrentOnMotor int
+	availableCurrentFromController int
+	armDC int
+	batteryVoltage int
+	motorVoltage int
+	controllerTemp int
+	spiErrorCount int
+	currentError int
+	operatingStatus string
 }
 
 func (this *MockPort) Read(b []byte) (int, error) {
@@ -57,15 +66,15 @@ func (this *MockPort) Close() error {
 
 func (this *MockPort) q1(b []byte) (int, error) {
 	time.Sleep(100 * time.Millisecond)
-	averageCurrentOnMotor := fmt.Sprintf("%x", 5)
-	availableCurrentFromController := fmt.Sprintf("%x", 6)
-	armDC := fmt.Sprintf("%x", 0)
-	batteryVoltage := fmt.Sprintf("%x", 4)
-	motorVoltage := fmt.Sprintf("%x", 3)
-	controllerTemp := fmt.Sprintf("%x", 7)
-	spiErrorCount := fmt.Sprintf("%x", 0)
-	currentError := fmt.Sprintf("%x", 1314)
-	operatingStatus := "S"
+	this.updateMockData()
+	averageCurrentOnMotor := fmt.Sprintf("%x", this.averageCurrentOnMotor)
+	availableCurrentFromController := fmt.Sprintf("%x", this.availableCurrentFromController)
+	armDC := fmt.Sprintf("%x", this.armDC)
+	batteryVoltage := fmt.Sprintf("%x", this.batteryVoltage)
+	motorVoltage := fmt.Sprintf("%x", this.motorVoltage)
+	controllerTemp := fmt.Sprintf("%x", this.controllerTemp)
+	spiErrorCount := fmt.Sprintf("%x", this.spiErrorCount)
+	currentError := fmt.Sprintf("%x", this.currentError)
 	line := []byte(
 		averageCurrentOnMotor + " " +
 		availableCurrentFromController + " " +
@@ -75,10 +84,55 @@ func (this *MockPort) q1(b []byte) (int, error) {
 		controllerTemp + " " +
 		spiErrorCount + " " +
 		currentError + " " +
-		operatingStatus +
+		this.operatingStatus +
 		"\n")
 	for i := 0; i < len(line); i++ {
 		b[i] = line[i]
 	}
 	return len(line), nil
+}
+
+func (this *MockPort) updateMockData() {
+	this.averageCurrentOnMotor++
+	if this.averageCurrentOnMotor > 2000{
+		this.averageCurrentOnMotor = 0;
+	}
+	this.availableCurrentFromController++
+	if this.availableCurrentFromController > 2000 {
+		this.availableCurrentFromController = 100
+	}
+	this.armDC++
+	if this.armDC > 10 {
+		this.armDC = 0
+	}
+	this.batteryVoltage++
+	if this.batteryVoltage > 285 {
+		this.batteryVoltage = 285
+	}
+	if this.batteryVoltage > 290 {
+		this.batteryVoltage = 285
+	}
+	this.motorVoltage++
+	if this.motorVoltage < 285 {
+		this.motorVoltage = 285
+	}
+	if this.motorVoltage > 290 {
+		this.motorVoltage = 285
+	}
+	this.controllerTemp++
+	if this.controllerTemp > 120 {
+		this.controllerTemp = 80
+	}
+	this.spiErrorCount++
+	if this.spiErrorCount > 1000 {
+		this.spiErrorCount = 0
+	}
+	this.currentError++
+	if this.currentError < 1111 {
+		this.currentError = 1111
+	}
+	if this.currentError > 1500 {
+		this.currentError = 1111
+	}
+	this.operatingStatus = "S"
 }
