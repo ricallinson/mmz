@@ -57,21 +57,26 @@ func (this *MockPort) Close() error {
 
 func (this *MockPort) q1(b []byte) (int, error) {
 	time.Sleep(100 * time.Millisecond)
-	motorKilowatts := fmt.Sprintf("%x", 2)
-	motorVoltage := fmt.Sprintf("%x", 3)
-	batteryVoltage := fmt.Sprintf("%x", 4)
 	averageCurrentOnMotor := fmt.Sprintf("%x", 5)
 	availableCurrentFromController := fmt.Sprintf("%x", 6)
+	armDC := fmt.Sprintf("%x", 0)
+	batteryVoltage := fmt.Sprintf("%x", 4)
+	motorVoltage := fmt.Sprintf("%x", 3)
 	controllerTemp := fmt.Sprintf("%x", 7)
+	spiErrorCount := fmt.Sprintf("%x", 0)
+	currentError := fmt.Sprintf("%x", 1314)
+	operatingStatus := "S"
 	line := []byte(
-		timestamp + " " +
-		motorKilowatts + " " +
-		motorVoltage + " " +
-		batteryVoltage+ " " +
 		averageCurrentOnMotor + " " +
 		availableCurrentFromController + " " +
+		armDC + " " +
+		batteryVoltage+ " " +
+		motorVoltage + " " +
 		controllerTemp + " " +
-		"S\n")
+		spiErrorCount + " " +
+		currentError + " " +
+		operatingStatus +
+		"\n")
 	for i := 0; i < len(line); i++ {
 		b[i] = line[i]
 	}
