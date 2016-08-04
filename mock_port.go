@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"time"
+	"fmt"
 )
 
 type MockPort struct {
@@ -56,9 +57,23 @@ func (this *MockPort) Close() error {
 
 func (this *MockPort) q1(b []byte) (int, error) {
 	time.Sleep(100 * time.Millisecond)
-	b[0] = 'f'
-	b[1] = 'o'
-	b[2] = 'o'
-	b[3] = '\n'
-	return 4, nil
+	motorKilowatts := fmt.Sprintf("%x", 2)
+	motorVoltage := fmt.Sprintf("%x", 3)
+	batteryVoltage := fmt.Sprintf("%x", 4)
+	averageCurrentOnMotor := fmt.Sprintf("%x", 5)
+	availableCurrentFromController := fmt.Sprintf("%x", 6)
+	controllerTemp := fmt.Sprintf("%x", 7)
+	line := []byte(
+		timestamp + " " +
+		motorKilowatts + " " +
+		motorVoltage + " " +
+		batteryVoltage+ " " +
+		averageCurrentOnMotor + " " +
+		availableCurrentFromController + " " +
+		controllerTemp + " " +
+		"S\n")
+	for i := 0; i < len(line); i++ {
+		b[i] = line[i]
+	}
+	return len(line), nil
 }
