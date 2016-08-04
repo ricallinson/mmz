@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"bufio"
+	"os"
+	"time"
 )
 
 type SerialPort interface {
@@ -70,8 +73,6 @@ func (this *Zilla) sendString(s, check string) bool {
 }
 
 func (this *Zilla) sendBytes(b []byte, check string) bool {
-	this.stopLogging()
-	defer this.startLogging()
 	var e error
 	_, e = this.serialPort.Write(b)
 	if e != nil {
@@ -95,26 +96,39 @@ func (this *Zilla) stopLogging() {
 	this.writeLog = false
 }
 
-func (this *Zilla) log(filePath string) bool {
-	if this.menuSpecial() == false {
-		return false
+func (this *Zilla) appendToLog(line []byte) []byte {
+	return line
+}
+
+func (this *Zilla) log(filename string) {
+	this.menuSpecial()
+	_, readError := this.serialPort.Write([]byte("Q1\n")) // The first logging screen.
+	if readError != nil {
+		fmt.Println(readError)
+		return
 	}
-	var e error
-	_, e = this.serialPort.Write([]byte("Q1")) // The first logging screen.
-	if e != nil {
-		fmt.Println(e)
-		return false
+
+	f, openFileError := os.OpenFile(filename, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+	if openFileError != nil {
+	    fmt.Println(openFileError)
 	}
-	// While "something" keep writing bytes to the file.
-	for this.writeLog == false {
-		buffer := make([]byte, 1024)
-		_, e = this.serialPort.Read(buffer)
-		if e != nil {
-			fmt.Println(e)
-			return false
+	defer f.Close()
+	// Create a reader buffer.
+	buf := bufio.NewReader(this.serialPort)
+	// While allowed keep writing bytes to the file.
+	for this.writeLog {
+		line, readLineError := buf.ReadBytes('\n')
+		if readLineError != nil {
+			fmt.Println(readLineError)
+			return
 		}
+		_, writeLineError := f.Write(this.appendToLog(line))
+		if writeLineError != nil {
+			fmt.Println(writeLineError)
+			return
+		}
+		time.Sleep(1 * time.Millisecond)
 	}
-	return true
 }
 
 func (this *Zilla) menuHome() bool {
@@ -129,19 +143,17 @@ func (this *Zilla) menuSettings() bool {
 }
 
 func (this *Zilla) menuBattery() bool {
-	defer this.startLogging()
 	this.menuHome()
 	return this.sendString("b", "a)BA, v)LBV, i)LBVI")
 }
 
 func (this *Zilla) menuMotor() bool {
-	defer this.startLogging()
 	this.menuHome()
 	return this.sendString("m", "Motor Settings:")
 }
 
 func (this *Zilla) menuSpeed() bool {
-	defer this.startLogging()
+	
 	this.menuHome()
 	return this.sendString("s", "Rev limits")
 }

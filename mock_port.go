@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"time"
 )
 
 type MockPort struct {
@@ -27,7 +28,7 @@ func (this *MockPort) Read(b []byte) (int, error) {
 	case 0, 27: // Home Menu
 		file, err = os.Open("./fixtures/home.txt")
 	case 'Q':
-		return 0, nil
+		return this.q1(b)
 	}
 	if err != nil {
 		return 0, err
@@ -37,7 +38,9 @@ func (this *MockPort) Read(b []byte) (int, error) {
 
 func (this *MockPort) Write(b []byte) (int, error) {
 	switch b[0] {
-	case 'd', 'b', 'm', 's', 'o', 'p', 'Q', 27:
+	case 'd', 'b', 'm', 's', 'o', 'p', 27:
+		this.history = b[0]
+	case 'Q':
 		this.history = b[0]
 	}
 	return 0, nil
@@ -49,4 +52,13 @@ func (this *MockPort) Flush() error {
 
 func (this *MockPort) Close() error {
 	return nil
+}
+
+func (this *MockPort) q1(b []byte) (int, error) {
+	time.Sleep(100 * time.Millisecond)
+	b[0] = 'f'
+	b[1] = 'o'
+	b[2] = 'o'
+	b[3] = '\n'
+	return 4, nil
 }

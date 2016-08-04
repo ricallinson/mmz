@@ -10,42 +10,42 @@ func TestZilla(t *testing.T) {
 	Describe("Zilla()", func() {
 
 		It("should read home", func() {
-			z := CreateZilla(&MockPort{})
+			_, z := CreateZilla(&MockPort{})
 			AssertEqual(z.menuHome(), true)
 		})
 
 		It("should read settings", func() {
-			z := CreateZilla(&MockPort{})
+			_, z := CreateZilla(&MockPort{})
 			AssertEqual(z.menuSettings(), true)
 		})
 
 		It("should read battery", func() {
-			z := CreateZilla(&MockPort{})
+			_, z := CreateZilla(&MockPort{})
 			AssertEqual(z.menuBattery(), true)
 		})
 
 		It("should read motor", func() {
-			z := CreateZilla(&MockPort{})
+			_, z := CreateZilla(&MockPort{})
 			AssertEqual(z.menuMotor(), true)
 		})
 
 		It("should read speed", func() {
-			z := CreateZilla(&MockPort{})
+			_, z := CreateZilla(&MockPort{})
 			AssertEqual(z.menuSpeed(), true)
 		})
 
 		It("should read options", func() {
-			z := CreateZilla(&MockPort{})
+			_, z := CreateZilla(&MockPort{})
 			AssertEqual(z.menuOptions(), true)
 		})
 
 		It("should read special", func() {
-			z := CreateZilla(&MockPort{})
+			_, z := CreateZilla(&MockPort{})
 			AssertEqual(z.menuSpecial(), true)
 		})
 
 		It("should execute Refresh", func() {
-			z := CreateZilla(&MockPort{})
+			_, z := CreateZilla(&MockPort{})
 			z.Refresh()
 			AssertEqual(z.BatteryAmpLimit, 1800)
 			AssertEqual(z.LowBatteryVoltageLimit, 119)
