@@ -1,14 +1,14 @@
 package main
 
 import (
-	"bytes"
-	"strings"
+	"encoding/json"
 	"strconv"
+	"strings"
 )
 
 type LiveData struct {
 	Timestamp                      int
-	RxCtrlFlagByte int
+	RxCtrlFlagByte                 int
 	AverageCurrentOnMotor          int
 	AvailableCurrentFromController int
 	ArmDC                          int
@@ -30,16 +30,27 @@ type LiveData struct {
 	MainContactorHasVoltageDrop    bool
 }
 
+func (this *LiveData) ToBytes() []byte {
+	b, _ := json.Marshal(this)
+	return append(b, 10)
+}
+
+func CreateLiveData(b []byte) *LiveData {
+	var d LiveData
+	json.Unmarshal(b, &d)
+	return &d
+}
+
 func getIntFromHex(s string) int {
 	v, _ := strconv.ParseInt(s, 16, 16)
 	return int(v)
 }
 
-func CreateLiveData(b []byte) *LiveData {
-	line := string(b[bytes.Index(b, []byte{10}):])
+func ParseQ1LineFromHairball(b []byte) *LiveData {
+	line := string(b)
 	values := strings.Split(strings.TrimSpace(line), " ")
 	data := &LiveData{
-		Timestamp:                      0,
+		Timestamp: 0,
 		// RxCtrlFlagByte
 		AverageCurrentOnMotor:          getIntFromHex(values[1]),
 		AvailableCurrentFromController: getIntFromHex(values[2]),

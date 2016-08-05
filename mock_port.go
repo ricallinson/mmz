@@ -78,16 +78,16 @@ func (this *MockPort) q1(b []byte) (int, error) {
 	operatingStatus := fmt.Sprintf("%X", this.operatingStatus)
 	line := []byte(
 		"00 " +
-		averageCurrentOnMotor + " " +
-		availableCurrentFromController + " " +
-		armDC + " " +
-		batteryVoltage + " " +
-		motorVoltage + " " +
-		controllerTemp + " " +
-		spiErrorCount + " " +
-		currentError + " " +
-		operatingStatus + " " +
-		"SFS\n")
+			averageCurrentOnMotor + " " +
+			availableCurrentFromController + " " +
+			armDC + " " +
+			batteryVoltage + " " +
+			motorVoltage + " " +
+			controllerTemp + " " +
+			spiErrorCount + " " +
+			currentError + " " +
+			operatingStatus + " " +
+			"SFS\n")
 	for i := 0; i < len(line); i++ {
 		b[i] = line[i]
 	}

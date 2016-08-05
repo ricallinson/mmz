@@ -82,9 +82,7 @@ func split(s string, sep string) []string {
 func CreateZilla(p SerialPort) (error, *Zilla) {
 	z := &Zilla{serialPort: p}
 	z.Errors = make([]string, 0)
-	if z.Refresh() == false {
-		return errors.New("Could not get data from Hairball."), nil
-	}
+	// OPen log file for reading and writing.
 	var openFileError error
 	z.writeLogFile, openFileError = os.OpenFile(LOGFILE, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
 	if openFileError != nil {
@@ -96,7 +94,10 @@ func CreateZilla(p SerialPort) (error, *Zilla) {
 		fmt.Println(openFileError)
 		return errors.New("Could not open log file for reading."), nil
 	}
-	z.startLogging()
+	// Update the Zilla object with it's values.
+	if z.Refresh() == false {
+		return errors.New("Could not get data from Hairball."), nil
+	}
 	return nil, z
 }
 
@@ -129,7 +130,7 @@ func (this *Zilla) sendBytes(b []byte, check string) bool {
 	if reflect.TypeOf(this.serialPort).String() != "*main.MockPort" {
 		time.Sleep(500 * time.Millisecond)
 	}
-	this.buffer = make([]byte, 512)
+	this.buffer = make([]byte, 1000)
 	_, e = this.serialPort.Read(this.buffer)
 	if e != nil {
 		fmt.Println(e)
@@ -188,6 +189,7 @@ func (this *Zilla) startLogging() {
 		// Open the first logging stream.
 		_, readError := this.serialPort.Write([]byte("Q1\r"))
 		if readError != nil {
+			fmt.Println("Could read from logs from Hairball.")
 			fmt.Println(readError)
 			return
 		}
@@ -198,10 +200,11 @@ func (this *Zilla) startLogging() {
 		for this.writeLog {
 			line, readLineError := buf.ReadBytes('\n')
 			if readLineError != nil {
+				fmt.Println("Could read log line from Hairball.")
 				fmt.Println(readLineError)
 				return
 			}
-			_, writeLineError := this.writeLogFile.Write(line)
+			_, writeLineError := this.writeLogFile.Write(ParseQ1LineFromHairball(line).ToBytes())
 			if writeLineError != nil {
 				fmt.Println(writeLineError)
 				return
@@ -212,7 +215,7 @@ func (this *Zilla) startLogging() {
 }
 
 func (this *Zilla) GetLiveData() *LiveData {
-	bufSize := 50
+	bufSize := 1000
 	buf := make([]byte, bufSize)
 	stat, _ := os.Stat(LOGFILE)
 	start := stat.Size() - int64(bufSize)
@@ -223,7 +226,10 @@ func (this *Zilla) GetLiveData() *LiveData {
 		fmt.Println(start)
 		fmt.Println(err)
 	}
-	return CreateLiveData(buf[:i])
+	buf = buf[:i]                              // Get the bytes written to the buffer.
+	buf = buf[bytes.Index(buf, []byte{10})+1:] // Remove all bytes before the first line feed.
+	buf = buf[:bytes.Index(buf, []byte{10})]   // Remove all bytes after the next line feed.
+	return CreateLiveData(buf)
 }
 
 // Refreshes all attributes by reading them from the Zilla Controller.
