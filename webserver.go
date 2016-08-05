@@ -23,6 +23,7 @@ func StartWebServer(port int, zilla *Zilla) {
 	})
 
 	app.Get("/settings", func(req *f.Request, res *f.Response, next func()) {
+		zilla.Refresh()
 		res.Render("settings.html", zilla)
 	})
 

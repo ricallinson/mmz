@@ -8,10 +8,10 @@
 
 
 Options: Enter letter to change
-a) On b) On c) On d) On
-e) Off f) On g) On h) On
-i) Off j) Off k) Off l) Off
-m) Off n) Off o) Off p) Off
+a) On 	b) On 	c) On 	d) On
+e) Off	f) On 	g) On 	h) On
+i) Off	j) Off	k) Off	l) Off
+m) Off	n) Off	o) Off	p) Off
 Esc) Cancel
 State: 1311
 How may I help you?

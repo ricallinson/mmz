@@ -60,14 +60,15 @@ type Zilla struct {
 	writeLogFile                  *os.File
 }
 
+// Return a boolean of "On" or "Off".
 func truthy(s string) bool {
 	return strings.Contains(s, "On")
 }
 
 // Returns a string array of values with white space removed.
-func valuesFromString(s string) []string {
+func split(s string, sep string) []string {
 	values := []string{}
-	tokens := strings.Split(s, " ")
+	tokens := strings.Split(s, sep)
 	for _, token := range tokens {
 		token = strings.TrimSpace(token)
 		if len(token) > 0 {
@@ -94,7 +95,7 @@ func CreateZilla(p SerialPort) (error, *Zilla) {
 		fmt.Println(openFileError)
 		return errors.New("Could not open log file for reading."), nil
 	}
-	z.startLogging()
+	// z.startLogging()
 	return nil, z
 }
 
@@ -110,7 +111,7 @@ func (this *Zilla) sendBytes(b []byte, check string) bool {
 		return false
 	}
 	// Cannot keep sleeping. Need a better solution here.
-	// time.Sleep(500 * time.Millisecond)
+	time.Sleep(500 * time.Millisecond)
 	this.buffer = make([]byte, 512)
 	_, e = this.serialPort.Read(this.buffer)
 	if e != nil {
@@ -180,11 +181,10 @@ func (this *Zilla) menuBattery() bool {
 
 func (this *Zilla) menuMotor() bool {
 	this.menuHome()
-	return this.sendString("m", "Motor Settings:")
+	return this.sendString("m", "Motor Settings")
 }
 
 func (this *Zilla) menuSpeed() bool {
-
 	this.menuHome()
 	return this.sendString("s", "Rev limits")
 }
@@ -237,53 +237,53 @@ func (this *Zilla) Refresh() bool {
 	lines := bytes.Split(this.buffer, []byte{10})
 	// Get values for BA, LBV, LBVI
 	var values []string
-	values = valuesFromString(string(lines[2]))
+	values = split(string(lines[2]), " ")
 	this.BatteryAmpLimit, _ = strconv.Atoi(values[0])
 	this.LowBatteryVoltageLimit, _ = strconv.Atoi(values[1])
 	this.LowBatteryVoltageIndicator, _ = strconv.Atoi(values[2])
 	// Values for Amp, Volt, RA
-	values = valuesFromString(string(lines[4]))
+	values = split(string(lines[4]), " ")
 	this.NormalMotorAmpLimit, _ = strconv.Atoi(values[0])
 	this.SeriesMotorVoltageLimit, _ = strconv.Atoi(values[1])
 	this.ReverseMotorAmpLimit, _ = strconv.Atoi(values[2])
 	// Values for RV, PA, PV
-	values = valuesFromString(string(lines[6]))
+	values = split(string(lines[6]), " ")
 	this.ReverseMotorVoltageLimit, _ = strconv.Atoi(values[0])
 	this.ParallelMotorAmpLimit, _ = strconv.Atoi(values[1])
 	this.ParallelMotorVoltageLimit, _ = strconv.Atoi(values[2])
 	// Values for Norm, Rev, Max
-	values = valuesFromString(string(lines[8]))
+	values = split(string(lines[8]), " ")
 	this.ForwardRpmLimit, _ = strconv.Atoi(values[0])
 	this.ReverseRpmLimit, _ = strconv.Atoi(values[1])
 	this.MaxRpmLimit, _ = strconv.Atoi(values[2])
 	// Values for a, b, c, d
-	values = valuesFromString(string(lines[9]))
-	this.RpmSensorMotorOne = truthy(values[1])
-	this.RpmSensorMotorTwo = truthy(values[3])
-	this.AutoShiftingSeriesToParallel = truthy(values[5])
-	this.StallDetectOn = truthy(values[7])
+	values = split(string(lines[9]), "\t")
+	this.RpmSensorMotorOne = truthy(values[0])
+	this.RpmSensorMotorTwo = truthy(values[1])
+	this.AutoShiftingSeriesToParallel = truthy(values[2])
+	this.StallDetectOn = truthy(values[3])
 	// Values for e, f, g, h
-	values = valuesFromString(string(lines[10]))
-	this.BatteryLightPolarity = truthy(values[1])
-	this.CheckEngineLightPolarity = truthy(values[3])
-	this.ReversingContactors = truthy(values[5])
-	this.SeriesParallelContactors = truthy(values[7])
+	values = split(string(lines[10]), "\t")
+	this.BatteryLightPolarity = truthy(values[0])
+	this.CheckEngineLightPolarity = truthy(values[1])
+	this.ReversingContactors = truthy(values[2])
+	this.SeriesParallelContactors = truthy(values[3])
 	// Values for i, j, k, l
-	values = valuesFromString(string(lines[11]))
-	this.ForceParallelInReverse = truthy(values[1])
-	this.InhibitSeriesParallelShifting = truthy(values[3])
-	this.TachometerDisplayMotorAmps = truthy(values[5])
-	this.TachometerSixCylinders = truthy(values[7])
+	values = split(string(lines[11]), "\t")
+	this.ForceParallelInReverse = truthy(values[0])
+	this.InhibitSeriesParallelShifting = truthy(values[1])
+	this.TachometerDisplayMotorAmps = truthy(values[2])
+	this.TachometerSixCylinders = truthy(values[3])
 	// Values for m, n, o, p
-	values = valuesFromString(string(lines[12]))
-	this.ReversesPlugInInputPolarity = truthy(values[1])
-	this.ActivateHEPI = truthy(values[3])
-	this.notUsed = truthy(values[5])
-	this.IsZ2k = truthy(values[7])
+	values = split(string(lines[12]), "\t")
+	this.ReversesPlugInInputPolarity = truthy(values[0])
+	this.ActivateHEPI = truthy(values[1])
+	this.notUsed = truthy(values[2])
+	this.IsZ2k = truthy(values[3])
 	// Values for errors
-	this.Errors = valuesFromString(string(lines[14]))
+	this.Errors = split(string(lines[14]), " ")
 	// Values for current state
-	values = valuesFromString(string(lines[15]))
+	values = split(string(lines[15]), " ")
 	this.CurrentState = values[1]
 	return true
 }

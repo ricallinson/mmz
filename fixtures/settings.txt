@@ -18,10 +18,10 @@ r) RV, c) PA, p) PV
  106     2000   180
 l)Norm, r)Rev, x)Max
  7000     1500   8000
-a) On b) On c) On d) On
-e) Off f) On g) On h) On
-i) Off j) Off k) Off l) Off
-m) Off n) Off o) Off p) On
+a) On 	b) On 	c) On 	d) On
+e) Off	f) On 	g) On 	h) On
+i) Off	j) Off	k) Off	l) Off
+m) Off	n) Off	o) Off	p) On
 Errors, Old-New:
 1111 1111 1111 1111 1111
 State: 1311 Return for menu
