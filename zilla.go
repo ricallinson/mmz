@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"reflect"
 )
 
 const (
@@ -111,7 +112,9 @@ func (this *Zilla) sendBytes(b []byte, check string) bool {
 		return false
 	}
 	// Cannot keep sleeping. Need a better solution here.
-	time.Sleep(500 * time.Millisecond)
+	if reflect.TypeOf(this.serialPort).String() != "*main.MockPort" {
+		time.Sleep(500 * time.Millisecond)
+	}
 	this.buffer = make([]byte, 512)
 	_, e = this.serialPort.Read(this.buffer)
 	if e != nil {
@@ -127,7 +130,7 @@ func (this *Zilla) sendBytes(b []byte, check string) bool {
 func (this *Zilla) startLogging() {
 	// Start logging in a go routine that stops and starts around other function calls into Zilla.
 	this.writeLog = true
-	go this.log()
+	go this.loggingRoutine()
 }
 
 func (this *Zilla) stopLogging() {
@@ -138,8 +141,13 @@ func (this *Zilla) appendToLog(line []byte) []byte {
 	return line
 }
 
-func (this *Zilla) log() {
-	this.menuSpecial()
+func (this *Zilla) loggingRoutine() {
+	this.sendBytes([]byte{27}, "")
+	this.sendBytes([]byte{27}, "")
+	if this.sendString("p", "Special Menu:") == false {
+		fmt.Println("Could not start logging")
+		return
+	}
 	_, readError := this.serialPort.Write([]byte("Q1\n")) // The first logging screen.
 	if readError != nil {
 		fmt.Println(readError)
