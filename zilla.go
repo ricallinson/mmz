@@ -1,17 +1,17 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"errors"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
-	"bufio"
-	"os"
 	"time"
 )
 
-const(
+const (
 	LOGFILE = "./log.dat"
 )
 
@@ -56,8 +56,8 @@ type Zilla struct {
 	buffer                        []byte   // byte array of the last Zilla output
 	serialPort                    SerialPort
 	writeLog                      bool
-	readLogFile 					  *os.File
-	writeLogFile 					  *os.File
+	readLogFile                   *os.File
+	writeLogFile                  *os.File
 }
 
 func truthy(s string) bool {
@@ -73,13 +73,13 @@ func CreateZilla(p SerialPort) (error, *Zilla) {
 	var openFileError error
 	z.writeLogFile, openFileError = os.OpenFile(LOGFILE, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
 	if openFileError != nil {
-	    fmt.Println(openFileError)
-	    return errors.New("Could not open log file for writing."), nil
+		fmt.Println(openFileError)
+		return errors.New("Could not open log file for writing."), nil
 	}
 	z.readLogFile, openFileError = os.Open(LOGFILE)
 	if openFileError != nil {
-	    fmt.Println(openFileError)
-	    return errors.New("Could not open log file for reading."), nil
+		fmt.Println(openFileError)
+		return errors.New("Could not open log file for reading."), nil
 	}
 	z.startLogging()
 	return nil, z
@@ -93,13 +93,20 @@ func (this *Zilla) sendBytes(b []byte, check string) bool {
 	var e error
 	_, e = this.serialPort.Write(b)
 	if e != nil {
+		fmt.Println(e)
 		return false
 	}
-	this.buffer = make([]byte, 1024)
+	// Cannot keep sleeping. Need a better solution here.
+	// time.Sleep(500 * time.Millisecond)
+	this.buffer = make([]byte, 512)
 	_, e = this.serialPort.Read(this.buffer)
 	if e != nil {
+		fmt.Println(e)
 		return false
 	}
+	// Debug hairball output.
+	this.buffer = bytes.TrimSpace(this.buffer)
+	// fmt.Println(string(this.buffer))
 	return bytes.Index(this.buffer, []byte(check)) > -1
 }
 
@@ -164,7 +171,7 @@ func (this *Zilla) menuMotor() bool {
 }
 
 func (this *Zilla) menuSpeed() bool {
-	
+
 	this.menuHome()
 	return this.sendString("s", "Rev limits")
 }
@@ -197,15 +204,27 @@ func (this *Zilla) GetLiveData() *LiveData {
 	bufSize := 50
 	buf := make([]byte, bufSize)
 	stat, _ := os.Stat(LOGFILE)
-    start := stat.Size() - int64(bufSize)
-    i, err := this.readLogFile.ReadAt(buf, start)
-    if (err != nil) {
-    	fmt.Println("Could not read last line from live data.")
-    	fmt.Println(LOGFILE)
-    	fmt.Println(start)
-    	fmt.Println(err)
-    }
-	return CreateLiveData(buf[:i]);
+	start := stat.Size() - int64(bufSize)
+	i, err := this.readLogFile.ReadAt(buf, start)
+	if err != nil {
+		fmt.Println("Could not read last line from live data.")
+		fmt.Println(LOGFILE)
+		fmt.Println(start)
+		fmt.Println(err)
+	}
+	return CreateLiveData(buf[:i])
+}
+
+func getValuesFromString(s string) []string {
+	values := []string{}
+	tokens := strings.Split(s, " ")
+	for _, token := range tokens {
+		token = strings.TrimSpace(token)
+		if len(token) > 0 {
+			values = append(values, token)
+		}
+	}
+	return values
 }
 
 // Refreshes all attributes by reading them from the Zilla Controller.

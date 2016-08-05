@@ -1,5 +1,16 @@
+
+
+
+
+
+
+
+
+
+
+
 Display only, change with menu
-a)BA, v)LBV, i)LBVI
+a)BA,  v)LBV,  i)LBVI
  1800 119 145
 a) Amp, v) Volt, i) RA
  1600 429 700

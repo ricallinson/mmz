@@ -1,6 +1,6 @@
 package main
 
-import(
+import (
 	// "fmt"
 	"bytes"
 	"strings"
@@ -42,19 +42,19 @@ func CreateLiveData(b []byte) *LiveData {
 		AverageCurrentOnMotor:          getIntFromHex(values[0]),
 		AvailableCurrentFromController: getIntFromHex(values[1]),
 		// ArmDC
-		BatteryVoltage:                 getIntFromHex(values[3]),
-		MotorVoltage:                   getIntFromHex(values[4]),
-		ControllerTemp:                 getIntFromHex(values[5]),
+		BatteryVoltage: getIntFromHex(values[3]),
+		MotorVoltage:   getIntFromHex(values[4]),
+		ControllerTemp: getIntFromHex(values[5]),
 		// SpiErrorCount
-		LatestOperation:                strconv.Itoa(int(getIntFromHex(values[7]))),
-		ShiftingInProgress:             false,
-		MainContactorIsOn:              true,
-		MotorContactorsAreOn:           true,
-		DirectionIsReverse:             false,
-		DirectionIsForward:             true,
-		MotorsAreInParallel:            false,
-		MotorsAreInSeries:              false,
-		MainContactorHasVoltageDrop:    false,
+		LatestOperation:             strconv.Itoa(int(getIntFromHex(values[7]))),
+		ShiftingInProgress:          false,
+		MainContactorIsOn:           true,
+		MotorContactorsAreOn:        true,
+		DirectionIsReverse:          false,
+		DirectionIsForward:          true,
+		MotorsAreInParallel:         false,
+		MotorsAreInSeries:           false,
+		MainContactorHasVoltageDrop: false,
 	}
 	data.MotorKilowatts = data.MotorVoltage * data.AverageCurrentOnMotor / 1000
 	data.LatestOperation = data.LatestOperation + ": " + Codes[data.LatestOperation]

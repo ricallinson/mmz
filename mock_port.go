@@ -1,22 +1,22 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"time"
-	"fmt"
 )
 
 type MockPort struct {
-	history byte
-	averageCurrentOnMotor int
+	history                        byte
+	averageCurrentOnMotor          int
 	availableCurrentFromController int
-	armDC int
-	batteryVoltage int
-	motorVoltage int
-	controllerTemp int
-	spiErrorCount int
-	currentError int
-	operatingStatus string
+	armDC                          int
+	batteryVoltage                 int
+	motorVoltage                   int
+	controllerTemp                 int
+	spiErrorCount                  int
+	currentError                   int
+	operatingStatus                string
 }
 
 func (this *MockPort) Read(b []byte) (int, error) {
@@ -77,15 +77,15 @@ func (this *MockPort) q1(b []byte) (int, error) {
 	currentError := fmt.Sprintf("%X", this.currentError)
 	line := []byte(
 		averageCurrentOnMotor + " " +
-		availableCurrentFromController + " " +
-		armDC + " " +
-		batteryVoltage+ " " +
-		motorVoltage + " " +
-		controllerTemp + " " +
-		spiErrorCount + " " +
-		currentError + " " +
-		this.operatingStatus +
-		"\n")
+			availableCurrentFromController + " " +
+			armDC + " " +
+			batteryVoltage + " " +
+			motorVoltage + " " +
+			controllerTemp + " " +
+			spiErrorCount + " " +
+			currentError + " " +
+			this.operatingStatus +
+			"\n")
 	for i := 0; i < len(line); i++ {
 		b[i] = line[i]
 	}
@@ -94,8 +94,8 @@ func (this *MockPort) q1(b []byte) (int, error) {
 
 func (this *MockPort) updateMockData() {
 	this.averageCurrentOnMotor++
-	if this.averageCurrentOnMotor > 2000{
-		this.averageCurrentOnMotor = 0;
+	if this.averageCurrentOnMotor > 2000 {
+		this.averageCurrentOnMotor = 0
 	}
 	this.availableCurrentFromController++
 	if this.availableCurrentFromController > 2000 {
