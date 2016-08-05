@@ -6,10 +6,10 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
-	"reflect"
 )
 
 const (
@@ -96,12 +96,26 @@ func CreateZilla(p SerialPort) (error, *Zilla) {
 		fmt.Println(openFileError)
 		return errors.New("Could not open log file for reading."), nil
 	}
-	// z.startLogging()
+	z.startLogging()
 	return nil, z
 }
 
 func (this *Zilla) sendString(s, check string) bool {
 	return this.sendBytes([]byte(s), check)
+}
+
+func (this *Zilla) sendIntValue(id string, val int) bool {
+	if this.sendString(id, "XXX") && this.sendString(strconv.Itoa(val), strconv.Itoa(val)) {
+		return this.Refresh()
+	}
+	return false
+}
+
+func (this *Zilla) sendToggleValue(id string) bool {
+	if this.sendString(id, "XXX") {
+		return this.Refresh()
+	}
+	return false
 }
 
 func (this *Zilla) sendBytes(b []byte, check string) bool {
@@ -127,51 +141,8 @@ func (this *Zilla) sendBytes(b []byte, check string) bool {
 	return bytes.Index(this.buffer, []byte(check)) > -1
 }
 
-func (this *Zilla) startLogging() {
-	// Start logging in a go routine that stops and starts around other function calls into Zilla.
-	this.writeLog = true
-	go this.loggingRoutine()
-}
-
-func (this *Zilla) stopLogging() {
-	this.writeLog = false
-}
-
-func (this *Zilla) appendToLog(line []byte) []byte {
-	return line
-}
-
-func (this *Zilla) loggingRoutine() {
-	this.sendBytes([]byte{27}, "")
-	this.sendBytes([]byte{27}, "")
-	if this.sendString("p", "Special Menu:") == false {
-		fmt.Println("Could not start logging")
-		return
-	}
-	_, readError := this.serialPort.Write([]byte("Q1\n")) // The first logging screen.
-	if readError != nil {
-		fmt.Println(readError)
-		return
-	}
-	// Create a reader buffer.
-	buf := bufio.NewReader(this.serialPort)
-	// While allowed keep writing bytes to the file.
-	for this.writeLog {
-		line, readLineError := buf.ReadBytes('\n')
-		if readLineError != nil {
-			fmt.Println(readLineError)
-			return
-		}
-		_, writeLineError := this.writeLogFile.Write(this.appendToLog(line))
-		if writeLineError != nil {
-			fmt.Println(writeLineError)
-			return
-		}
-		time.Sleep(1 * time.Millisecond)
-	}
-}
-
 func (this *Zilla) menuHome() bool {
+	this.writeLog = false
 	this.sendBytes([]byte{27}, "")
 	this.sendBytes([]byte{27}, "")
 	return this.sendBytes([]byte{27}, "d) Display settings")
@@ -207,18 +178,37 @@ func (this *Zilla) menuSpecial() bool {
 	return this.sendString("p", "Special Menu:")
 }
 
-func (this *Zilla) writeIntValue(id string, val int) bool {
-	if this.sendString(id, "XXX") && this.sendString(strconv.Itoa(val), strconv.Itoa(val)) {
-		return this.Refresh()
-	}
-	return false
-}
-
-func (this *Zilla) writeToggleValue(id string) bool {
-	if this.sendString(id, "XXX") {
-		return this.Refresh()
-	}
-	return false
+func (this *Zilla) startLogging() {
+	go func() {
+		this.menuHome()
+		if this.sendString("p", "Special Menu:") == false {
+			fmt.Println("Could not start logging.")
+			return
+		}
+		// Open the first logging stream.
+		_, readError := this.serialPort.Write([]byte("Q1\r"))
+		if readError != nil {
+			fmt.Println(readError)
+			return
+		}
+		// Create a reader buffer.
+		buf := bufio.NewReader(this.serialPort)
+		// While allowed keep writing bytes to the file.
+		this.writeLog = true
+		for this.writeLog {
+			line, readLineError := buf.ReadBytes('\n')
+			if readLineError != nil {
+				fmt.Println(readLineError)
+				return
+			}
+			_, writeLineError := this.writeLogFile.Write(line)
+			if writeLineError != nil {
+				fmt.Println(writeLineError)
+				return
+			}
+			time.Sleep(1 * time.Millisecond)
+		}
+	}()
 }
 
 func (this *Zilla) GetLiveData() *LiveData {
@@ -241,6 +231,7 @@ func (this *Zilla) Refresh() bool {
 	if this.menuSettings() == false {
 		return false
 	}
+	defer this.startLogging()
 	// Read all the settings in this struct.
 	lines := bytes.Split(this.buffer, []byte{10})
 	// Get values for BA, LBV, LBVI
@@ -298,7 +289,7 @@ func (this *Zilla) Refresh() bool {
 
 func (this *Zilla) SetBatteryAmpLimit(val int) bool {
 	this.menuBattery()
-	this.writeIntValue("a", val)
+	this.sendIntValue("a", val)
 	return this.BatteryAmpLimit == val
 }
 

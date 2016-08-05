@@ -16,7 +16,7 @@ type MockPort struct {
 	controllerTemp                 int
 	spiErrorCount                  int
 	currentError                   int
-	operatingStatus                string
+	operatingStatus                int
 }
 
 func (this *MockPort) Read(b []byte) (int, error) {
@@ -75,17 +75,19 @@ func (this *MockPort) q1(b []byte) (int, error) {
 	controllerTemp := fmt.Sprintf("%X", this.controllerTemp)
 	spiErrorCount := fmt.Sprintf("%X", this.spiErrorCount)
 	currentError := fmt.Sprintf("%X", this.currentError)
+	operatingStatus := fmt.Sprintf("%X", this.operatingStatus)
 	line := []byte(
+		"00 " +
 		averageCurrentOnMotor + " " +
-			availableCurrentFromController + " " +
-			armDC + " " +
-			batteryVoltage + " " +
-			motorVoltage + " " +
-			controllerTemp + " " +
-			spiErrorCount + " " +
-			currentError + " " +
-			this.operatingStatus +
-			"\n")
+		availableCurrentFromController + " " +
+		armDC + " " +
+		batteryVoltage + " " +
+		motorVoltage + " " +
+		controllerTemp + " " +
+		spiErrorCount + " " +
+		currentError + " " +
+		operatingStatus + " " +
+		"SFS\n")
 	for i := 0; i < len(line); i++ {
 		b[i] = line[i]
 	}
@@ -131,5 +133,4 @@ func (this *MockPort) updateMockData() {
 	if this.currentError > 1500 {
 		this.currentError = 1111
 	}
-	this.operatingStatus = "S"
 }
