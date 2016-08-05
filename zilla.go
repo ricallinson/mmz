@@ -11,6 +11,10 @@ import (
 	"time"
 )
 
+const(
+	LOGFILE = "./log.dat"
+)
+
 type SerialPort interface {
 	Read([]byte) (int, error)
 	Write([]byte) (int, error)
@@ -52,6 +56,8 @@ type Zilla struct {
 	buffer                        []byte   // byte array of the last Zilla output
 	serialPort                    SerialPort
 	writeLog                      bool
+	readLogFile 					  *os.File
+	writeLogFile 					  *os.File
 }
 
 func truthy(s string) bool {
@@ -63,6 +69,17 @@ func CreateZilla(p SerialPort) (error, *Zilla) {
 	z.Errors = make([]string, 0)
 	if z.Refresh() == false {
 		return errors.New("Could not get data from Hairball."), nil
+	}
+	var openFileError error
+	z.writeLogFile, openFileError = os.OpenFile(LOGFILE, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+	if openFileError != nil {
+	    fmt.Println(openFileError)
+	    return errors.New("Could not open log file for writing."), nil
+	}
+	z.readLogFile, openFileError = os.Open(LOGFILE)
+	if openFileError != nil {
+	    fmt.Println(openFileError)
+	    return errors.New("Could not open log file for reading."), nil
 	}
 	z.startLogging()
 	return nil, z
@@ -89,7 +106,7 @@ func (this *Zilla) sendBytes(b []byte, check string) bool {
 func (this *Zilla) startLogging() {
 	// Start logging in a go routine that stops and starts around other function calls into Zilla.
 	this.writeLog = true
-	go this.log("./log.dat")
+	go this.log()
 }
 
 func (this *Zilla) stopLogging() {
@@ -100,19 +117,13 @@ func (this *Zilla) appendToLog(line []byte) []byte {
 	return line
 }
 
-func (this *Zilla) log(filename string) {
+func (this *Zilla) log() {
 	this.menuSpecial()
 	_, readError := this.serialPort.Write([]byte("Q1\n")) // The first logging screen.
 	if readError != nil {
 		fmt.Println(readError)
 		return
 	}
-
-	f, openFileError := os.OpenFile(filename, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
-	if openFileError != nil {
-	    fmt.Println(openFileError)
-	}
-	defer f.Close()
 	// Create a reader buffer.
 	buf := bufio.NewReader(this.serialPort)
 	// While allowed keep writing bytes to the file.
@@ -122,7 +133,7 @@ func (this *Zilla) log(filename string) {
 			fmt.Println(readLineError)
 			return
 		}
-		_, writeLineError := f.Write(this.appendToLog(line))
+		_, writeLineError := this.writeLogFile.Write(this.appendToLog(line))
 		if writeLineError != nil {
 			fmt.Println(writeLineError)
 			return
@@ -180,6 +191,21 @@ func (this *Zilla) writeToggleValue(id string) bool {
 		return this.Refresh()
 	}
 	return false
+}
+
+func (this *Zilla) GetLiveData() *LiveData {
+	bufSize := 50
+	buf := make([]byte, bufSize)
+	stat, _ := os.Stat(LOGFILE)
+    start := stat.Size() - int64(bufSize)
+    i, err := this.readLogFile.ReadAt(buf, start)
+    if (err != nil) {
+    	fmt.Println("Could not read last line from live data.")
+    	fmt.Println(LOGFILE)
+    	fmt.Println(start)
+    	fmt.Println(err)
+    }
+	return CreateLiveData(buf[:i]);
 }
 
 // Refreshes all attributes by reading them from the Zilla Controller.

@@ -67,14 +67,14 @@ func (this *MockPort) Close() error {
 func (this *MockPort) q1(b []byte) (int, error) {
 	time.Sleep(100 * time.Millisecond)
 	this.updateMockData()
-	averageCurrentOnMotor := fmt.Sprintf("%x", this.averageCurrentOnMotor)
-	availableCurrentFromController := fmt.Sprintf("%x", this.availableCurrentFromController)
-	armDC := fmt.Sprintf("%x", this.armDC)
-	batteryVoltage := fmt.Sprintf("%x", this.batteryVoltage)
-	motorVoltage := fmt.Sprintf("%x", this.motorVoltage)
-	controllerTemp := fmt.Sprintf("%x", this.controllerTemp)
-	spiErrorCount := fmt.Sprintf("%x", this.spiErrorCount)
-	currentError := fmt.Sprintf("%x", this.currentError)
+	averageCurrentOnMotor := fmt.Sprintf("%X", this.averageCurrentOnMotor)
+	availableCurrentFromController := fmt.Sprintf("%X", this.availableCurrentFromController)
+	armDC := fmt.Sprintf("%X", this.armDC)
+	batteryVoltage := fmt.Sprintf("%X", this.batteryVoltage)
+	motorVoltage := fmt.Sprintf("%X", this.motorVoltage)
+	controllerTemp := fmt.Sprintf("%X", this.controllerTemp)
+	spiErrorCount := fmt.Sprintf("%X", this.spiErrorCount)
+	currentError := fmt.Sprintf("%X", this.currentError)
 	line := []byte(
 		averageCurrentOnMotor + " " +
 		availableCurrentFromController + " " +
@@ -106,18 +106,15 @@ func (this *MockPort) updateMockData() {
 		this.armDC = 0
 	}
 	this.batteryVoltage++
-	if this.batteryVoltage > 285 {
+	if this.batteryVoltage < 285 {
 		this.batteryVoltage = 285
 	}
 	if this.batteryVoltage > 290 {
 		this.batteryVoltage = 285
 	}
 	this.motorVoltage++
-	if this.motorVoltage < 285 {
-		this.motorVoltage = 285
-	}
 	if this.motorVoltage > 290 {
-		this.motorVoltage = 285
+		this.motorVoltage = 150
 	}
 	this.controllerTemp++
 	if this.controllerTemp > 120 {

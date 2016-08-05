@@ -15,11 +15,11 @@ func StartWebServer(port int, zilla *Zilla) {
 	app.Engine(".html", mustache.Create())
 
 	app.Get("/", func(req *f.Request, res *f.Response, next func()) {
-		res.Render("index.html", ReadLatestFromDataStream())
+		res.Render("index.html", zilla.GetLiveData())
 	})
 
 	app.Get("/datastream", func(req *f.Request, res *f.Response, next func()) {
-		res.Send(ReadLatestFromDataStream())
+		res.Send(zilla.GetLiveData())
 	})
 
 	app.Get("/settings", func(req *f.Request, res *f.Response, next func()) {
