@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -49,7 +50,7 @@ func getIntFromHex(s string) int {
 func ParseQ1LineFromHairball(b []byte) *LiveData {
 	line := string(b)
 	values := strings.Split(strings.TrimSpace(line), " ")
-	data := &LiveData{
+	ld := &LiveData{
 		Timestamp: 0,
 		// RxCtrlFlagByte
 		AverageCurrentOnMotor:          getIntFromHex(values[1]),
@@ -61,16 +62,37 @@ func ParseQ1LineFromHairball(b []byte) *LiveData {
 		// SpiErrorCount
 		CurrentError: strconv.Itoa(int(getIntFromHex(values[8]))),
 		// OperatingStatus
-		ShiftingInProgress:          false,
-		MainContactorIsOn:           true,
-		MotorContactorsAreOn:        true,
-		DirectionIsReverse:          false,
-		DirectionIsForward:          true,
-		MotorsAreInParallel:         false,
-		MotorsAreInSeries:           false,
-		MainContactorHasVoltageDrop: false,
 	}
-	data.MotorKilowatts = data.MotorVoltage * data.AverageCurrentOnMotor / 1000
-	data.CurrentError = data.CurrentError + ": " + Codes[data.CurrentError]
-	return data
+	// States
+	setStates(values[10], ld)
+	ld.MotorKilowatts = ld.MotorVoltage * ld.AverageCurrentOnMotor / 1000
+	ld.CurrentError = ld.CurrentError + ": " + Codes[ld.CurrentError]
+	return ld
+}
+
+func setStates(s string, ld *LiveData) {
+	for i, v := range s {
+		switch v {
+		case 'S':
+			if i == 0 {
+				ld.StoppedState = true
+			} else {
+				ld.MotorsAreInSeries = true
+			}
+		case 'G':
+			ld.ShiftingInProgress = true
+		case 'O':
+			ld.MainContactorIsOn = true
+		case 'M':
+			ld.MotorContactorsAreOn = true
+		case 'R':
+			ld.DirectionIsReverse = true
+		case 'F':
+			ld.DirectionIsForward = true
+		case 'P':
+			ld.MotorsAreInParallel = true
+		case 'V':
+			ld.MainContactorHasVoltageDrop = true
+		}
+	}
 }
