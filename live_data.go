@@ -2,13 +2,13 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type LiveData struct {
-	Timestamp                      int
+	Timestamp                      int64
 	RxCtrlFlagByte                 int
 	AverageCurrentOnMotor          int
 	AvailableCurrentFromController int
@@ -51,7 +51,7 @@ func ParseQ1LineFromHairball(b []byte) *LiveData {
 	line := string(b)
 	values := strings.Split(strings.TrimSpace(line), " ")
 	ld := &LiveData{
-		Timestamp: 0,
+		Timestamp: time.Now().Unix(),
 		// RxCtrlFlagByte
 		AverageCurrentOnMotor:          getIntFromHex(values[1]),
 		AvailableCurrentFromController: getIntFromHex(values[2]),
