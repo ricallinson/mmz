@@ -11,13 +11,13 @@
 
 Display only, change with menu
 a)BA,  v)LBV,  i)LBVI
- 1800 119 145
+ 1800    119     145
 a) Amp, v) Volt, i) RA
- 1600 429 700
+ 1600     429      700
 r) RV, c) PA, p) PV
- 106 2000 180
+ 106     2000   180
 l)Norm, r)Rev, x)Max
- 7000 1500 8000
+ 7000     1500   8000
 a) On b) On c) On d) On
 e) Off f) On g) On h) On
 i) Off j) Off k) Off l) Off
