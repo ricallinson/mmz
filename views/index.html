@@ -29,7 +29,7 @@
               <h3 class="panel-title">Motor Kilowatts</h3>
             </div>
             <div class="panel-body">
-              <h2>{{MotorKilowatts}} kw</h2>
+              <h2><span id="MotorKilowatts">{{MotorKilowatts}}</span> kw</h2>
             </div>
           </div>
           <div class="panel panel-default">
@@ -37,7 +37,7 @@
               <h3 class="panel-title">Motor Voltage</h3>
             </div>
             <div class="panel-body">
-              <h2>{{MotorVoltage}} volts</h2>
+              <h2><span id="MotorVoltage">{{MotorVoltage}}</span> volts</h2>
             </div>
           </div>
           <div class="panel panel-default">
@@ -45,7 +45,7 @@
               <h3 class="panel-title">Battery Voltage</h3>
             </div>
             <div class="panel-body">
-              <h2>{{BatteryVoltage}} volts</h2>
+              <h2><span id="BatteryVoltage">{{BatteryVoltage}}</span> volts</h2>
             </div>
           </div>
           <div class="panel panel-default">
@@ -53,7 +53,7 @@
               <h3 class="panel-title">Average Current on Motor</h3>
             </div>
             <div class="panel-body">
-              <h2>{{AverageCurrentOnMotor}} amps</h2>
+              <h2><span id="AverageCurrentOnMotor">{{AverageCurrentOnMotor}}</span> amps</h2>
             </div>
           </div>
           <div class="panel panel-default">
@@ -61,11 +61,29 @@
               <h3 class="panel-title">Available Current from Controller</h3>
             </div>
             <div class="panel-body">
-              <h2>{{AvailableCurrentFromController}} amps</h2>
+              <h2><span id="AvailableCurrentFromController">{{AvailableCurrentFromController}}</span> amps</h2>
             </div>
           </div>
         </div>
         <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Current Controller Temp</h3>
+            </div>
+            <div class="panel-body">
+              <h2><span id="ControllerTemp">{{ControllerTemp}}</span> &deg;F</h2>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Current Error</h3>
+            </div>
+            <div class="panel-body">
+              <div>
+                <div id="CurrentError" class="alert alert-info" role="alert">{{CurrentError}}</div>
+              </div>
+            </div>
+          </div>
           <div class="panel panel-default">
             <div class="panel-heading">
               <h3 class="panel-title">Operating Status</h3>
@@ -84,29 +102,12 @@
               </div>
             </div>
           </div>
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">Current Controller Temp</h3>
-            </div>
-            <div class="panel-body">
-              <h2>{{ControllerTemp}} &deg;F</h2>
-            </div>
-          </div>
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">Current Error</h3>
-            </div>
-            <div class="panel-body">
-              <div>
-                <div class="alert alert-info" role="alert">{{CurrentError}}</div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/bootstrap-toggle.min.js"></script>
+    <script src="js/main.js"></script>
   </body>
 </html>

@@ -18,7 +18,7 @@ func StartWebServer(port int, zilla *Zilla) {
 		res.Render("index.html", zilla.GetLiveData())
 	})
 
-	app.Get("/datastream", func(req *f.Request, res *f.Response, next func()) {
+	app.Get("/livedata", func(req *f.Request, res *f.Response, next func()) {
 		res.Send(zilla.GetLiveData())
 	})
 
