@@ -7,6 +7,7 @@
     <title>Zilla Controller</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-toggle.min.css" rel="stylesheet">
+    <link href="css/vis.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">
   </head>
   <body>
@@ -26,52 +27,52 @@
         <div class="col-md-6">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Motor Kilowatts</h3>
+              <h3 class="panel-title">Motor Kilowatts <span id="MotorKilowatts">{{MotorKilowatts}}</span> kw</h3>
             </div>
             <div class="panel-body">
-              <h2><span id="MotorKilowatts">{{MotorKilowatts}}</span> kw</h2>
+              <div id="MotorKilowattsVis"></div>
             </div>
           </div>
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Motor Voltage</h3>
+              <h3 class="panel-title">Motor Voltage <span id="MotorVoltage">{{MotorVoltage}}</span> volts</h3>
             </div>
             <div class="panel-body">
-              <h2><span id="MotorVoltage">{{MotorVoltage}}</span> volts</h2>
+              <div id="MotorVoltageVis"></div>
             </div>
           </div>
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Battery Voltage</h3>
+              <h3 class="panel-title">Battery Voltage <span id="BatteryVoltage">{{BatteryVoltage}}</span> volts</h3>
             </div>
             <div class="panel-body">
-              <h2><span id="BatteryVoltage">{{BatteryVoltage}}</span> volts</h2>
+              <div id="BatteryVoltageVis"></div>
             </div>
           </div>
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Average Current on Motor</h3>
+              <h3 class="panel-title">Average Current on Motor <span id="AverageCurrentOnMotor">{{AverageCurrentOnMotor}}</span> amps</h3>
             </div>
             <div class="panel-body">
-              <h2><span id="AverageCurrentOnMotor">{{AverageCurrentOnMotor}}</span> amps</h2>
+              <div id="AverageCurrentOnMotorVis"></div>
             </div>
           </div>
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Available Current from Controller</h3>
+              <h3 class="panel-title">Available Current from Controller <span id="AvailableCurrentFromController">{{AvailableCurrentFromController}}</span> amps</h3>
             </div>
             <div class="panel-body">
-              <h2><span id="AvailableCurrentFromController">{{AvailableCurrentFromController}}</span> amps</h2>
+              <div id="AvailableCurrentFromControllerVis"></div>
             </div>
           </div>
         </div>
         <div class="col-md-6">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Current Controller Temp</h3>
+              <h3 class="panel-title">Current Controller Temp <span id="ControllerTemp">{{ControllerTemp}}</span> &deg;F</h3>
             </div>
             <div class="panel-body">
-              <h2><span id="ControllerTemp">{{ControllerTemp}}</span> &deg;F</h2>
+              <div id="ControllerTempVis"></div>
             </div>
           </div>
           <div class="panel panel-default">
@@ -108,6 +109,7 @@
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/bootstrap-toggle.min.js"></script>
+    <script src="js/vis.js"></script>
     <script src="js/main.js"></script>
   </body>
 </html>
