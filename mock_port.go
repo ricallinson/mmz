@@ -9,6 +9,7 @@ import (
 
 type MockPort struct {
 	history                        byte
+	update                         byte
 	averageCurrentOnMotor          int
 	availableCurrentFromController int
 	armDC                          int
@@ -23,7 +24,6 @@ type MockPort struct {
 
 func copyIntoArray(s []byte, d []byte) {
 	for i, _ := range d {
-		// fmt.Println(len(s), len(d), i)
 		if i >= len(s) || i >= len(d) {
 			return
 		}
@@ -73,11 +73,25 @@ func (this *MockPort) Read(b []byte) (int, error) {
 }
 
 func (this *MockPort) Write(b []byte) (int, error) {
+	switch this.history {
+	case 'b', 'm', 's', 'o':
+		this.update = b[0]
+		return 1, nil
+	}
 	switch b[0] {
 	case 'd', 'b', 'm', 's', 'o', 'p', 27, 'Q':
 		this.history = b[0]
+		this.update = 0
+		return 1, nil
+	default:
+		// Value is always an int.
+		// Get the mock and replace;
+		// string(this.update) + ") int"
+		// with;
+		// string(this.update) + ")" + string(b)
+		fmt.Println(string(b))
+		return len(b), nil
 	}
-	return 0, nil
 }
 
 func (this *MockPort) Flush() error {
