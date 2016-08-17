@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"time"
 )
@@ -17,40 +18,63 @@ type MockPort struct {
 	spiErrorCount                  int
 	currentError                   int
 	operatingStatus                int
+	mocks                          map[byte][]byte
+}
+
+func copyIntoArray(s []byte, d []byte) {
+	for i, _ := range d {
+		// fmt.Println(len(s), len(d), i)
+		if i >= len(s) || i >= len(d) {
+			return
+		}
+		d[i] = s[i]
+	}
+}
+
+func NewMockPort() *MockPort {
+	this := &MockPort{
+		mocks: make(map[byte][]byte),
+	}
+	var file *os.File
+	// Display Settings.
+	file, _ = os.Open("./fixtures/settings.txt")
+	this.mocks['d'], _ = ioutil.ReadAll(file)
+	// Battery Menu.
+	file, _ = os.Open("./fixtures/battery.txt")
+	this.mocks['b'], _ = ioutil.ReadAll(file)
+	// Motor Menu.
+	file, _ = os.Open("./fixtures/motor.txt")
+	this.mocks['m'], _ = ioutil.ReadAll(file)
+	// Speed Menu.
+	file, _ = os.Open("./fixtures/speed.txt")
+	this.mocks['s'], _ = ioutil.ReadAll(file)
+	// Options Menu.
+	file, _ = os.Open("./fixtures/options.txt")
+	this.mocks['o'], _ = ioutil.ReadAll(file)
+	// Special Menu.
+	file, _ = os.Open("./fixtures/special.txt")
+	this.mocks['p'], _ = ioutil.ReadAll(file)
+	// Home Menu.
+	file, _ = os.Open("./fixtures/home.txt")
+	this.mocks[27], _ = ioutil.ReadAll(file)
+	// All done.
+	return this
 }
 
 func (this *MockPort) Read(b []byte) (int, error) {
-	var file *os.File
-	var err error
 	switch this.history {
-	case 'd': // Display Settings
-		file, err = os.Open("./fixtures/settings.txt")
-	case 'b': // Battery Menu
-		file, err = os.Open("./fixtures/battery.txt")
-	case 'm': // Motor Menu
-		file, err = os.Open("./fixtures/motor.txt")
-	case 's': // Speed Menu
-		file, err = os.Open("./fixtures/speed.txt")
-	case 'o': // Options Menu
-		file, err = os.Open("./fixtures/options.txt")
-	case 'p': // Special Menu
-		file, err = os.Open("./fixtures/special.txt")
-	case 0, 27: // Home Menu
-		file, err = os.Open("./fixtures/home.txt")
 	case 'Q':
 		return this.q1(b)
+	case 'd', 'b', 'm', 's', 'o', 'p', 27:
+		copyIntoArray(this.mocks[this.history], b)
+		return len(this.mocks[this.history]), nil
 	}
-	if err != nil {
-		return 0, err
-	}
-	return file.Read(b)
+	return 0, nil
 }
 
 func (this *MockPort) Write(b []byte) (int, error) {
 	switch b[0] {
-	case 'd', 'b', 'm', 's', 'o', 'p', 27:
-		this.history = b[0]
-	case 'Q':
+	case 'd', 'b', 'm', 's', 'o', 'p', 27, 'Q':
 		this.history = b[0]
 	}
 	return 0, nil

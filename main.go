@@ -23,7 +23,7 @@ func main() {
 		fmt.Println(serialError)
 		return
 	}
-	zillaError, zilla := CreateZilla(serialPort)
+	zilla, zillaError := CreateZilla(serialPort)
 	if zillaError != nil {
 		fmt.Println(zillaError)
 		return

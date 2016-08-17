@@ -79,26 +79,26 @@ func split(s string, sep string) []string {
 	return values
 }
 
-func CreateZilla(p SerialPort) (error, *Zilla) {
-	z := &Zilla{serialPort: p}
-	z.Errors = make([]string, 0)
-	// OPen log file for reading and writing.
+func CreateZilla(p SerialPort) (*Zilla, error) {
+	this := &Zilla{serialPort: p}
+	this.Errors = make([]string, 0)
+	// Open log file for reading and writing.
 	var openFileError error
-	z.writeLogFile, openFileError = os.OpenFile(LOGFILE, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+	this.writeLogFile, openFileError = os.OpenFile(LOGFILE, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
 	if openFileError != nil {
 		fmt.Println(openFileError)
-		return errors.New("Could not open log file for writing."), nil
+		return nil, errors.New("Could not open log file for writing.")
 	}
-	z.readLogFile, openFileError = os.Open(LOGFILE)
+	this.readLogFile, openFileError = os.Open(LOGFILE)
 	if openFileError != nil {
 		fmt.Println(openFileError)
-		return errors.New("Could not open log file for reading."), nil
+		return nil, errors.New("Could not open log file for reading.")
 	}
 	// Update the Zilla object with it's values.
-	if z.Refresh() == false {
-		return errors.New("Could not get data from Hairball."), nil
+	if this.Refresh() == false {
+		return nil, errors.New("Could not get data from Hairball.")
 	}
-	return nil, z
+	return this, nil
 }
 
 func (this *Zilla) sendString(s, check string) bool {

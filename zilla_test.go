@@ -9,43 +9,49 @@ func TestZilla(t *testing.T) {
 
 	Describe("Zilla()", func() {
 
+		It("should return a Zilla object", func() {
+			z, err := CreateZilla(NewMockPort())
+			AssertEqual(err, nil)
+			AssertNotEqual(z, nil)
+		})
+
 		It("should read home", func() {
-			_, z := CreateZilla(&MockPort{})
+			z, _ := CreateZilla(NewMockPort())
 			AssertEqual(z.menuHome(), true)
 		})
 
 		It("should read settings", func() {
-			_, z := CreateZilla(&MockPort{})
+			z, _ := CreateZilla(NewMockPort())
 			AssertEqual(z.menuSettings(), true)
 		})
 
 		It("should read battery", func() {
-			_, z := CreateZilla(&MockPort{})
+			z, _ := CreateZilla(NewMockPort())
 			AssertEqual(z.menuBattery(), true)
 		})
 
 		It("should read motor", func() {
-			_, z := CreateZilla(&MockPort{})
+			z, _ := CreateZilla(NewMockPort())
 			AssertEqual(z.menuMotor(), true)
 		})
 
 		It("should read speed", func() {
-			_, z := CreateZilla(&MockPort{})
+			z, _ := CreateZilla(NewMockPort())
 			AssertEqual(z.menuSpeed(), true)
 		})
 
 		It("should read options", func() {
-			_, z := CreateZilla(&MockPort{})
+			z, _ := CreateZilla(NewMockPort())
 			AssertEqual(z.menuOptions(), true)
 		})
 
 		It("should read special", func() {
-			_, z := CreateZilla(&MockPort{})
+			z, _ := CreateZilla(NewMockPort())
 			AssertEqual(z.menuSpecial(), true)
 		})
 
 		It("should execute Refresh", func() {
-			_, z := CreateZilla(&MockPort{})
+			z, _ := CreateZilla(NewMockPort())
 			z.Refresh()
 			AssertEqual(z.BatteryAmpLimit, 1800)
 			AssertEqual(z.LowBatteryVoltageLimit, 119)
