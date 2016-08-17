@@ -106,14 +106,14 @@ func (this *Zilla) sendString(s, check string) bool {
 }
 
 func (this *Zilla) sendIntValue(id string, val int) bool {
-	if this.sendString(id, "XXX") && this.sendString(strconv.Itoa(val), strconv.Itoa(val)) {
+	if this.sendString(id, "") && this.sendString(strconv.Itoa(val), strconv.Itoa(val)) {
 		return this.Refresh()
 	}
 	return false
 }
 
 func (this *Zilla) sendToggleValue(id string) bool {
-	if this.sendString(id, "XXX") {
+	if this.sendString(id, "") {
 		return this.Refresh()
 	}
 	return false
@@ -293,108 +293,145 @@ func (this *Zilla) Refresh() bool {
 	return true
 }
 
+// Battery Menu
+
 func (this *Zilla) SetBatteryAmpLimit(val int) bool {
 	this.menuBattery()
-	this.sendIntValue("a", val)
-	return this.BatteryAmpLimit == val
+	return this.sendIntValue("a", val)
 }
 
 func (this *Zilla) SetLowBatteryVoltageLimit(val int) bool {
-	return this.Refresh()
+	this.menuBattery()
+	return this.sendIntValue("v", val)
 }
 
+func (this *Zilla) SetLowBatteryVoltageIndicator(val int) bool {
+	this.menuBattery()
+	return this.sendIntValue("i", val)
+}
+
+// Motor Menu
+
 func (this *Zilla) SetNormalMotorAmpLimit(val int) bool {
-	return this.Refresh()
+	this.menuMotor()
+	return this.sendIntValue("a", val)
 }
 
 func (this *Zilla) SetSeriesMotorVoltageLimit(val int) bool {
-	return this.Refresh()
+	this.menuMotor()
+	return this.sendIntValue("v", val)
 }
 
 func (this *Zilla) SetReverseMotorAmpLimit(val int) bool {
-	return this.Refresh()
+	this.menuMotor()
+	return this.sendIntValue("i", val)
 }
 
 func (this *Zilla) SetReverseMotorVoltageLimit(val int) bool {
-	return this.Refresh()
+	this.menuMotor()
+	return this.sendIntValue("r", val)
 }
 
 func (this *Zilla) SetParallelMotorAmpLimit(val int) bool {
-	return this.Refresh()
+	this.menuMotor()
+	return this.sendIntValue("c", val)
 }
 
 func (this *Zilla) SetParallelMotorVoltageLimit(val int) bool {
-	return this.Refresh()
+	this.menuMotor()
+	return this.sendIntValue("p", val)
 }
 
+// Speed Menu
+
 func (this *Zilla) SetForwardRpmLimit(val int) bool {
-	return this.Refresh()
+	this.menuSpeed()
+	return this.sendIntValue("l", val)
 }
 
 func (this *Zilla) SetReverseRpmLimit(val int) bool {
-	return this.Refresh()
+	this.menuSpeed()
+	return this.sendIntValue("r", val)
 }
 
 func (this *Zilla) SetMaxRpmLimit(val int) bool {
-	return this.Refresh()
+	this.menuSpeed()
+	return this.sendIntValue("x", val)
 }
 
-func (this *Zilla) SetRpmSensorMotorOne(val bool) bool {
-	return this.Refresh()
+// Options Menu
+
+func (this *Zilla) ToggleRpmSensorMotorOne() bool {
+	this.menuOptions()
+	return this.sendToggleValue("a")
 }
 
-func (this *Zilla) SetRpmSensorMotorTwo(val bool) bool {
-	return this.Refresh()
+func (this *Zilla) SetRpmSensorMotorTwo() bool {
+	this.menuOptions()
+	return this.sendToggleValue("b")
 }
 
-func (this *Zilla) SetAutoShiftingSeriesToParallel(val bool) bool {
-	return this.Refresh()
+func (this *Zilla) ToggleAutoShiftingSeriesToParallel() bool {
+	this.menuOptions()
+	return this.sendToggleValue("c")
 }
 
-func (this *Zilla) SetStallDetectOn(val bool) bool {
-	return this.Refresh()
+func (this *Zilla) ToggleStallDetectOn() bool {
+	this.menuOptions()
+	return this.sendToggleValue("d")
 }
 
-func (this *Zilla) SetBatteryLightPolarity(val bool) bool {
-	return this.Refresh()
+func (this *Zilla) ToggleBatteryLightPolarity() bool {
+	this.menuOptions()
+	return this.sendToggleValue("e")
 }
 
-func (this *Zilla) SetCheckEngineLightPolarity(val bool) bool {
-	return this.Refresh()
+func (this *Zilla) ToggleCheckEngineLightPolarity() bool {
+	this.menuOptions()
+	return this.sendToggleValue("f")
 }
 
-func (this *Zilla) SetReversingContactors(val bool) bool {
-	return this.Refresh()
+func (this *Zilla) ToggleReversingContactors() bool {
+	this.menuOptions()
+	return this.sendToggleValue("g")
 }
 
-func (this *Zilla) SetSeriesParallelContactors(val bool) bool {
-	return this.Refresh()
+func (this *Zilla) ToggleSeriesParallelContactors() bool {
+	this.menuOptions()
+	return this.sendToggleValue("h")
 }
 
-func (this *Zilla) SetForceParallelInReverse(val bool) bool {
-	return this.Refresh()
+func (this *Zilla) SetForceParallelInReverse() bool {
+	this.menuOptions()
+	return this.sendToggleValue("i")
 }
 
-func (this *Zilla) SetInhibitSeriesParallelShifting(val bool) bool {
-	return this.Refresh()
+func (this *Zilla) ToggleInhibitSeriesParallelShifting() bool {
+	this.menuOptions()
+	return this.sendToggleValue("j")
 }
 
-func (this *Zilla) SetTachometerDisplayMotorAmps(val bool) bool {
-	return this.Refresh()
+func (this *Zilla) ToggleTachometerDisplayMotorAmps() bool {
+	this.menuOptions()
+	return this.sendToggleValue("k")
 }
 
-func (this *Zilla) SetTachometerSixCylinders(val bool) bool {
-	return this.Refresh()
+func (this *Zilla) ToggleTachometerSixCylinders() bool {
+	this.menuOptions()
+	return this.sendToggleValue("l")
 }
 
-func (this *Zilla) SetReversesPlugInInputPolarity(val bool) bool {
-	return this.Refresh()
+func (this *Zilla) ToggleReversesPlugInInputPolarity() bool {
+	this.menuOptions()
+	return this.sendToggleValue("m")
 }
 
-func (this *Zilla) SetActivateHEPI(val bool) bool {
-	return this.Refresh()
+func (this *Zilla) ToggleActivateHEPI() bool {
+	this.menuOptions()
+	return this.sendToggleValue("n")
 }
 
-func (this *Zilla) SetIsZ2k(val bool) bool {
-	return this.Refresh()
+func (this *Zilla) ToggleIsZ2k() bool {
+	this.menuOptions()
+	return this.sendToggleValue("p")
 }
