@@ -123,31 +123,29 @@ func (this *MockPort) changeSettingsIntValue(menu string, option string, value s
 		}
 	case "m":
 		// First find the start and end to change based on the menu.
-		oldLine = findValueLine(b, "RA")
 		// Next find the bytes to change based on start and end and option.
-		values = split(string(oldLine), " ")
 		switch option {
 		case "a":
+			oldLine = findValueLine(b, "RA")
 			index = 0
 		case "v":
+			oldLine = findValueLine(b, "RA")
 			index = 1
 		case "i":
+			oldLine = findValueLine(b, "RA")
 			index = 2
-		}
-	case "s":
-		// First find the start and end to change based on the menu.
-		oldLine = findValueLine(b, "PV")
-		// Next find the bytes to change based on start and end and option.
-		values = split(string(oldLine), " ")
-		switch option {
 		case "r":
+			oldLine = findValueLine(b, "PV")
 			index = 0
 		case "c":
+			oldLine = findValueLine(b, "PV")
 			index = 1
 		case "p":
+			oldLine = findValueLine(b, "PV")
 			index = 2
 		}
-	case "o":
+		values = split(string(oldLine), " ")
+	case "s":
 		// First find the start and end to change based on the menu.
 		oldLine = findValueLine(b, "Max")
 		// Next find the bytes to change based on start and end and option.

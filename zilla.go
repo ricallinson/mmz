@@ -64,16 +64,8 @@ func CreateZilla(p SerialPort) (*Zilla, error) {
 	this := &Zilla{serialPort: p}
 	this.Errors = make([]string, 0)
 	// Open log file for reading and writing.
-	var openFileError error
-	this.writeLogFile, openFileError = os.OpenFile(LOGFILE, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
-	if openFileError != nil {
-		fmt.Println(openFileError)
-		return nil, errors.New("Could not open log file for writing.")
-	}
-	this.readLogFile, openFileError = os.Open(LOGFILE)
-	if openFileError != nil {
-		fmt.Println(openFileError)
-		return nil, errors.New("Could not open log file for reading.")
+	if err := this.OpenLog(); err != nil {
+		return nil, err
 	}
 	// Update the Zilla object with it's values.
 	if this.Refresh() == false {
@@ -195,6 +187,26 @@ func (this *Zilla) startLogging() {
 	}()
 }
 
+func (this *Zilla) OpenLog() error {
+	var openFileError error
+	this.writeLogFile, openFileError = os.OpenFile(LOGFILE, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+	if openFileError != nil {
+		fmt.Println(openFileError)
+		return errors.New("Could not open log file for writing.")
+	}
+	this.readLogFile, openFileError = os.Open(LOGFILE)
+	if openFileError != nil {
+		fmt.Println(openFileError)
+		return errors.New("Could not open log file for reading.")
+	}
+	return nil
+}
+
+func (this *Zilla) CloseLog() {
+	this.readLogFile.Close()
+	this.writeLogFile.Close()
+}
+
 func (this *Zilla) GetLiveData() *LiveData {
 	bufSize := 1000
 	buf := make([]byte, bufSize)
@@ -284,61 +296,72 @@ func (this *Zilla) SetBatteryAmpLimit(val int) bool {
 
 func (this *Zilla) SetLowBatteryVoltageLimit(val int) bool {
 	this.menuBattery()
-	return this.sendIntValue("v", val)
+	this.sendIntValue("v", val)
+	return this.LowBatteryVoltageLimit == val
 }
 
 func (this *Zilla) SetLowBatteryVoltageIndicator(val int) bool {
 	this.menuBattery()
-	return this.sendIntValue("i", val)
+	this.sendIntValue("i", val)
+	return this.LowBatteryVoltageIndicator == val
 }
 
 // Motor Menu
 
 func (this *Zilla) SetNormalMotorAmpLimit(val int) bool {
 	this.menuMotor()
-	return this.sendIntValue("a", val)
+	this.sendIntValue("a", val)
+	return this.NormalMotorAmpLimit == val
 }
 
 func (this *Zilla) SetSeriesMotorVoltageLimit(val int) bool {
 	this.menuMotor()
-	return this.sendIntValue("v", val)
+	this.sendIntValue("v", val)
+	return this.SeriesMotorVoltageLimit == val
 }
 
 func (this *Zilla) SetReverseMotorAmpLimit(val int) bool {
 	this.menuMotor()
-	return this.sendIntValue("i", val)
+	this.sendIntValue("i", val)
+	return this.ReverseMotorAmpLimit == val
 }
 
 func (this *Zilla) SetReverseMotorVoltageLimit(val int) bool {
 	this.menuMotor()
-	return this.sendIntValue("r", val)
+	this.sendIntValue("r", val)
+	return this.ReverseMotorVoltageLimit == val
 }
 
 func (this *Zilla) SetParallelMotorAmpLimit(val int) bool {
 	this.menuMotor()
-	return this.sendIntValue("c", val)
+	this.sendIntValue("c", val)
+	return this.ParallelMotorAmpLimit == val
 }
 
 func (this *Zilla) SetParallelMotorVoltageLimit(val int) bool {
 	this.menuMotor()
-	return this.sendIntValue("p", val)
+	this.sendIntValue("p", val)
+	return this.ParallelMotorVoltageLimit == val
 }
 
 // Speed Menu
 
 func (this *Zilla) SetForwardRpmLimit(val int) bool {
 	this.menuSpeed()
-	return this.sendIntValue("l", val)
+	this.sendIntValue("l", val)
+	return this.ForwardRpmLimit == val
 }
 
 func (this *Zilla) SetReverseRpmLimit(val int) bool {
 	this.menuSpeed()
 	return this.sendIntValue("r", val)
+	return this.ReverseRpmLimit == val
 }
 
 func (this *Zilla) SetMaxRpmLimit(val int) bool {
 	this.menuSpeed()
 	return this.sendIntValue("x", val)
+	return this.MaxRpmLimit == val
 }
 
 // Options Menu
