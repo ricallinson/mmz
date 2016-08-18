@@ -8,3 +8,4 @@ install:
     - go get github.com/tarm/serial
     - go get github.com/ricallinson/simplebdd
     - go get github.com/goforgery/mustache
+    - go get github.com/goforgery/static
