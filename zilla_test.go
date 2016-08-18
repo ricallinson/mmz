@@ -88,6 +88,11 @@ func TestZilla(t *testing.T) {
 			AssertEqual(z.Errors[3], "1111")
 			AssertEqual(z.Errors[4], "1111")
 		})
+
+		It("should SetBatteryAmpLimit to 999", func() {
+			z, _ := CreateZilla(NewMockPort())
+			AssertEqual(z.SetBatteryAmpLimit(999), true)
+		})
 	})
 
 	Report(t)

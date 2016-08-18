@@ -297,7 +297,8 @@ func (this *Zilla) Refresh() bool {
 
 func (this *Zilla) SetBatteryAmpLimit(val int) bool {
 	this.menuBattery()
-	return this.sendIntValue("a", val)
+	this.sendIntValue("a", val)
+	return this.BatteryAmpLimit == val
 }
 
 func (this *Zilla) SetLowBatteryVoltageLimit(val int) bool {

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"regexp"
 	"time"
 )
 
@@ -86,13 +85,8 @@ func (this *MockPort) Write(b []byte) (int, error) {
 		return 1, nil
 	default:
 		// Value is always an int.
-		// Get the mock and replace;
-		// string(this.update) + ") int"
-		// with;
-		// string(this.update) + ")" + string(b)
-		re := regexp.MustCompile(")")
-		mock := re.ReplaceAllLiteralString(string(this.mocks[this.history]), this.update+") "+string(b))
-		this.mocks[this.history] = []byte(mock)
+		// Get the mock and replace the value.
+		// this.update
 		return len(b), nil
 	}
 }
