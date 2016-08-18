@@ -94,6 +94,12 @@
 (function () {
     $('input').change(function(e) {
         $(this).addClass('dirty');
-        console.log(this.id);
+        var id = this.id
+        $.getJSON('/set/' + id + '?value=' + this.value, function (data) {
+            console.log(data);
+            if (data.status) {
+                $('#' + id).removeClass('dirty');
+            }
+        });
     });
 }());

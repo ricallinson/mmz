@@ -38,3 +38,11 @@ func split(s string, sep string) []string {
 	}
 	return values
 }
+
+// Convert a boolean to an integer of 0 or 1.
+func Btoi(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
+}
