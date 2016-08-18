@@ -375,12 +375,16 @@ func (this *Zilla) ToggleRpmSensorMotorOne() bool {
 
 func (this *Zilla) ToggleRpmSensorMotorTwo() bool {
 	this.menuOptions()
-	return this.sendToggleValue("b")
+	v := this.RpmSensorMotorTwo
+	this.sendToggleValue("b")
+	return this.RpmSensorMotorTwo != v
 }
 
 func (this *Zilla) ToggleAutoShiftingSeriesToParallel() bool {
 	this.menuOptions()
-	return this.sendToggleValue("c")
+	v := this.AutoShiftingSeriesToParallel
+	this.sendToggleValue("c")
+	return this.AutoShiftingSeriesToParallel != v
 }
 
 func (this *Zilla) ToggleStallDetectOn() bool {

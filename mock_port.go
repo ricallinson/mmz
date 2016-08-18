@@ -162,7 +162,6 @@ func (this *MockPort) changeSettingsIntValue(menu string, option string, value s
 	// Replace the old value with the new value.
 	newLine := bytes.Replace(oldLine, []byte(values[index]), []byte(value), 1)
 	this.mocks['d'] = bytes.Replace(b, oldLine, newLine, 1)
-	fmt.Println(string(this.mocks['d']))
 }
 
 func (this *MockPort) changeSettingsToggleValue(option string) {

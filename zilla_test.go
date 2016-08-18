@@ -159,6 +159,14 @@ func TestZilla(t *testing.T) {
 			AssertEqual(zilla.ToggleRpmSensorMotorOne(), true)
 		})
 
+		It("should ToggleRpmSensorMotorTwo", func() {
+			AssertEqual(zilla.ToggleRpmSensorMotorTwo(), true)
+		})
+
+		It("should ToggleAutoShiftingSeriesToParallel", func() {
+			AssertEqual(zilla.ToggleAutoShiftingSeriesToParallel(), true)
+		})
+
 		It("should ToggleActivateHEPI", func() {
 			AssertEqual(zilla.ToggleActivateHEPI(), true)
 		})
