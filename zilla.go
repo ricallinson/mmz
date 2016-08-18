@@ -364,10 +364,12 @@ func (this *Zilla) SetMaxRpmLimit(val int) bool {
 
 func (this *Zilla) ToggleRpmSensorMotorOne() bool {
 	this.menuOptions()
-	return this.sendToggleValue("a")
+	v := this.RpmSensorMotorOne
+	this.sendToggleValue("a")
+	return this.RpmSensorMotorOne != v
 }
 
-func (this *Zilla) SetRpmSensorMotorTwo() bool {
+func (this *Zilla) ToggleRpmSensorMotorTwo() bool {
 	this.menuOptions()
 	return this.sendToggleValue("b")
 }
@@ -429,7 +431,9 @@ func (this *Zilla) ToggleReversesPlugInInputPolarity() bool {
 
 func (this *Zilla) ToggleActivateHEPI() bool {
 	this.menuOptions()
-	return this.sendToggleValue("n")
+	v := this.ActivateHEPI
+	this.sendToggleValue("n")
+	return this.ActivateHEPI != v
 }
 
 func (this *Zilla) ToggleIsZ2k() bool {

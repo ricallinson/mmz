@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -73,22 +74,22 @@ func (this *MockPort) Read(b []byte) (int, error) {
 }
 
 func (this *MockPort) Write(b []byte) (int, error) {
+	// Are we in a menu?
 	switch this.history {
 	case 'b', 'm', 's', 'o':
-		this.update = string([]byte{b[0]})
-		return 1, nil
+		if b[0] != 27 {
+			this.changeSettingsValue(string(b))
+			return len(b), nil
+		}
 	}
+	// If not then are we going into a menu?
 	switch b[0] {
 	case 'd', 'b', 'm', 's', 'o', 'p', 27, 'Q':
 		this.history = b[0]
 		this.update = ""
 		return 1, nil
-	default:
-		// Value is always an int.
-		// Get the mock and replace the value.
-		// this.update
-		return len(b), nil
 	}
+	return 0, nil
 }
 
 func (this *MockPort) Flush() error {
@@ -97,6 +98,32 @@ func (this *MockPort) Flush() error {
 
 func (this *MockPort) Close() error {
 	return nil
+}
+
+func (this *MockPort) changeSettingsValue(value string) {
+	if this.history == 'o' {
+		this.changeSettingsToggleValue(value)
+	} else if this.update != "" {
+		this.changeSettingsIntValue(string(this.history), this.update, value)
+		this.update = ""
+	} else {
+		this.update = value
+	}
+}
+
+func (this *MockPort) changeSettingsIntValue(page string, option string, value string) {
+
+}
+
+func (this *MockPort) changeSettingsToggleValue(option string) {
+	b := this.mocks['d']
+	if bytes.Contains(b, []byte(option+") On")) {
+		b = bytes.Replace(b, []byte(option+") On"), []byte(option+") Off"), 1)
+	} else {
+		b = bytes.Replace(b, []byte(option+") Off"), []byte(option+") On"), 1)
+	}
+	this.mocks['d'] = b
+	fmt.Println(string(b))
 }
 
 func (this *MockPort) q1(b []byte) (int, error) {

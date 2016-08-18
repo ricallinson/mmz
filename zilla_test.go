@@ -93,6 +93,16 @@ func TestZilla(t *testing.T) {
 			z, _ := CreateZilla(NewMockPort())
 			AssertEqual(z.SetBatteryAmpLimit(999), true)
 		})
+
+		It("should ToggleRpmSensorMotorOne", func() {
+			z, _ := CreateZilla(NewMockPort())
+			AssertEqual(z.ToggleRpmSensorMotorOne(), true)
+		})
+
+		It("should ToggleActivateHEPI", func() {
+			z, _ := CreateZilla(NewMockPort())
+			AssertEqual(z.ToggleActivateHEPI(), true)
+		})
 	})
 
 	Report(t)
