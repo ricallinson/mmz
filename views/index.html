@@ -27,15 +27,7 @@
         <div class="col-md-6">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Motor Kilowatts <span id="MotorKilowatts">{{MotorKilowatts}}</span> kw</h3>
-            </div>
-            <div class="panel-body">
-              <div id="MotorKilowattsVis"></div>
-            </div>
-          </div>
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">Motor Voltage <span id="MotorVoltage">{{MotorVoltage}}</span> volts</h3>
+              <h3 class="panel-title">Motor Voltage <span class="MotorVoltage">{{MotorVoltage}}</span> volts</h3>
             </div>
             <div class="panel-body">
               <div id="MotorVoltageVis"></div>
@@ -43,7 +35,7 @@
           </div>
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Battery Voltage <span id="BatteryVoltage">{{BatteryVoltage}}</span> volts</h3>
+              <h3 class="panel-title">Battery Voltage <span class="BatteryVoltage">{{BatteryVoltage}}</span> volts</h3>
             </div>
             <div class="panel-body">
               <div id="BatteryVoltageVis"></div>
@@ -51,7 +43,7 @@
           </div>
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Average Current on Motor <span id="AverageCurrentOnMotor">{{AverageCurrentOnMotor}}</span> amps</h3>
+              <h3 class="panel-title">Average Current on Motor <span class="AverageCurrentOnMotor">{{AverageCurrentOnMotor}}</span> amps</h3>
             </div>
             <div class="panel-body">
               <div id="AverageCurrentOnMotorVis"></div>
@@ -59,7 +51,7 @@
           </div>
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Available Current from Controller <span id="AvailableCurrentFromController">{{AvailableCurrentFromController}}</span> amps</h3>
+              <h3 class="panel-title">Available Current from Controller <span class="AvailableCurrentFromController">{{AvailableCurrentFromController}}</span> amps</h3>
             </div>
             <div class="panel-body">
               <div id="AvailableCurrentFromControllerVis"></div>
@@ -69,7 +61,40 @@
         <div class="col-md-6">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Current Controller Temp <span id="ControllerTemp">{{ControllerTemp}}</span> &deg;F</h3>
+              <h3 class="panel-title">Operating Status</h3>
+            </div>
+            <div class="panel-body">
+              <div class="row">
+                <div class="col-md-3">
+                  <h2><span class="MotorKilowatts">{{MotorKilowatts}}</span> kw</h2>
+                </div>
+                <div class="col-md-4">
+                  <div>
+                    {{#StoppedState}}<p>Stopped state.</p>{{/StoppedState}}
+                    {{#ShiftingInProgress}}<p>Shifting in progress.</p>{{/ShiftingInProgress}}
+                    {{#MainContactorIsOn}}<p>Main contactor is on OK.</p>{{/MainContactorIsOn}}
+                    {{#MotorContactorsAreOn}}<p>Motor contactors are on OK.</p>{{/MotorContactorsAreOn}}
+                    {{#DirectionIsReverse}}<p>Direction is reverse.</p>{{/DirectionIsReverse}}
+                    {{#DirectionIsForward}}<p>Direction is forward.</p>{{/DirectionIsForward}}
+                    {{#MotorsAreInParallel}}<p>Motors are in parallel.</p>{{/MotorsAreInParallel}}
+                    {{#MotorsAreInSeries}}<p>Motors are in series.</p>{{/MotorsAreInSeries}}
+                    {{#MainContactorHasVoltageDrop}}<p>Main contactor has voltage drop (>5V) across power terminals.</p>{{/MainContactorHasVoltageDrop}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Motor Kilowatts <span class="MotorKilowatts">{{MotorKilowatts}}</span> kw</h3>
+            </div>
+            <div class="panel-body">
+              <div id="MotorKilowattsVis"></div>
+            </div>
+          </div>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Current Controller Temp <span class="ControllerTemp">{{ControllerTemp}}</span> &deg;F</h3>
             </div>
             <div class="panel-body">
               <div id="ControllerTempVis"></div>
@@ -81,25 +106,7 @@
             </div>
             <div class="panel-body">
               <div>
-                <div id="CurrentError" class="alert alert-info" role="alert">{{CurrentError}}</div>
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">Operating Status</h3>
-            </div>
-            <div class="panel-body">
-              <div>
-                {{#StoppedState}}<p>Stopped state.</p>{{/StoppedState}}
-                {{#ShiftingInProgress}}<p>Shifting in progress.</p>{{/ShiftingInProgress}}
-                {{#MainContactorIsOn}}<p>Main contactor is on OK.</p>{{/MainContactorIsOn}}
-                {{#MotorContactorsAreOn}}<p>Motor contactors are on OK.</p>{{/MotorContactorsAreOn}}
-                {{#DirectionIsReverse}}<p>Direction is reverse.</p>{{/DirectionIsReverse}}
-                {{#DirectionIsForward}}<p>Direction is forward.</p>{{/DirectionIsForward}}
-                {{#MotorsAreInParallel}}<p>Motors are in parallel.</p>{{/MotorsAreInParallel}}
-                {{#MotorsAreInSeries}}<p>Motors are in series.</p>{{/MotorsAreInSeries}}
-                {{#MainContactorHasVoltageDrop}}<p>Main contactor has voltage drop (>5V) across power terminals.</p>{{/MainContactorHasVoltageDrop}}
+                <div class="alert alert-info CurrentError" role="alert">{{CurrentError}}</div>
               </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 (function () {
 
-    if (!document.vis) {
+    if (!window.vis) {
         return;
     }
 
@@ -83,7 +83,7 @@
                 if (graphs[nodeId + 'Vis']) {
                     updateGraph(nodeId + 'Vis', data.Timestamp, value);
                 }
-                $('#' + nodeId).text(value);
+                $('.' + nodeId).text(value);
             });
         });
     }, 1000);
