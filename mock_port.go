@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"time"
 )
 
 type MockPort struct {
 	history                        byte
-	update                         byte
+	update                         string
 	averageCurrentOnMotor          int
 	availableCurrentFromController int
 	armDC                          int
@@ -75,13 +76,13 @@ func (this *MockPort) Read(b []byte) (int, error) {
 func (this *MockPort) Write(b []byte) (int, error) {
 	switch this.history {
 	case 'b', 'm', 's', 'o':
-		this.update = b[0]
+		this.update = string([]byte{b[0]})
 		return 1, nil
 	}
 	switch b[0] {
 	case 'd', 'b', 'm', 's', 'o', 'p', 27, 'Q':
 		this.history = b[0]
-		this.update = 0
+		this.update = ""
 		return 1, nil
 	default:
 		// Value is always an int.
@@ -89,7 +90,9 @@ func (this *MockPort) Write(b []byte) (int, error) {
 		// string(this.update) + ") int"
 		// with;
 		// string(this.update) + ")" + string(b)
-		fmt.Println(string(b))
+		re := regexp.MustCompile(")")
+		mock := re.ReplaceAllLiteralString(string(this.mocks[this.history]), this.update+") "+string(b))
+		this.mocks[this.history] = []byte(mock)
 		return len(b), nil
 	}
 }
