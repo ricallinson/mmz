@@ -31,24 +31,31 @@ func NewMockPort() *MockPort {
 	// Display Settings.
 	file, _ = os.Open("./fixtures/settings.txt")
 	this.mocks['d'], _ = ioutil.ReadAll(file)
+	file.Close()
 	// Battery Menu.
 	file, _ = os.Open("./fixtures/battery.txt")
 	this.mocks['b'], _ = ioutil.ReadAll(file)
+	file.Close()
 	// Motor Menu.
 	file, _ = os.Open("./fixtures/motor.txt")
 	this.mocks['m'], _ = ioutil.ReadAll(file)
+	file.Close()
 	// Speed Menu.
 	file, _ = os.Open("./fixtures/speed.txt")
 	this.mocks['s'], _ = ioutil.ReadAll(file)
+	file.Close()
 	// Options Menu.
 	file, _ = os.Open("./fixtures/options.txt")
 	this.mocks['o'], _ = ioutil.ReadAll(file)
+	file.Close()
 	// Special Menu.
 	file, _ = os.Open("./fixtures/special.txt")
 	this.mocks['p'], _ = ioutil.ReadAll(file)
+	file.Close()
 	// Home Menu.
 	file, _ = os.Open("./fixtures/home.txt")
 	this.mocks[27], _ = ioutil.ReadAll(file)
+	file.Close()
 	// All done.
 	return this
 }

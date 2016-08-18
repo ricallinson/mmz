@@ -389,52 +389,72 @@ func (this *Zilla) ToggleAutoShiftingSeriesToParallel() bool {
 
 func (this *Zilla) ToggleStallDetectOn() bool {
 	this.menuOptions()
-	return this.sendToggleValue("d")
+	v := this.StallDetectOn
+	this.sendToggleValue("d")
+	return this.StallDetectOn != v
 }
 
 func (this *Zilla) ToggleBatteryLightPolarity() bool {
 	this.menuOptions()
-	return this.sendToggleValue("e")
+	v := this.BatteryLightPolarity
+	this.sendToggleValue("e")
+	return this.BatteryLightPolarity != v
 }
 
 func (this *Zilla) ToggleCheckEngineLightPolarity() bool {
 	this.menuOptions()
-	return this.sendToggleValue("f")
+	v := this.CheckEngineLightPolarity
+	this.sendToggleValue("f")
+	return this.CheckEngineLightPolarity != v
 }
 
 func (this *Zilla) ToggleReversingContactors() bool {
 	this.menuOptions()
-	return this.sendToggleValue("g")
+	v := this.ReversingContactors
+	this.sendToggleValue("g")
+	return this.ReversingContactors != v
 }
 
 func (this *Zilla) ToggleSeriesParallelContactors() bool {
 	this.menuOptions()
-	return this.sendToggleValue("h")
+	v := this.SeriesParallelContactors
+	this.sendToggleValue("h")
+	return this.SeriesParallelContactors != v
 }
 
-func (this *Zilla) SetForceParallelInReverse() bool {
+func (this *Zilla) ToggleForceParallelInReverse() bool {
 	this.menuOptions()
-	return this.sendToggleValue("i")
+	v := this.ForceParallelInReverse
+	this.sendToggleValue("i")
+	return this.ForceParallelInReverse != v
 }
 
 func (this *Zilla) ToggleInhibitSeriesParallelShifting() bool {
 	this.menuOptions()
-	return this.sendToggleValue("j")
+	v := this.InhibitSeriesParallelShifting
+	this.sendToggleValue("j")
+	return this.InhibitSeriesParallelShifting != v
 }
 
 func (this *Zilla) ToggleTachometerDisplayMotorAmps() bool {
 	this.menuOptions()
-	return this.sendToggleValue("k")
+	v := this.TachometerDisplayMotorAmps
+	this.sendToggleValue("k")
+	return this.TachometerDisplayMotorAmps != v
 }
 
 func (this *Zilla) ToggleTachometerSixCylinders() bool {
 	this.menuOptions()
-	return this.sendToggleValue("l")
+	v := this.TachometerSixCylinders
+	this.sendToggleValue("l")
+	return this.TachometerSixCylinders != v
 }
 
 func (this *Zilla) ToggleReversesPlugInInputPolarity() bool {
 	this.menuOptions()
-	return this.sendToggleValue("m")
+	v := this.ReversesPlugInInputPolarity
+	this.sendToggleValue("m")
+	return this.ReversesPlugInInputPolarity != v
 }
 
 func (this *Zilla) ToggleActivateHEPI() bool {
@@ -446,5 +466,7 @@ func (this *Zilla) ToggleActivateHEPI() bool {
 
 func (this *Zilla) ToggleIsZ2k() bool {
 	this.menuOptions()
-	return this.sendToggleValue("p")
+	v := this.IsZ2k
+	this.sendToggleValue("p")
+	return this.IsZ2k != v
 }

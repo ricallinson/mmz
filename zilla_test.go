@@ -12,7 +12,11 @@ func TestZilla(t *testing.T) {
 		var zilla *Zilla
 
 		BeforeEach(func() {
-			zilla, _ = CreateZilla(NewMockPort())
+			var err error
+			zilla, err = CreateZilla(NewMockPort())
+			if err != nil {
+				panic(err)
+			}
 		})
 
 		AfterEach(func() {
@@ -21,6 +25,7 @@ func TestZilla(t *testing.T) {
 
 		It("should return a Zilla object", func() {
 			zilla, err := CreateZilla(NewMockPort())
+			zilla.CloseLog()
 			AssertEqual(err, nil)
 			AssertNotEqual(zilla, nil)
 		})
@@ -167,8 +172,52 @@ func TestZilla(t *testing.T) {
 			AssertEqual(zilla.ToggleAutoShiftingSeriesToParallel(), true)
 		})
 
+		It("should ToggleStallDetectOn", func() {
+			AssertEqual(zilla.ToggleStallDetectOn(), true)
+		})
+
+		It("should ToggleBatteryLightPolarity", func() {
+			AssertEqual(zilla.ToggleBatteryLightPolarity(), true)
+		})
+
+		It("should ToggleCheckEngineLightPolarity", func() {
+			AssertEqual(zilla.ToggleCheckEngineLightPolarity(), true)
+		})
+
+		It("should ToggleReversingContactors", func() {
+			AssertEqual(zilla.ToggleReversingContactors(), true)
+		})
+
+		It("should ToggleSeriesParallelContactors", func() {
+			AssertEqual(zilla.ToggleSeriesParallelContactors(), true)
+		})
+
+		It("should ToggleForceParallelInReverse", func() {
+			AssertEqual(zilla.ToggleForceParallelInReverse(), true)
+		})
+
+		It("should ToggleInhibitSeriesParallelShifting", func() {
+			AssertEqual(zilla.ToggleInhibitSeriesParallelShifting(), true)
+		})
+
+		It("should ToggleTachometerDisplayMotorAmps", func() {
+			AssertEqual(zilla.ToggleTachometerDisplayMotorAmps(), true)
+		})
+
+		It("should ToggleTachometerSixCylinders", func() {
+			AssertEqual(zilla.ToggleTachometerSixCylinders(), true)
+		})
+
+		It("should ToggleReversesPlugInInputPolarity", func() {
+			AssertEqual(zilla.ToggleReversesPlugInInputPolarity(), true)
+		})
+
 		It("should ToggleActivateHEPI", func() {
 			AssertEqual(zilla.ToggleActivateHEPI(), true)
+		})
+
+		It("should ToggleIsZ2k", func() {
+			AssertEqual(zilla.ToggleIsZ2k(), true)
 		})
 	})
 
