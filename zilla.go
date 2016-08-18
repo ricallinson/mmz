@@ -60,7 +60,7 @@ type Zilla struct {
 	writeLogFile                  *os.File
 }
 
-func CreateZilla(p SerialPort) (*Zilla, error) {
+func NewZilla(p SerialPort) (*Zilla, error) {
 	this := &Zilla{serialPort: p}
 	this.Errors = make([]string, 0)
 	// Open log file for reading and writing.

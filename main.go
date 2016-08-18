@@ -15,7 +15,7 @@ func main() {
 	var serialPort SerialPort
 	var serialError error
 	if hairball == "" {
-		serialPort = &MockPort{}
+		serialPort = NewMockPort()
 	} else {
 		serialError, serialPort = connectToHairball(hairball)
 	}
@@ -23,7 +23,7 @@ func main() {
 		fmt.Println(serialError)
 		return
 	}
-	zilla, zillaError := CreateZilla(serialPort)
+	zilla, zillaError := NewZilla(serialPort)
 	if zillaError != nil {
 		fmt.Println(zillaError)
 		return

@@ -13,7 +13,7 @@ func TestZilla(t *testing.T) {
 
 		BeforeEach(func() {
 			var err error
-			zilla, err = CreateZilla(NewMockPort())
+			zilla, err = NewZilla(NewMockPort())
 			if err != nil {
 				panic(err)
 			}
@@ -24,7 +24,7 @@ func TestZilla(t *testing.T) {
 		})
 
 		It("should return a Zilla object", func() {
-			zilla, err := CreateZilla(NewMockPort())
+			zilla, err := NewZilla(NewMockPort())
 			zilla.CloseLog()
 			AssertEqual(err, nil)
 			AssertNotEqual(zilla, nil)
