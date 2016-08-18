@@ -92,6 +92,31 @@ func TestZilla(t *testing.T) {
 		It("should SetBatteryAmpLimit to 999", func() {
 			z, _ := CreateZilla(NewMockPort())
 			AssertEqual(z.SetBatteryAmpLimit(999), true)
+			AssertEqual(z.BatteryAmpLimit, 999)
+		})
+
+		It("should SetLowBatteryVoltageLimit to 999", func() {
+			z, _ := CreateZilla(NewMockPort())
+			AssertEqual(z.SetLowBatteryVoltageLimit(999), true)
+			AssertEqual(z.LowBatteryVoltageLimit, 999)
+		})
+
+		It("should SetLowBatteryVoltageIndicator to 999", func() {
+			z, _ := CreateZilla(NewMockPort())
+			AssertEqual(z.SetLowBatteryVoltageIndicator(999), true)
+			AssertEqual(z.LowBatteryVoltageIndicator, 999)
+		})
+
+		It("should SetNormalMotorAmpLimit to 999", func() {
+			z, _ := CreateZilla(NewMockPort())
+			AssertEqual(z.SetNormalMotorAmpLimit(999), true)
+			AssertEqual(z.NormalMotorAmpLimit, 999)
+		})
+
+		It("should SetSeriesMotorVoltageLimit to 999", func() {
+			z, _ := CreateZilla(NewMockPort())
+			AssertEqual(z.SetSeriesMotorVoltageLimit(999), true)
+			AssertEqual(z.SeriesMotorVoltageLimit, 999)
 		})
 
 		It("should ToggleRpmSensorMotorOne", func() {

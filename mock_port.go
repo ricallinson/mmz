@@ -9,7 +9,7 @@ import (
 )
 
 type MockPort struct {
-	history                        byte
+	menu                           byte
 	update                         string
 	averageCurrentOnMotor          int
 	availableCurrentFromController int
@@ -21,15 +21,6 @@ type MockPort struct {
 	currentError                   int
 	operatingStatus                int
 	mocks                          map[byte][]byte
-}
-
-func copyIntoArray(s []byte, d []byte) {
-	for i, _ := range d {
-		if i >= len(s) || i >= len(d) {
-			return
-		}
-		d[i] = s[i]
-	}
 }
 
 func NewMockPort() *MockPort {
@@ -63,19 +54,19 @@ func NewMockPort() *MockPort {
 }
 
 func (this *MockPort) Read(b []byte) (int, error) {
-	switch this.history {
+	switch this.menu {
 	case 'Q':
 		return this.q1(b)
 	case 'd', 'b', 'm', 's', 'o', 'p', 27:
-		copyIntoArray(this.mocks[this.history], b)
-		return len(this.mocks[this.history]), nil
+		copyIntoArray(this.mocks[this.menu], b)
+		return len(this.mocks[this.menu]), nil
 	}
 	return 0, nil
 }
 
 func (this *MockPort) Write(b []byte) (int, error) {
 	// Are we in a menu?
-	switch this.history {
+	switch this.menu {
 	case 'b', 'm', 's', 'o':
 		if b[0] != 27 {
 			this.changeSettingsValue(string(b))
@@ -85,7 +76,7 @@ func (this *MockPort) Write(b []byte) (int, error) {
 	// If not then are we going into a menu?
 	switch b[0] {
 	case 'd', 'b', 'm', 's', 'o', 'p', 27, 'Q':
-		this.history = b[0]
+		this.menu = b[0]
 		this.update = ""
 		return 1, nil
 	}
@@ -101,18 +92,79 @@ func (this *MockPort) Close() error {
 }
 
 func (this *MockPort) changeSettingsValue(value string) {
-	if this.history == 'o' {
+	if this.menu == 'o' {
 		this.changeSettingsToggleValue(value)
 	} else if this.update != "" {
-		this.changeSettingsIntValue(string(this.history), this.update, value)
+		this.changeSettingsIntValue(string(this.menu), this.update, value)
 		this.update = ""
 	} else {
 		this.update = value
 	}
 }
 
-func (this *MockPort) changeSettingsIntValue(page string, option string, value string) {
-
+func (this *MockPort) changeSettingsIntValue(menu string, option string, value string) {
+	b := this.mocks['d']
+	var oldLine []byte
+	var values []string
+	var index int
+	switch menu {
+	case "b":
+		// First find the start and end to change based on the menu.
+		oldLine = findValueLine(b, "LBVI")
+		// Next find the bytes to change based on start and end and option.
+		values = split(string(oldLine), " ")
+		switch option {
+		case "a":
+			index = 0
+		case "v":
+			index = 1
+		case "i":
+			index = 2
+		}
+	case "m":
+		// First find the start and end to change based on the menu.
+		oldLine = findValueLine(b, "RA")
+		// Next find the bytes to change based on start and end and option.
+		values = split(string(oldLine), " ")
+		switch option {
+		case "a":
+			index = 0
+		case "v":
+			index = 1
+		case "i":
+			index = 2
+		}
+	case "s":
+		// First find the start and end to change based on the menu.
+		oldLine = findValueLine(b, "PV")
+		// Next find the bytes to change based on start and end and option.
+		values = split(string(oldLine), " ")
+		switch option {
+		case "r":
+			index = 0
+		case "c":
+			index = 1
+		case "p":
+			index = 2
+		}
+	case "o":
+		// First find the start and end to change based on the menu.
+		oldLine = findValueLine(b, "Max")
+		// Next find the bytes to change based on start and end and option.
+		values = split(string(oldLine), " ")
+		switch option {
+		case "l":
+			index = 0
+		case "r":
+			index = 1
+		case "x":
+			index = 2
+		}
+	}
+	// Replace the old value with the new value.
+	newLine := bytes.Replace(oldLine, []byte(values[index]), []byte(value), 1)
+	this.mocks['d'] = bytes.Replace(b, oldLine, newLine, 1)
+	fmt.Println(string(this.mocks['d']))
 }
 
 func (this *MockPort) changeSettingsToggleValue(option string) {
@@ -123,7 +175,6 @@ func (this *MockPort) changeSettingsToggleValue(option string) {
 		b = bytes.Replace(b, []byte(option+") Off"), []byte(option+") On"), 1)
 	}
 	this.mocks['d'] = b
-	fmt.Println(string(b))
 }
 
 func (this *MockPort) q1(b []byte) (int, error) {

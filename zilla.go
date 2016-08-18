@@ -8,7 +8,6 @@ import (
 	"os"
 	"reflect"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -61,24 +60,6 @@ type Zilla struct {
 	writeLogFile                  *os.File
 }
 
-// Return a boolean of "On" or "Off".
-func truthy(s string) bool {
-	return strings.Contains(s, "On")
-}
-
-// Returns a string array of values with white space removed.
-func split(s string, sep string) []string {
-	values := []string{}
-	tokens := strings.Split(s, sep)
-	for _, token := range tokens {
-		token = strings.TrimSpace(token)
-		if len(token) > 0 {
-			values = append(values, token)
-		}
-	}
-	return values
-}
-
 func CreateZilla(p SerialPort) (*Zilla, error) {
 	this := &Zilla{serialPort: p}
 	this.Errors = make([]string, 0)
@@ -106,7 +87,7 @@ func (this *Zilla) sendString(s, check string) bool {
 }
 
 func (this *Zilla) sendIntValue(id string, val int) bool {
-	if this.sendString(id, "") && this.sendString(strconv.Itoa(val), strconv.Itoa(val)) {
+	if this.sendString(id, "") && this.sendString(strconv.Itoa(val), "") {
 		return this.Refresh()
 	}
 	return false
