@@ -1,5 +1,9 @@
 (function () {
 
+    if (!document.vis) {
+        return;
+    }
+
     var graphs = {};
 
     function makeGraph(nodeId, min, max) {
@@ -85,4 +89,11 @@
     }, 1000);
 
     renderGraphs();
+}());
+
+(function () {
+    $('input').change(function(e) {
+        $(this).addClass('dirty');
+        console.log(this.id);
+    });
 }());
