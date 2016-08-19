@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path"
 	"reflect"
 	"strconv"
 	"time"
@@ -187,6 +188,10 @@ func (this *Zilla) startLogging() {
 }
 
 func (this *Zilla) OpenLog() error {
+	if err := os.MkdirAll(path.Dir(this.logFile), 0777); err != nil {
+		fmt.Println(err)
+		return errors.New("Could not create directory for logs.")
+	}
 	var openFileError error
 	this.writeLogFile, openFileError = os.OpenFile(this.logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
 	if openFileError != nil {
