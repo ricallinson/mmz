@@ -23,7 +23,7 @@ func StartWebServer(port int, zilla *Zilla) {
 		res.Send(zilla.GetLiveData())
 	})
 
-	app.Get("/set/:attribute", func(req *f.Request, res *f.Response, next func()) {
+	app.Get("/update/:attribute", func(req *f.Request, res *f.Response, next func()) {
 		var status bool
 		attribute := req.Param("attribute")
 		value, _ := strconv.Atoi(req.Query("value"))

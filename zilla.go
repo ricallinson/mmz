@@ -11,10 +11,6 @@ import (
 	"time"
 )
 
-const (
-	LOGFILE = "./log.dat"
-)
-
 type SerialPort interface {
 	Read([]byte) (int, error)
 	Write([]byte) (int, error)
@@ -56,6 +52,7 @@ type Zilla struct {
 	buffer                        []byte   // byte array of the last Zilla output
 	serialPort                    SerialPort
 	writeLog                      bool
+	logFile                       string
 	readLogFile                   *os.File
 	writeLogFile                  *os.File
 }
@@ -63,6 +60,8 @@ type Zilla struct {
 func NewZilla(p SerialPort) (*Zilla, error) {
 	this := &Zilla{serialPort: p}
 	this.Errors = make([]string, 0)
+	// Set the log file for this instance.
+	this.logFile = "./logs/" + strconv.FormatInt(time.Now().Unix(), 10) + ".dat"
 	// Open log file for reading and writing.
 	if err := this.OpenLog(); err != nil {
 		return nil, err
@@ -189,12 +188,12 @@ func (this *Zilla) startLogging() {
 
 func (this *Zilla) OpenLog() error {
 	var openFileError error
-	this.writeLogFile, openFileError = os.OpenFile(LOGFILE, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+	this.writeLogFile, openFileError = os.OpenFile(this.logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
 	if openFileError != nil {
 		fmt.Println(openFileError)
 		return errors.New("Could not open log file for writing.")
 	}
-	this.readLogFile, openFileError = os.Open(LOGFILE)
+	this.readLogFile, openFileError = os.Open(this.logFile)
 	if openFileError != nil {
 		fmt.Println(openFileError)
 		return errors.New("Could not open log file for reading.")
@@ -210,12 +209,12 @@ func (this *Zilla) CloseLog() {
 func (this *Zilla) GetLiveData() *LiveData {
 	bufSize := 1000
 	buf := make([]byte, bufSize)
-	stat, _ := os.Stat(LOGFILE)
+	stat, _ := os.Stat(this.logFile)
 	start := stat.Size() - int64(bufSize)
 	i, err := this.readLogFile.ReadAt(buf, start)
 	if err != nil {
 		fmt.Println("Could not read last line from live data.")
-		fmt.Println(LOGFILE)
+		fmt.Println(this.logFile)
 		fmt.Println(start)
 		fmt.Println(err)
 	}
