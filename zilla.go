@@ -61,8 +61,6 @@ type Zilla struct {
 func NewZilla(p SerialPort) (*Zilla, error) {
 	this := &Zilla{serialPort: p}
 	this.Errors = make([]string, 0)
-	// Set the log file for this instance.
-	this.logFile = "./logs/" + strconv.FormatInt(time.Now().Unix(), 10) + ".dat"
 	// Open log file for reading and writing.
 	if err := this.OpenLog(); err != nil {
 		return nil, err
@@ -188,6 +186,9 @@ func (this *Zilla) startLogging() {
 }
 
 func (this *Zilla) OpenLog() error {
+	// Set the log file for this session.
+	this.logFile = "./logs/" + strconv.FormatInt(time.Now().Unix(), 10) + ".dat"
+	// Make sure the directory is created.
 	if err := os.MkdirAll(path.Dir(this.logFile), 0777); err != nil {
 		fmt.Println(err)
 		return errors.New("Could not create directory for logs.")
@@ -212,6 +213,10 @@ func (this *Zilla) CloseLog() {
 }
 
 func (this *Zilla) GetLiveData() *LiveData {
+	if this.logFile == "" {
+		fmt.Println("No log file available.")
+		return nil
+	}
 	bufSize := 1000
 	buf := make([]byte, bufSize)
 	stat, _ := os.Stat(this.logFile)
@@ -219,9 +224,7 @@ func (this *Zilla) GetLiveData() *LiveData {
 	i, err := this.readLogFile.ReadAt(buf, start)
 	if err != nil {
 		fmt.Println("Could not read last line from live data.")
-		fmt.Println(this.logFile)
-		fmt.Println(start)
-		fmt.Println(err)
+		return nil
 	}
 	buf = buf[:i]                              // Get the bytes written to the buffer.
 	buf = buf[bytes.Index(buf, []byte{10})+1:] // Remove all bytes before the first line feed.
