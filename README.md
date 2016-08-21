@@ -11,8 +11,8 @@ Interface for configuring, logging and visualizing data for a Manzanita Micro Zi
     sudo apt-get install go
     export GOPATH=$HOME/Library/Go/gocode
     go get github.com/ricallinson/mmz
-    ~/Library/Go/gocode/src/github.com/ricallinson/mmz
-    ~/Library/Go/gocode/bin/mmz -hairball /dev/usbXXXX
+    $HOME/Library/Go/gocode/src/github.com/ricallinson/mmz
+    $HOME/Library/Go/gocode/bin/mmz -hairball /dev/usbXXXX
 
 Where `/dev/usbXXXX` is the location of your USB to RS-232 serial port adapter.
 
