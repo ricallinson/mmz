@@ -48,3 +48,7 @@ To be run per module;
 
     go test -coverprofile=coverage.out; go tool cover -html=coverage.out -o=coverage.html
     open coverage.html
+
+## Links
+
+* https://www.stewright.me/2013/05/install-and-run-raspbian-from-a-usb-flash-drive/
