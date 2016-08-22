@@ -102,8 +102,11 @@ func StartWebServer(port int, zilla *Zilla) {
 	})
 
 	app.Get("/settings", func(req *f.Request, res *f.Response, next func()) {
-		zilla.Refresh()
-		res.Render("settings.html", zilla)
+		if zilla.Refresh() != false {
+			res.Render("settings.html", zilla)
+			return
+		}
+		res.Send("Could not read settings")
 	})
 
 	fmt.Printf("The Manzanita Micro Zilla interface is now running on port '%d'.\n", port)

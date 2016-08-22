@@ -107,8 +107,8 @@ func (this *Zilla) sendBytes(b []byte, check string) bool {
 		fmt.Println(e)
 		return false
 	}
-	// Debug hairball output.
 	this.buffer = bytes.TrimSpace(this.buffer)
+	// Debug hairball output.
 	// fmt.Println(string(this.buffer))
 	return bytes.Index(this.buffer, []byte(check)) > -1
 }
@@ -208,6 +208,7 @@ func (this *Zilla) OpenLog() error {
 }
 
 func (this *Zilla) CloseLog() {
+	this.writeLog = false
 	this.readLogFile.Close()
 	this.writeLogFile.Close()
 }

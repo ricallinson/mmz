@@ -95,7 +95,7 @@
     $('input').change(function(e) {
         $(this).addClass('dirty');
         var id = this.id
-        $.getJSON('/set/' + id + '?value=' + this.value, function (data) {
+        $.getJSON('/update/' + id + '?value=' + this.value, function (data) {
             console.log(data);
             if (data.status) {
                 $('#' + id).removeClass('dirty');

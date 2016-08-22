@@ -12,9 +12,9 @@ Interface for configuring, logging and visualizing data for a Manzanita Micro Zi
     export GOPATH=$HOME/Library/Go/gocode
     go get github.com/ricallinson/mmz
     $HOME/Library/Go/gocode/src/github.com/ricallinson/mmz
-    $HOME/Library/Go/gocode/bin/mmz -hairball /dev/usbXXXX
+    $HOME/Library/Go/gocode/bin/mmz -hairball /dev/tty.usbserial
 
-Where `/dev/usbXXXX` is the location of your USB to RS-232 serial port adapter.
+Where `/dev/tty.usbserial` is the location of your USB to RS-232 serial port adapter.
 
 You should then see `The Manzanita Micro Zilla interface is now running on port '8080'.` printed to the screen.
 
@@ -52,3 +52,12 @@ To be run per module;
 ## Links
 
 * https://www.stewright.me/2013/05/install-and-run-raspbian-from-a-usb-flash-drive/
+
+## Help
+
+### Connect to Hairball
+
+    screen /dev/tty.usbserial
+
+Exit from Hairball `CTRL + A + \`.
+
