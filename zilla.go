@@ -179,25 +179,28 @@ func (this *Zilla) CloseLog() {
 }
 
 func (this *Zilla) startLogging() {
-	go func() {
-		this.menuHome()
-		if this.sendString("p", "Special Menu:") == false {
-			fmt.Println("Could not start logging.")
-			return
-		}
-		// Open the first logging stream.
-		_, readError := this.serialPort.Write([]byte("Q1\r"))
-		if readError != nil {
-			fmt.Println("Could not read logs from Hairball.")
-			fmt.Println(readError)
-			return
-		}
-		// Create a reader buffer.
-		buf := bufio.NewReader(this.serialPort)
-		// While allowed keep writing bytes to the file.
-		this.writeLog = true
-		for {
-			line, readLineError := buf.ReadBytes('\n')
+	this.menuHome()
+	if this.sendString("p", "Special Menu:") == false {
+		fmt.Println("Could not start logging.")
+		return
+	}
+	// Open the first logging stream.
+	_, readError := this.serialPort.Write([]byte("Q1\r"))
+	if readError != nil {
+		fmt.Println("Could not read logs from Hairball.")
+		fmt.Println(readError)
+		return
+	}
+	// Create a reader buffer.
+	buf := bufio.NewReader(this.serialPort)
+	// While allowed keep writing bytes to the file.
+	this.writeLog = true
+	// Now we have a buffer reading from the log keep reading and writing.
+	go func(zilla *Zilla, input *bufio.Reader) {
+		for zilla.writeLog {
+			// This could be the real world problem.
+			// The code could be waiting here for bytes and get the ones meant for the menu change.
+			line, readLineError := input.ReadBytes('\n')
 			if readLineError != nil {
 				fmt.Println("Could read log line from Hairball.")
 				fmt.Println(readLineError)
@@ -208,16 +211,14 @@ func (this *Zilla) startLogging() {
 				fmt.Println("Could not parse Hairball log line.")
 				return
 			}
-			_, writeLineError := this.writeLogFile.Write(logLine.ToBytes())
-			if writeLineError != nil {
-				// fmt.Println("Could not write log data.")
-				// fmt.Println(writeLineError)
+			if _, err := zilla.writeLogFile.Write(logLine.ToBytes()); err != nil {
+				// If there is a write error it means the file has been closed.
 				return
 			}
 			// Sleep 100ms as the logs are only written 10 times a second.
 			time.Sleep(100 * time.Millisecond)
 		}
-	}()
+	}(this, buf)
 }
 
 func (this *Zilla) GetLiveData() *LiveData {
