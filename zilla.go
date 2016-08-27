@@ -113,43 +113,6 @@ func (this *Zilla) sendBytes(b []byte, check string) bool {
 	return bytes.Index(this.buffer, []byte(check)) > -1
 }
 
-func (this *Zilla) menuHome() bool {
-	this.writeLog = false
-	this.sendBytes([]byte{27}, "")
-	this.sendBytes([]byte{27}, "")
-	return this.sendBytes([]byte{27}, "d) Display settings")
-}
-
-func (this *Zilla) menuSettings() bool {
-	this.menuHome()
-	return this.sendString("d", "Display only, change with menu")
-}
-
-func (this *Zilla) menuBattery() bool {
-	this.menuHome()
-	return this.sendString("b", "a)BA, v)LBV, i)LBVI")
-}
-
-func (this *Zilla) menuMotor() bool {
-	this.menuHome()
-	return this.sendString("m", "Motor Settings")
-}
-
-func (this *Zilla) menuSpeed() bool {
-	this.menuHome()
-	return this.sendString("s", "Rev limits")
-}
-
-func (this *Zilla) menuOptions() bool {
-	this.menuHome()
-	return this.sendString("o", "Options: Enter letter to change")
-}
-
-func (this *Zilla) menuSpecial() bool {
-	this.menuHome()
-	return this.sendString("p", "Special Menu:")
-}
-
 func (this *Zilla) OpenLog() error {
 	// Set the log file for this session.
 	this.logFile = "./logs/" + strconv.FormatInt(time.Now().Unix(), 10) + ".dat"
@@ -215,10 +178,51 @@ func (this *Zilla) startLogging() {
 				// If there is a write error it means the file has been closed.
 				return
 			}
-			// Sleep 100ms as the logs are only written 10 times a second.
+			// Sleep for 100ms as the logs are only written 10 times a second.
 			time.Sleep(100 * time.Millisecond)
 		}
 	}(this, buf)
+}
+
+func (this *Zilla) menuHome() bool {
+	// Is there a better way to stop logging?
+	this.writeLog = false
+	// Is the result of this sendBytes() read by the startLogging() function?
+	this.sendBytes([]byte{27}, "")
+	// We should have stopped logging by now.
+	this.sendBytes([]byte{27}, "")
+	// This sendBytes() should put us in the home menu with no logging.
+	return this.sendBytes([]byte{27}, "d) Display settings")
+}
+
+func (this *Zilla) menuSettings() bool {
+	this.menuHome()
+	return this.sendString("d", "Display only, change with menu")
+}
+
+func (this *Zilla) menuBattery() bool {
+	this.menuHome()
+	return this.sendString("b", "a)BA, v)LBV, i)LBVI")
+}
+
+func (this *Zilla) menuMotor() bool {
+	this.menuHome()
+	return this.sendString("m", "Motor Settings")
+}
+
+func (this *Zilla) menuSpeed() bool {
+	this.menuHome()
+	return this.sendString("s", "Rev limits")
+}
+
+func (this *Zilla) menuOptions() bool {
+	this.menuHome()
+	return this.sendString("o", "Options: Enter letter to change")
+}
+
+func (this *Zilla) menuSpecial() bool {
+	this.menuHome()
+	return this.sendString("p", "Special Menu:")
 }
 
 func (this *Zilla) GetLiveData() *LiveData {
@@ -246,6 +250,7 @@ func (this *Zilla) Refresh() bool {
 	if this.menuSettings() == false {
 		return false
 	}
+	// Once we have the new data start logging again.
 	defer this.startLogging()
 	// Read all the settings in this struct.
 	lines := bytes.Split(this.buffer, []byte{10})
