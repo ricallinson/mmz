@@ -195,6 +195,7 @@ func (this *Zilla) menuHome() bool {
 	this.sendBytes([]byte{27}, "")
 	// We should have stopped logging by now.
 	this.sendBytes([]byte{27}, "")
+	this.sendBytes([]byte{27}, "")
 	// This sendBytes() should put us in the home menu with no logging.
 	return this.sendBytes([]byte{27}, "d) Display settings")
 }
@@ -337,8 +338,9 @@ func (this *Zilla) SetLowBatteryVoltageIndicator(val int) bool {
 
 func (this *Zilla) SetNormalMotorAmpLimit(val int) bool {
 	this.menuMotor()
+	v := this.NormalMotorAmpLimit
 	this.sendIntValue("a", val)
-	return this.NormalMotorAmpLimit == val
+	return this.NormalMotorAmpLimit != v
 }
 
 func (this *Zilla) SetSeriesMotorVoltageLimit(val int) bool {
@@ -350,8 +352,9 @@ func (this *Zilla) SetSeriesMotorVoltageLimit(val int) bool {
 
 func (this *Zilla) SetReverseMotorAmpLimit(val int) bool {
 	this.menuMotor()
+	v := this.ReverseMotorAmpLimit
 	this.sendIntValue("i", val)
-	return this.ReverseMotorAmpLimit == val
+	return this.ReverseMotorAmpLimit != v
 }
 
 func (this *Zilla) SetReverseMotorVoltageLimit(val int) bool {
@@ -363,8 +366,9 @@ func (this *Zilla) SetReverseMotorVoltageLimit(val int) bool {
 
 func (this *Zilla) SetParallelMotorAmpLimit(val int) bool {
 	this.menuMotor()
+	v := this.ParallelMotorAmpLimit
 	this.sendIntValue("c", val)
-	return this.ParallelMotorAmpLimit == val
+	return this.ParallelMotorAmpLimit != v
 }
 
 func (this *Zilla) SetParallelMotorVoltageLimit(val int) bool {
