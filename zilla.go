@@ -77,7 +77,7 @@ func (this *Zilla) sendString(s, check string) bool {
 }
 
 func (this *Zilla) sendIntValue(id string, val int) bool {
-	if this.sendString(id, "") && this.sendString(strconv.Itoa(val), "") {
+	if this.sendString(id, "") && this.sendString(strconv.Itoa(val)+"\r\n", "") {
 		return this.Refresh()
 	}
 	return false
@@ -93,6 +93,8 @@ func (this *Zilla) sendToggleValue(id string) bool {
 func (this *Zilla) sendBytes(b []byte, check string) bool {
 	var e error
 	_, e = this.serialPort.Write(b)
+	// Debug sent data.
+	// fmt.Println(string(b))
 	if e != nil {
 		fmt.Println(e)
 		return false
@@ -103,6 +105,8 @@ func (this *Zilla) sendBytes(b []byte, check string) bool {
 	}
 	this.buffer = make([]byte, 1000)
 	_, e = this.serialPort.Read(this.buffer)
+	// Debug returned data.
+	// fmt.Println(string(this.buffer))
 	if e != nil {
 		fmt.Println(e)
 		return false
@@ -317,14 +321,16 @@ func (this *Zilla) SetBatteryAmpLimit(val int) bool {
 
 func (this *Zilla) SetLowBatteryVoltageLimit(val int) bool {
 	this.menuBattery()
+	v := this.LowBatteryVoltageLimit
 	this.sendIntValue("v", val)
-	return this.LowBatteryVoltageLimit == val
+	return this.LowBatteryVoltageLimit != v
 }
 
 func (this *Zilla) SetLowBatteryVoltageIndicator(val int) bool {
 	this.menuBattery()
+	v := this.LowBatteryVoltageIndicator
 	this.sendIntValue("i", val)
-	return this.LowBatteryVoltageIndicator == val
+	return this.LowBatteryVoltageIndicator != v
 }
 
 // Motor Menu
@@ -337,8 +343,9 @@ func (this *Zilla) SetNormalMotorAmpLimit(val int) bool {
 
 func (this *Zilla) SetSeriesMotorVoltageLimit(val int) bool {
 	this.menuMotor()
+	v := this.SeriesMotorVoltageLimit
 	this.sendIntValue("v", val)
-	return this.SeriesMotorVoltageLimit == val
+	return this.SeriesMotorVoltageLimit != v
 }
 
 func (this *Zilla) SetReverseMotorAmpLimit(val int) bool {
@@ -349,8 +356,9 @@ func (this *Zilla) SetReverseMotorAmpLimit(val int) bool {
 
 func (this *Zilla) SetReverseMotorVoltageLimit(val int) bool {
 	this.menuMotor()
+	v := this.ReverseMotorVoltageLimit
 	this.sendIntValue("r", val)
-	return this.ReverseMotorVoltageLimit == val
+	return this.ReverseMotorVoltageLimit != v
 }
 
 func (this *Zilla) SetParallelMotorAmpLimit(val int) bool {
@@ -361,8 +369,9 @@ func (this *Zilla) SetParallelMotorAmpLimit(val int) bool {
 
 func (this *Zilla) SetParallelMotorVoltageLimit(val int) bool {
 	this.menuMotor()
+	v := this.ParallelMotorVoltageLimit
 	this.sendIntValue("p", val)
-	return this.ParallelMotorVoltageLimit == val
+	return this.ParallelMotorVoltageLimit != v
 }
 
 // Speed Menu

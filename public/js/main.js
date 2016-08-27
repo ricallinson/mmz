@@ -71,7 +71,7 @@
     // Create a graphs.
     makeGraph('MotorKilowattsVis', 0, 1000);
     makeGraph('MotorVoltageVis', 0, 300);
-    makeGraph('BatteryVoltageVis', 200, 300);
+    makeGraph('BatteryVoltageVis', 0, 300);
     makeGraph('AverageCurrentOnMotorVis', 0, 2000);
     makeGraph('AvailableCurrentFromControllerVis', 0, 2000);
     makeGraph('ControllerTempVis', 0, 200);
