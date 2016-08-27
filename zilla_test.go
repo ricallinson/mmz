@@ -3,6 +3,7 @@ package main
 import (
 	. "github.com/ricallinson/simplebdd"
 	"testing"
+	"time"
 )
 
 func TestZilla(t *testing.T) {
@@ -218,6 +219,16 @@ func TestZilla(t *testing.T) {
 
 		It("should ToggleIsZ2k", func() {
 			AssertEqual(zilla.ToggleIsZ2k(), true)
+		})
+
+		It("should start logging and then show settings", func() {
+			time.Sleep(1000 * time.Millisecond)
+			zilla.GetLiveData()
+			time.Sleep(1000 * time.Millisecond)
+			zilla.Refresh()
+			time.Sleep(1000 * time.Millisecond)
+			zilla.GetLiveData()
+			AssertEqual(true, true)
 		})
 	})
 

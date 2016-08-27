@@ -150,41 +150,6 @@ func (this *Zilla) menuSpecial() bool {
 	return this.sendString("p", "Special Menu:")
 }
 
-func (this *Zilla) startLogging() {
-	go func() {
-		this.menuHome()
-		if this.sendString("p", "Special Menu:") == false {
-			fmt.Println("Could not start logging.")
-			return
-		}
-		// Open the first logging stream.
-		_, readError := this.serialPort.Write([]byte("Q1\r"))
-		if readError != nil {
-			fmt.Println("Could read from logs from Hairball.")
-			fmt.Println(readError)
-			return
-		}
-		// Create a reader buffer.
-		buf := bufio.NewReader(this.serialPort)
-		// While allowed keep writing bytes to the file.
-		this.writeLog = true
-		for this.writeLog {
-			line, readLineError := buf.ReadBytes('\n')
-			if readLineError != nil {
-				fmt.Println("Could read log line from Hairball.")
-				fmt.Println(readLineError)
-				return
-			}
-			_, writeLineError := this.writeLogFile.Write(ParseQ1LineFromHairball(line).ToBytes())
-			if writeLineError != nil {
-				fmt.Println(writeLineError)
-				return
-			}
-			time.Sleep(1 * time.Millisecond)
-		}
-	}()
-}
-
 func (this *Zilla) OpenLog() error {
 	// Set the log file for this session.
 	this.logFile = "./logs/" + strconv.FormatInt(time.Now().Unix(), 10) + ".dat"
@@ -211,6 +176,48 @@ func (this *Zilla) CloseLog() {
 	this.writeLog = false
 	this.readLogFile.Close()
 	this.writeLogFile.Close()
+}
+
+func (this *Zilla) startLogging() {
+	go func() {
+		this.menuHome()
+		if this.sendString("p", "Special Menu:") == false {
+			fmt.Println("Could not start logging.")
+			return
+		}
+		// Open the first logging stream.
+		_, readError := this.serialPort.Write([]byte("Q1\r"))
+		if readError != nil {
+			fmt.Println("Could not read logs from Hairball.")
+			fmt.Println(readError)
+			return
+		}
+		// Create a reader buffer.
+		buf := bufio.NewReader(this.serialPort)
+		// While allowed keep writing bytes to the file.
+		this.writeLog = true
+		for {
+			line, readLineError := buf.ReadBytes('\n')
+			if readLineError != nil {
+				fmt.Println("Could read log line from Hairball.")
+				fmt.Println(readLineError)
+				return
+			}
+			logLine := ParseQ1LineFromHairball(line)
+			if logLine == nil {
+				fmt.Println("Could not parse Hairball log line.")
+				return
+			}
+			_, writeLineError := this.writeLogFile.Write(logLine.ToBytes())
+			if writeLineError != nil {
+				// fmt.Println("Could not write log data.")
+				// fmt.Println(writeLineError)
+				return
+			}
+			// Sleep 100ms as the logs are only written 10 times a second.
+			time.Sleep(100 * time.Millisecond)
+		}
+	}()
 }
 
 func (this *Zilla) GetLiveData() *LiveData {

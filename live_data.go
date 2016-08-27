@@ -49,6 +49,9 @@ func getIntFromHex(s string) int {
 
 func ParseQ1LineFromHairball(b []byte) *LiveData {
 	values := strings.Split(strings.TrimSpace(string(b)), " ")
+	if len(values) < 9 {
+		return nil
+	}
 	ld := &LiveData{
 		Timestamp: time.Now().Unix(),
 		// RxCtrlFlagByte
