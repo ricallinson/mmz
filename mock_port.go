@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -102,7 +103,7 @@ func (this *MockPort) changeSettingsValue(value string) {
 	if this.menu == 'o' {
 		this.changeSettingsToggleValue(value)
 	} else if this.update != "" {
-		this.changeSettingsIntValue(string(this.menu), this.update, value)
+		this.changeSettingsIntValue(string(this.menu), this.update, strings.TrimSpace(value))
 		this.update = ""
 	} else {
 		this.update = value
