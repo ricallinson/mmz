@@ -43,7 +43,7 @@ func CreateLiveData(b []byte) *LiveData {
 }
 
 func getIntFromHex(s string) int {
-	v, _ := strconv.ParseInt(s, 16, 16)
+	v, _ := strconv.ParseUint(s, 32, 32)
 	return int(v)
 }
 

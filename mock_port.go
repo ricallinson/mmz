@@ -2,9 +2,9 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -12,15 +12,15 @@ import (
 type MockPort struct {
 	menu                           byte
 	update                         string
-	averageCurrentOnMotor          int
-	availableCurrentFromController int
-	armDC                          int
-	batteryVoltage                 int
-	motorVoltage                   int
-	controllerTemp                 int
-	spiErrorCount                  int
-	currentError                   int
-	operatingStatus                int
+	averageCurrentOnMotor          uint64
+	availableCurrentFromController uint64
+	armDC                          uint64
+	batteryVoltage                 uint64
+	motorVoltage                   uint64
+	controllerTemp                 uint64
+	spiErrorCount                  uint64
+	currentError                   uint64
+	operatingStatus                uint64
 	mocks                          map[byte][]byte
 }
 
@@ -185,15 +185,15 @@ func (this *MockPort) changeSettingsToggleValue(option string) {
 func (this *MockPort) q1(b []byte) (int, error) {
 	time.Sleep(100 * time.Millisecond)
 	this.updateMockData()
-	averageCurrentOnMotor := fmt.Sprintf("%X", this.averageCurrentOnMotor)
-	availableCurrentFromController := fmt.Sprintf("%X", this.availableCurrentFromController)
-	armDC := fmt.Sprintf("%X", this.armDC)
-	batteryVoltage := fmt.Sprintf("%X", this.batteryVoltage)
-	motorVoltage := fmt.Sprintf("%X", this.motorVoltage)
-	controllerTemp := fmt.Sprintf("%X", this.controllerTemp)
-	spiErrorCount := fmt.Sprintf("%X", this.spiErrorCount)
-	currentError := fmt.Sprintf("%X", this.currentError)
-	operatingStatus := fmt.Sprintf("%X", this.operatingStatus)
+	averageCurrentOnMotor := strconv.FormatUint(this.averageCurrentOnMotor, 32)
+	availableCurrentFromController := strconv.FormatUint(this.availableCurrentFromController, 32)
+	armDC := strconv.FormatUint(this.armDC, 32)
+	batteryVoltage := strconv.FormatUint(this.batteryVoltage, 32)
+	motorVoltage := strconv.FormatUint(this.motorVoltage, 32)
+	controllerTemp := strconv.FormatUint(this.controllerTemp, 32)
+	spiErrorCount := strconv.FormatUint(this.spiErrorCount, 32)
+	currentError := strconv.FormatUint(this.currentError, 32)
+	operatingStatus := strconv.FormatUint(this.operatingStatus, 32)
 	line := []byte(
 		"00 " +
 			averageCurrentOnMotor + " " +

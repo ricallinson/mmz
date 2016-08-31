@@ -72,6 +72,12 @@ func NewZilla(p SerialPort) (*Zilla, error) {
 	return this, nil
 }
 
+// Loop on a channel sending routines from the queue to the Hairball.
+// If there are no routines in the queue log data until a routine appears.
+func (this *Zilla) loop() bool {
+	return false
+}
+
 func (this *Zilla) sendString(s, check string) bool {
 	return this.sendBytes([]byte(s), check)
 }
