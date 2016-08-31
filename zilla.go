@@ -12,6 +12,19 @@ import (
 	"time"
 )
 
+type zillaCommand struct {
+	bytes []byte
+	done  chan bool
+	data  []byte
+}
+
+func newZillaCommand(bytes []byte) zillaCommand {
+	return zillaCommand{
+		bytes: bytes,
+		done:  make(chan bool),
+	}
+}
+
 type SerialPort interface {
 	Read([]byte) (int, error)
 	Write([]byte) (int, error)
@@ -50,7 +63,8 @@ type Zilla struct {
 	IsZ2k                         bool     // p) Off
 	CurrentState                  string   // 1311
 	Errors                        []string // 1111, 1111, ...
-	buffer                        []byte   // byte array of the last Zilla output
+	queue                         chan zillaCommand
+	buffer                        []byte // byte array of the last Zilla output
 	serialPort                    SerialPort
 	writeLog                      bool
 	logFile                       string
@@ -59,12 +73,16 @@ type Zilla struct {
 }
 
 func NewZilla(p SerialPort) (*Zilla, error) {
-	this := &Zilla{serialPort: p}
-	this.Errors = make([]string, 0)
+	this := &Zilla{
+		Errors:     make([]string, 0),
+		serialPort: p,
+		queue:      make(chan zillaCommand, 100),
+	}
 	// Open log file for reading and writing.
 	if err := this.OpenLog(); err != nil {
 		return nil, err
 	}
+	go this.start()
 	// Update the Zilla object with it's values.
 	if this.Refresh() == false {
 		return nil, errors.New("Could not get data from Hairball.")
@@ -72,10 +90,16 @@ func NewZilla(p SerialPort) (*Zilla, error) {
 	return this, nil
 }
 
-// Loop on a channel sending routines from the queue to the Hairball.
-// If there are no routines in the queue log data until a routine appears.
-func (this *Zilla) loop() bool {
-	return false
+// Loop on the queue channel sending commands from the queue to the Hairball.
+// If there are no commands in the queue log data until a command appears.
+func (this *Zilla) start() {
+	for {
+		select {
+		case command := <-this.queue:
+			this.sendBytes(command.bytes, "")
+			command.done <- true
+		}
+	}
 }
 
 func (this *Zilla) sendString(s, check string) bool {
@@ -254,6 +278,14 @@ func (this *Zilla) GetLiveData() *LiveData {
 	buf = buf[bytes.Index(buf, []byte{10})+1:] // Remove all bytes before the first line feed.
 	buf = buf[:bytes.Index(buf, []byte{10})]   // Remove all bytes after the next line feed.
 	return CreateLiveData(buf)
+}
+
+// Refreshes all attributes by reading them from the Zilla Controller.
+func (this *Zilla) GetSettings() bool {
+	// Add Zilla command sequence to a queue.
+	// Wait for the command to execute and return.
+	// Parse the returned buffer.
+	return false
 }
 
 // Refreshes all attributes by reading them from the Zilla Controller.

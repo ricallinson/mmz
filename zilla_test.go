@@ -31,6 +31,13 @@ func TestZilla(t *testing.T) {
 			AssertNotEqual(zilla, nil)
 		})
 
+		It("should execute a command in the Zilla.queue", func() {
+			c := newZillaCommand([]byte{27})
+			zilla.queue <- c
+			done := <-c.done
+			AssertEqual(done, true)
+		})
+
 		It("should read home", func() {
 			AssertEqual(zilla.menuHome(), true)
 		})
