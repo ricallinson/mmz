@@ -54,59 +54,55 @@ func StartWebServer(port int, zilla *Zilla) {
 			status = zilla.SetMaxRpmLimit(value)
 		case "RpmSensorMotorOne":
 			status = zilla.ToggleRpmSensorMotorOne()
-			value = Btoi(zilla.RpmSensorMotorOne)
+			value = Btoi(zilla.GetSettings().RpmSensorMotorOne)
 		case "RpmSensorMotorTwo":
 			status = zilla.ToggleRpmSensorMotorTwo()
-			value = Btoi(zilla.RpmSensorMotorTwo)
+			value = Btoi(zilla.GetSettings().RpmSensorMotorTwo)
 		case "AutoShiftingSeriesToParallel":
 			status = zilla.ToggleAutoShiftingSeriesToParallel()
-			value = Btoi(zilla.AutoShiftingSeriesToParallel)
+			value = Btoi(zilla.GetSettings().AutoShiftingSeriesToParallel)
 		case "StallDetectOn":
 			status = zilla.ToggleStallDetectOn()
-			value = Btoi(zilla.StallDetectOn)
+			value = Btoi(zilla.GetSettings().StallDetectOn)
 		case "BatteryLightPolarity":
 			status = zilla.ToggleBatteryLightPolarity()
-			value = Btoi(zilla.BatteryLightPolarity)
+			value = Btoi(zilla.GetSettings().BatteryLightPolarity)
 		case "CheckEngineLightPolarity":
 			status = zilla.ToggleCheckEngineLightPolarity()
-			value = Btoi(zilla.CheckEngineLightPolarity)
+			value = Btoi(zilla.GetSettings().CheckEngineLightPolarity)
 		case "ReversingContactors":
 			status = zilla.ToggleReversingContactors()
-			value = Btoi(zilla.ReversingContactors)
+			value = Btoi(zilla.GetSettings().ReversingContactors)
 		case "SeriesParallelContactors":
 			status = zilla.ToggleSeriesParallelContactors()
-			value = Btoi(zilla.SeriesParallelContactors)
+			value = Btoi(zilla.GetSettings().SeriesParallelContactors)
 		case "ForceParallelInReverse":
 			status = zilla.ToggleForceParallelInReverse()
-			value = Btoi(zilla.ForceParallelInReverse)
+			value = Btoi(zilla.GetSettings().ForceParallelInReverse)
 		case "InhibitSeriesParallelShifting":
 			status = zilla.ToggleInhibitSeriesParallelShifting()
-			value = Btoi(zilla.InhibitSeriesParallelShifting)
+			value = Btoi(zilla.GetSettings().InhibitSeriesParallelShifting)
 		case "TachometerDisplayMotorAmps":
 			status = zilla.ToggleTachometerDisplayMotorAmps()
-			value = Btoi(zilla.TachometerDisplayMotorAmps)
+			value = Btoi(zilla.GetSettings().TachometerDisplayMotorAmps)
 		case "TachometerSixCylinders":
 			status = zilla.ToggleTachometerSixCylinders()
-			value = Btoi(zilla.TachometerSixCylinders)
+			value = Btoi(zilla.GetSettings().TachometerSixCylinders)
 		case "ReversesPlugInInputPolarity":
 			status = zilla.ToggleReversesPlugInInputPolarity()
-			value = Btoi(zilla.ReversesPlugInInputPolarity)
+			value = Btoi(zilla.GetSettings().ReversesPlugInInputPolarity)
 		case "ActivateHEPI":
 			status = zilla.ToggleActivateHEPI()
-			value = Btoi(zilla.ActivateHEPI)
+			value = Btoi(zilla.GetSettings().ActivateHEPI)
 		case "IsZ2k":
 			status = zilla.ToggleIsZ2k()
-			value = Btoi(zilla.IsZ2k)
+			value = Btoi(zilla.GetSettings().IsZ2k)
 		}
 		res.Send(map[string]interface{}{"status": status, "attribute": attribute, "value": value})
 	})
 
 	app.Get("/settings", func(req *f.Request, res *f.Response, next func()) {
-		if zilla.Refresh() != false {
-			res.Render("settings.html", zilla)
-			return
-		}
-		res.Send("Could not read settings")
+		res.Render("settings.html", zilla.GetSettings())
 	})
 
 	fmt.Printf("The Manzanita Micro Zilla interface is now running on port '%d'.\n", port)

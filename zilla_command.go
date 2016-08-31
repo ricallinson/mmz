@@ -11,10 +11,12 @@ type zillaCommand struct {
 }
 
 func newZillaCommand() *zillaCommand {
-	return &zillaCommand{
+	this := &zillaCommand{
 		bytes: [][]byte{},
 		done:  make(chan bool),
 	}
+	this.sendHome()
+	return this
 }
 
 func (this *zillaCommand) sendInt(val int) {
