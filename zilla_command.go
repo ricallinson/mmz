@@ -23,14 +23,14 @@ func (this *zillaCommand) sendInt(val int) {
 	this.sendString(strconv.Itoa(val) + "\r\n")
 }
 
+func (this *zillaCommand) sendString(s string) {
+	this.sendBytes([]byte(s))
+}
+
 func (this *zillaCommand) sendHome() {
 	this.sendBytes([]byte{27})
 	this.sendBytes([]byte{27})
 	this.sendBytes([]byte{27})
-}
-
-func (this *zillaCommand) sendString(s string) {
-	this.sendBytes([]byte(s))
 }
 
 func (this *zillaCommand) sendBytes(b []byte) {
