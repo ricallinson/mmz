@@ -50,7 +50,7 @@ type Zilla struct {
 	IsZ2k                         bool     // p) Off
 	CurrentState                  string   // 1311
 	Errors                        []string // 1111, 1111, ...
-	queue                         chan zillaCommand
+	queue                         chan *zillaCommand
 	buffer                        []byte // byte array of the last Zilla output
 	serialPort                    SerialPort
 	writeLog                      bool
@@ -63,7 +63,7 @@ func NewZilla(p SerialPort) (*Zilla, error) {
 	this := &Zilla{
 		Errors:     make([]string, 0),
 		serialPort: p,
-		queue:      make(chan zillaCommand, 100),
+		queue:      make(chan *zillaCommand, 100),
 	}
 	// Open log file for reading and writing.
 	if err := this.OpenLog(); err != nil {
@@ -82,11 +82,41 @@ func NewZilla(p SerialPort) (*Zilla, error) {
 func (this *Zilla) start() {
 	for {
 		select {
-		case command := <-this.queue:
-			this.sendBytes(command.bytes, "")
-			command.done <- true
+		case cmd := <-this.queue:
+			for _, b := range cmd.bytes {
+				cmd.data = this.writeBytes(b)
+			}
+			cmd.done <- true
 		}
 	}
+}
+
+func (this *Zilla) writeCommand(cmd *zillaCommand) {
+	this.queue <- cmd
+	<-cmd.done
+}
+
+func (this *Zilla) writeBytes(b []byte) []byte {
+	var e error
+	_, e = this.serialPort.Write(b)
+	// fmt.Println(string(b))
+	if e != nil {
+		fmt.Println(e)
+		return nil
+	}
+	// Cannot keep sleeping. Need a better solution here.
+	if reflect.TypeOf(this.serialPort).String() != "*main.MockPort" {
+		time.Sleep(500 * time.Millisecond)
+	}
+	data := make([]byte, 1000)
+	_, e = this.serialPort.Read(data)
+	if e != nil {
+		fmt.Println(e)
+		return nil
+	}
+	data = bytes.TrimSpace(data)
+	// fmt.Println(string(data))
+	return data
 }
 
 func (this *Zilla) sendString(s, check string) bool {
@@ -277,13 +307,12 @@ func (this *Zilla) GetSettings() bool {
 
 // Refreshes all attributes by reading them from the Zilla Controller.
 func (this *Zilla) Refresh() bool {
-	if this.menuSettings() == false {
-		return false
-	}
-	// Once we have the new data start logging again.
-	defer this.startLogging()
-	// Read all the settings in this struct.
-	lines := bytes.Split(this.buffer, []byte{10})
+	cmd := newZillaCommand()
+	cmd.sendHome()
+	cmd.sendString("d") // Menu Settings
+	this.writeCommand(cmd)
+	// Read all the settings line by line.
+	lines := bytes.Split(cmd.data, []byte{10})
 	// Get values for BA, LBV, LBVI
 	var values []string
 	values = split(string(lines[2]), " ")
