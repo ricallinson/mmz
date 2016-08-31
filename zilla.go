@@ -12,19 +12,6 @@ import (
 	"time"
 )
 
-type zillaCommand struct {
-	bytes []byte
-	done  chan bool
-	data  []byte
-}
-
-func newZillaCommand(bytes []byte) zillaCommand {
-	return zillaCommand{
-		bytes: bytes,
-		done:  make(chan bool),
-	}
-}
-
 type SerialPort interface {
 	Read([]byte) (int, error)
 	Write([]byte) (int, error)
