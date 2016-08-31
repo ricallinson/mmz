@@ -1,7 +1,7 @@
 package main
 
 import (
-	// "bufio"
+	"bufio"
 	"bytes"
 	"errors"
 	"fmt"
@@ -53,11 +53,10 @@ type ZillaSettings struct {
 }
 
 type Zilla struct {
-	queue        chan *zillaCommand
-	buffer       []byte // byte array of the last Zilla output
 	serialPort   SerialPort
-	writeLog     bool
+	queue        chan *zillaCommand
 	logFile      string
+	writeLog     bool
 	readLogFile  *os.File
 	writeLogFile *os.File
 }
@@ -86,12 +85,15 @@ func (this *Zilla) start() {
 				cmd.data = this.writeBytes(b)
 			}
 			cmd.done <- true
+		default:
+			this.writeLogToFile()
 		}
 	}
 }
 
 func (this *Zilla) writeCommand(cmd *zillaCommand) {
 	this.queue <- cmd
+	this.writeLog = false
 	<-cmd.done
 }
 
@@ -116,6 +118,41 @@ func (this *Zilla) writeBytes(b []byte) []byte {
 	data = bytes.TrimSpace(data)
 	// fmt.Println(string(data))
 	return data
+}
+
+func (this *Zilla) writeLogToFile() {
+	this.serialPort.Write([]byte{27})  // Esc
+	this.serialPort.Write([]byte{27})  // Esc
+	this.serialPort.Write([]byte{27})  // Esc
+	this.serialPort.Write([]byte("p")) // Menu Special
+	_, readError := this.serialPort.Write([]byte("Q1\r"))
+	if readError != nil {
+		fmt.Println("Could not read logs from Hairball.")
+		return
+	}
+	input := bufio.NewReader(this.serialPort)
+	this.writeLog = true
+	for this.writeLog {
+		// This could be the real world problem.
+		// The code could be waiting here for bytes and get the ones meant for the menu change.
+		line, readLineError := input.ReadBytes('\n')
+		if readLineError != nil {
+			fmt.Println("Could read log line from Hairball.")
+			fmt.Println(readLineError)
+			return
+		}
+		logLine := ParseQ1LineFromHairball(line)
+		if logLine == nil {
+			fmt.Println("Could not parse Hairball log line.")
+			return
+		}
+		if _, err := this.writeLogFile.Write(logLine.ToBytes()); err != nil {
+			// If there is a write error it means the file has been closed.
+			return
+		}
+		// Sleep for 100ms as the logs are only written 10 times a second.
+		time.Sleep(100 * time.Millisecond)
+	}
 }
 
 func (this *Zilla) OpenLog() error {
@@ -144,49 +181,6 @@ func (this *Zilla) CloseLog() {
 	this.writeLog = false
 	this.readLogFile.Close()
 	this.writeLogFile.Close()
-}
-
-func (this *Zilla) startLogging() {
-	// this.menuHome()
-	// if this.sendString("p", "Special Menu:") == false {
-	// 	fmt.Println("Could not start logging.")
-	// 	return
-	// }
-	// // Open the first logging stream.
-	// _, readError := this.serialPort.Write([]byte("Q1\r"))
-	// if readError != nil {
-	// 	fmt.Println("Could not read logs from Hairball.")
-	// 	fmt.Println(readError)
-	// 	return
-	// }
-	// // Create a reader buffer.
-	// buf := bufio.NewReader(this.serialPort)
-	// // While allowed keep writing bytes to the file.
-	// this.writeLog = true
-	// // Now we have a buffer reading from the log keep reading and writing.
-	// go func(zilla *Zilla, input *bufio.Reader) {
-	// 	for zilla.writeLog {
-	// 		// This could be the real world problem.
-	// 		// The code could be waiting here for bytes and get the ones meant for the menu change.
-	// 		line, readLineError := input.ReadBytes('\n')
-	// 		if readLineError != nil {
-	// 			fmt.Println("Could read log line from Hairball.")
-	// 			fmt.Println(readLineError)
-	// 			return
-	// 		}
-	// 		logLine := ParseQ1LineFromHairball(line)
-	// 		if logLine == nil {
-	// 			fmt.Println("Could not parse Hairball log line.")
-	// 			return
-	// 		}
-	// 		if _, err := zilla.writeLogFile.Write(logLine.ToBytes()); err != nil {
-	// 			// If there is a write error it means the file has been closed.
-	// 			return
-	// 		}
-	// 		// Sleep for 100ms as the logs are only written 10 times a second.
-	// 		time.Sleep(100 * time.Millisecond)
-	// 	}
-	// }(this, buf)
 }
 
 func (this *Zilla) GetLiveData() *LiveData {
