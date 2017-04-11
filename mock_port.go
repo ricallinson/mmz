@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"strconv"
 	"strings"
@@ -244,11 +245,5 @@ func (this *MockPort) updateMockData() {
 	if this.spiErrorCount > 1000 {
 		this.spiErrorCount = 0
 	}
-	this.currentError++
-	if this.currentError < 1111 {
-		this.currentError = 1111
-	}
-	if this.currentError > 1500 {
-		this.currentError = 1111
-	}
+	this.currentError = CodeList[rand.Intn(len(CodeList))]
 }
