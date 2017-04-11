@@ -235,7 +235,7 @@ func (this *MockPort) updateMockData() {
 	}
 	this.motorVoltage++
 	if this.motorVoltage > 290 {
-		this.motorVoltage = 150
+		this.motorVoltage = 96
 	}
 	this.controllerTemp++
 	if this.controllerTemp > 120 {
