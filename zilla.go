@@ -86,6 +86,7 @@ func (this *Zilla) start() {
 			}
 			cmd.done <- true
 		default:
+			this.writeLog = true
 			this.writeLogToFile()
 		}
 	}
@@ -137,6 +138,7 @@ func (this *Zilla) writeBytes(b []byte) []byte {
 	return data
 }
 
+// Blocks while writing log file.
 func (this *Zilla) writeLogToFile() {
 	this.serialPort.Write([]byte{27})  // Esc
 	this.serialPort.Write([]byte{27})  // Esc
@@ -148,7 +150,6 @@ func (this *Zilla) writeLogToFile() {
 		return
 	}
 	input := bufio.NewReader(this.serialPort)
-	this.writeLog = true
 	for this.writeLog {
 		// This could be the real world problem.
 		// The code could be waiting here for bytes and get the ones meant for the menu change.
@@ -197,6 +198,10 @@ func (this *Zilla) openLogFile() error {
 }
 
 func (this *Zilla) CloseLogFile() {
+	// Wait for the queue to drain before closing.
+	if len(this.queue) > 0 {
+		time.Sleep(time.Millisecond)
+	}
 	this.writeLog = false
 	this.readLogFile.Close()
 	this.writeLogFile.Close()
