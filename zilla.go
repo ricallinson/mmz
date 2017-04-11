@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"fmt"
+	"log"
 	"os"
 	"path"
 	"reflect"
@@ -100,7 +100,7 @@ func (this *Zilla) writeCommands(types ...interface{}) []byte {
 		case int:
 			cmd.sendInt(t.(int))
 		default:
-			fmt.Println("Cannot send type")
+			log.Println("Cannot send type")
 			return nil
 		}
 	}
@@ -117,9 +117,9 @@ func (this *Zilla) writeCommand(cmd *zillaCommand) {
 func (this *Zilla) writeBytes(b []byte) []byte {
 	var e error
 	_, e = this.serialPort.Write(b)
-	// fmt.Println(string(b))
+	// log.Println(string(b))
 	if e != nil {
-		fmt.Println(e)
+		log.Println(e)
 		return nil
 	}
 	// Cannot keep sleeping. Need a better solution here.
@@ -129,11 +129,11 @@ func (this *Zilla) writeBytes(b []byte) []byte {
 	data := make([]byte, 1000)
 	_, e = this.serialPort.Read(data)
 	if e != nil {
-		fmt.Println(e)
+		log.Println(e)
 		return nil
 	}
 	data = bytes.TrimSpace(data)
-	// fmt.Println(string(data))
+	// log.Println(string(data))
 	return data
 }
 
@@ -144,7 +144,7 @@ func (this *Zilla) writeLogToFile() {
 	this.serialPort.Write([]byte("p")) // Menu Special
 	_, readError := this.serialPort.Write([]byte("Q1\r"))
 	if readError != nil {
-		fmt.Println("Could not read logs from Hairball.")
+		log.Println("Could not read logs from Hairball.")
 		return
 	}
 	input := bufio.NewReader(this.serialPort)
@@ -154,13 +154,13 @@ func (this *Zilla) writeLogToFile() {
 		// The code could be waiting here for bytes and get the ones meant for the menu change.
 		line, readLineError := input.ReadBytes('\n')
 		if readLineError != nil {
-			fmt.Println("Could read log line from Hairball.")
-			fmt.Println(readLineError)
+			log.Println("Could read log line from Hairball.")
+			log.Println(readLineError)
 			return
 		}
 		logLine := ParseQ1LineFromHairball(line)
 		if logLine == nil {
-			fmt.Println("Could not parse Hairball log line.")
+			log.Println("Could not parse Hairball log line.")
 			return
 		}
 		if _, err := this.writeLogFile.Write(logLine.ToBytes()); err != nil {
@@ -178,20 +178,21 @@ func (this *Zilla) openLogFile() error {
 	this.logFile = "./logs/" + strconv.FormatInt(time.Now().Unix(), 10) + ".dat"
 	// Make sure the directory is created.
 	if err := os.MkdirAll(path.Dir(this.logFile), 0777); err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return errors.New("Could not create directory for logs.")
 	}
 	var openFileError error
 	this.writeLogFile, openFileError = os.OpenFile(this.logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
 	if openFileError != nil {
-		fmt.Println(openFileError)
+		log.Println(openFileError)
 		return errors.New("Could not open log file for writing.")
 	}
 	this.readLogFile, openFileError = os.Open(this.logFile)
 	if openFileError != nil {
-		fmt.Println(openFileError)
+		log.Println(openFileError)
 		return errors.New("Could not open log file for reading.")
 	}
+	log.Print("Created log file:", this.logFile)
 	return nil
 }
 
@@ -203,7 +204,7 @@ func (this *Zilla) CloseLogFile() {
 
 func (this *Zilla) GetLiveData() *LiveData {
 	if this.logFile == "" {
-		fmt.Println("No log file available.")
+		log.Println("No log file available.")
 		return nil
 	}
 	bufSize := 1000
@@ -212,7 +213,7 @@ func (this *Zilla) GetLiveData() *LiveData {
 	start := stat.Size() - int64(bufSize)
 	i, err := this.readLogFile.ReadAt(buf, start)
 	if err != nil {
-		fmt.Println("Could not read last line from live data.")
+		log.Println("Could not read last line from live data.")
 		return nil
 	}
 	buf = buf[:i]                              // Get the bytes written to the buffer.

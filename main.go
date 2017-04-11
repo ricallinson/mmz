@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/tarm/serial"
+	"log"
 )
 
 func main() {
@@ -20,12 +20,12 @@ func main() {
 		serialError, serialPort = connectToHairball(hairball)
 	}
 	if serialError != nil {
-		fmt.Println(serialError)
+		log.Println(serialError)
 		return
 	}
 	zilla, zillaError := NewZilla(serialPort)
 	if zillaError != nil {
-		fmt.Println(zillaError)
+		log.Println(zillaError)
 		return
 	}
 	StartWebServer(port, zilla)

@@ -10,7 +10,7 @@ Interface for configuring, logging and visualizing data for a Manzanita Micro Zi
 
     sudo apt-get install go
     export GOPATH=$HOME/Library/Go/gocode
-    go get github.com/ricallinson/mmz
+    go install github.com/ricallinson/mmz
     $HOME/Library/Go/gocode/src/github.com/ricallinson/mmz
     $HOME/Library/Go/gocode/bin/mmz -hairball /dev/tty.usbserial
 
@@ -26,6 +26,8 @@ Requires a [Go](https://golang.org/dl/) environment.
 
     go get github.com/ricallinson/mmz
     go get github.com/goforgery/forgery2
+    go get github.com/goforgery/mustache
+    go get github.com/goforgery/static
     go get github.com/tarm/serial
     go get github.com/ricallinson/simplebdd
     go install github.com/ricallinson/mmz
@@ -34,7 +36,7 @@ Requires a [Go](https://golang.org/dl/) environment.
 
 Start the application with the following command;
 
-    mmz -serial /path/to/zilla/serial
+    mmz -hairball /path/to/zilla/serial
 
 Then open a browser to http://localhost:8080/.
 
@@ -42,12 +44,9 @@ Then open a browser to http://localhost:8080/.
 
     go test
 
-## Code Coverage
+## Code Coverage Report
 
-To be run per module;
-
-    go test -coverprofile=coverage.out; go tool cover -html=coverage.out -o=coverage.html
-    open coverage.html
+    go test -covermode=count -coverprofile=count.out; go tool cover -html=count.out
 
 ## Links
 
@@ -60,4 +59,3 @@ To be run per module;
     screen /dev/tty.usbserial
 
 Exit from Hairball `CTRL + A + \`.
-

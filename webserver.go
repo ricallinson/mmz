@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"github.com/goforgery/forgery2"
 	"github.com/goforgery/mustache"
 	"github.com/goforgery/static"
+	"log"
 	"strconv"
 )
 
@@ -105,7 +105,7 @@ func StartWebServer(port int, zilla *Zilla) {
 		res.Render("settings.html", zilla.GetSettings())
 	})
 
-	fmt.Printf("The Manzanita Micro Zilla interface is now running on port '%d'.\n", port)
+	log.Printf("The Manzanita Micro Zilla interface is now running on port '%d'.\n", port)
 
 	app.Listen(port)
 }
