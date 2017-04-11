@@ -98,6 +98,9 @@ func StartWebServer(port int, zilla *Zilla) {
 			status = zilla.ToggleIsZ2k()
 			value = Btoi(zilla.GetSettings().IsZ2k)
 		}
+		if !status {
+			log.Println("Command", attribute, "failed.")
+		}
 		res.Send(map[string]interface{}{"status": status, "attribute": attribute, "value": value})
 	})
 
