@@ -87,6 +87,10 @@ func (this *Zilla) start() {
 			}
 			cmd.done <- true
 		default:
+			// Once Close() has been called there is nothing more to do.
+			if this.closed {
+				return
+			}
 			this.writeLogToFile()
 		}
 	}
@@ -102,7 +106,7 @@ func (this *Zilla) writeCommands(types ...interface{}) []byte {
 		case int:
 			cmd.sendInt(t.(int))
 		default:
-			log.Println("Cannot send type")
+			log.Println("Cannot only write types string or int")
 			return nil
 		}
 	}
@@ -116,7 +120,7 @@ func (this *Zilla) writeCommands(types ...interface{}) []byte {
 // Sends the given bytes directly to the Zilla.
 func (this *Zilla) writeBytes(b []byte) {
 	if this.closed {
-		log.Print("Connection to Zilla has been closed.")
+		log.Print("Write connection to Zilla has been closed.")
 		return
 	}
 	_, e := this.serialPort.Write(b)
@@ -133,9 +137,10 @@ func (this *Zilla) readBytes() []byte {
 // Reads bytes directly from the Zilla up to the given byte or EOF.
 func (this *Zilla) readBytesTo(to byte) []byte {
 	if this.closed {
-		log.Print("Connection to Zilla has been closed.")
+		log.Print("Read connection to Zilla has been closed.")
 		return nil
 	}
+	// TODO: The mock only returns a byte array not single bytes.
 	buff := make([]byte, 1)
 	data := make([]byte, 0)
 	for {
@@ -144,6 +149,7 @@ func (this *Zilla) readBytesTo(to byte) []byte {
 		if to == buff[0] || i == 0 {
 			break
 		}
+		log.Print(buff[0])
 	}
 	data = bytes.TrimSpace(data)
 	// log.Println(string(data))
@@ -152,7 +158,10 @@ func (this *Zilla) readBytesTo(to byte) []byte {
 
 // Blocks while writing log file.
 func (this *Zilla) writeLogToFile() {
+	// Before anything else happens tell the world we are now logging.
+	this.writeLog = true
 	// We have to write and read each command to be sure the Zilla is responding.
+	// The writeCommands() function is not used as it creates a circular dependency.
 	this.writeBytes([]byte{27})
 	this.readBytes()
 	this.writeBytes([]byte{27})
@@ -162,7 +171,6 @@ func (this *Zilla) writeLogToFile() {
 	this.writeBytes([]byte("p")) // Menu Special
 	this.readBytes()
 	this.writeBytes([]byte("Q1\r")) // Start logs
-	this.writeLog = true
 	for this.writeLog {
 		line := this.readBytesTo('\n')
 		// log.Print(string(line))

@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	. "github.com/ricallinson/simplebdd"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -13,31 +15,25 @@ func TestZilla(t *testing.T) {
 		var zilla *Zilla
 
 		BeforeEach(func() {
-			var err error
-			zilla, err = NewZilla(NewMockPort())
-			if err != nil {
-				panic(err)
-			}
+			fmt.Println("NewZilla()")
+			zilla, _ = NewZilla(NewMockPort())
 		})
 
 		AfterEach(func() {
+			fmt.Println("Close()")
 			zilla.Close()
 		})
 
 		It("should return a Zilla object", func() {
-			zilla, err := NewZilla(NewMockPort())
-			zilla.Close()
-			AssertEqual(err, nil)
-			AssertNotEqual(zilla, nil)
+			AssertEqual(reflect.TypeOf(zilla).String(), "*mmz.Zilla")
 		})
 
-		It("should execute a command in the Zilla.queue", func() {
-			cmd := newZillaCommand()
-			cmd.sendBytes([]byte{27})
-			zilla.queue <- cmd
-			done := <-cmd.done
-			AssertEqual(done, true)
-		})
+		// It("should execute a command in the Zilla.queue", func() {
+		// 	cmd := newZillaCommand()
+		// 	cmd.sendBytes([]byte{27})
+		// 	zilla.queue <- cmd
+		// 	AssertEqual(<-cmd.done, true)
+		// })
 
 		// Set
 
