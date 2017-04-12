@@ -5,13 +5,14 @@ import (
 	"strings"
 )
 
-func copyIntoArray(s []byte, d []byte) {
+func copyIntoArray(s []byte, d []byte) int {
 	for i, _ := range d {
 		if i >= len(s) || i >= len(d) {
-			return
+			return i
 		}
 		d[i] = s[i]
 	}
+	return len(d)
 }
 
 func findValueLine(b []byte, end string) []byte {

@@ -110,7 +110,7 @@ func (this *Zilla) writeCommands(types ...interface{}) []byte {
 			return nil
 		}
 	}
-	// We have to stop logging so the command can be picked up.
+	// We have to stop logging so the command can be picked up from the queue.
 	this.writeLog = false
 	this.queue <- cmd
 	<-cmd.done
@@ -149,7 +149,7 @@ func (this *Zilla) readBytesTo(to byte) []byte {
 		if to == buff[0] || i == 0 {
 			break
 		}
-		log.Print(buff[0])
+		// log.Print(buff[0])
 	}
 	data = bytes.TrimSpace(data)
 	// log.Println(string(data))
@@ -171,7 +171,7 @@ func (this *Zilla) writeLogToFile() {
 	this.writeBytes([]byte("p")) // Menu Special
 	this.readBytes()
 	this.writeBytes([]byte("Q1\r")) // Start logs
-	for this.writeLog {
+	for this.writeLog && !this.closed {
 		line := this.readBytesTo('\n')
 		// log.Print(string(line))
 		logLine := ParseQ1LineFromHairball(line)
@@ -180,6 +180,7 @@ func (this *Zilla) writeLogToFile() {
 		}
 		if _, err := this.writeLogFile.Write(logLine.ToBytes()); err != nil {
 			// If there is a write error it means the log file has been closed.
+			log.Print("Log file has been closed.")
 			this.writeLog = false
 			return
 		}

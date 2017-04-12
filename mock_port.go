@@ -23,6 +23,7 @@ type MockPort struct {
 	currentError                   uint64
 	operatingStatus                uint64
 	mocks                          map[byte][]byte
+	buffer                         []byte
 }
 
 func NewMockPort() *MockPort {
@@ -58,6 +59,8 @@ func NewMockPort() *MockPort {
 	file, _ = os.Open("./fixtures/home.txt")
 	this.mocks[27], _ = ioutil.ReadAll(file)
 	file.Close()
+	// Create the buffer.
+	this.buffer = []byte{}
 	// All done.
 	return this
 }
@@ -65,12 +68,14 @@ func NewMockPort() *MockPort {
 func (this *MockPort) Read(b []byte) (int, error) {
 	switch this.menu {
 	case 'Q':
-		return this.q1(b)
-	case 'd', 'b', 'm', 's', 'o', 'p', 27:
-		copyIntoArray(this.mocks[this.menu], b)
-		return len(this.mocks[this.menu]), nil
+		this.q1()
 	}
-	return 0, nil
+	i := copyIntoArray(this.buffer, b)
+	this.buffer = this.buffer[i:]
+	if len(this.buffer) == 0 {
+		b = append(b, 0)
+	}
+	return i, nil
 }
 
 func (this *MockPort) Write(b []byte) (int, error) {
@@ -86,6 +91,7 @@ func (this *MockPort) Write(b []byte) (int, error) {
 	switch b[0] {
 	case 'd', 'b', 'm', 's', 'o', 'p', 27, 'Q':
 		this.menu = b[0]
+		this.buffer = append(this.buffer, this.mocks[this.menu]...)
 		this.update = ""
 		return 1, nil
 	}
@@ -183,7 +189,7 @@ func (this *MockPort) changeSettingsToggleValue(option string) {
 	this.mocks['d'] = b
 }
 
-func (this *MockPort) q1(b []byte) (int, error) {
+func (this *MockPort) q1() (int, error) {
 	time.Sleep(100 * time.Millisecond)
 	this.updateMockData()
 	averageCurrentOnMotor := strconv.FormatUint(this.averageCurrentOnMotor, 32)
@@ -207,9 +213,7 @@ func (this *MockPort) q1(b []byte) (int, error) {
 			currentError + " " +
 			operatingStatus + " " +
 			"SFS\n")
-	for i := 0; i < len(line); i++ {
-		b[i] = line[i]
-	}
+	this.buffer = append(this.buffer, line...)
 	return len(line), nil
 }
 
