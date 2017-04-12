@@ -19,7 +19,7 @@ type LiveData struct {
 	SpiErrorCount                  int
 	CurrentError                   string
 	OperatingStatus                int
-	MotorKilowatts                 int
+	MotorKilowatts                 float64
 	StoppedState                   bool
 	ShiftingInProgress             bool
 	MainContactorIsOn              bool
@@ -67,7 +67,7 @@ func ParseQ1LineFromHairball(b []byte) *LiveData {
 	}
 	// States
 	setStates(values[10], ld)
-	ld.MotorKilowatts = ld.MotorVoltage * ld.AverageCurrentOnMotor / 1000
+	ld.MotorKilowatts = float64(ld.MotorVoltage*ld.AverageCurrentOnMotor) / 1000
 	ld.CurrentError = ld.CurrentError + ": " + Codes[ld.CurrentError]
 	return ld
 }

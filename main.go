@@ -4,6 +4,7 @@ import (
 	"flag"
 	"github.com/tarm/serial"
 	"log"
+	"time"
 )
 
 func main() {
@@ -33,11 +34,12 @@ func main() {
 
 func connectToHairball(path string) (error, *serial.Port) {
 	c := &serial.Config{
-		Name:     path,
-		Baud:     9600,
-		Size:     8,
-		Parity:   serial.ParityNone,
-		StopBits: serial.Stop1,
+		Name:        path,
+		Baud:        9600,
+		Size:        8,
+		Parity:      serial.ParityNone,
+		StopBits:    serial.Stop1,
+		ReadTimeout: time.Millisecond,
 	}
 	s, err := serial.OpenPort(c)
 	if err != nil {

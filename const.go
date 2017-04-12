@@ -1,6 +1,7 @@
 package main
 
 var CodeList []uint64 = []uint64{
+	0,
 	1111,
 	1112,
 	1113,
@@ -47,6 +48,7 @@ var CodeList []uint64 = []uint64{
 }
 
 var Codes map[string]string = map[string]string{
+	"0": "No error.",
 	// Error codes.
 	"1111": "Unknown mode, no error.",
 	"1112": "Hairball watchdog reset.",

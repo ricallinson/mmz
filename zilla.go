@@ -1,13 +1,11 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"errors"
 	"log"
 	"os"
 	"path"
-	"reflect"
 	"strconv"
 	"time"
 )
@@ -71,8 +69,9 @@ func NewZilla(p SerialPort) (*Zilla, error) {
 	if err := this.createLogFile(); err != nil {
 		return nil, err
 	}
-	// Start listening on the queue.
+	// Start listening on the queue for commands.
 	go this.start()
+	// Return the Zilla instance.
 	return this, nil
 }
 
@@ -83,17 +82,17 @@ func (this *Zilla) start() {
 		select {
 		case cmd := <-this.queue:
 			for _, b := range cmd.bytes {
-				cmd.data = this.writeBytes(b)
+				this.writeBytes(b)
+				cmd.data = this.readBytes()
 			}
 			cmd.done <- true
 		default:
-			this.writeLog = true
 			this.writeLogToFile()
 		}
 	}
 }
 
-// Takes a list of commands and sends them to the Zilla in the order recived.
+// Takes a list of commands and sends them to the Zilla in the order received.
 func (this *Zilla) writeCommands(types ...interface{}) []byte {
 	cmd := newZillaCommand()
 	for _, t := range types {
@@ -107,39 +106,44 @@ func (this *Zilla) writeCommands(types ...interface{}) []byte {
 			return nil
 		}
 	}
-	this.writeCommand(cmd)
+	// We have to stop logging so the command can be picked up.
+	this.writeLog = false
+	this.queue <- cmd
+	<-cmd.done
 	return cmd.data
 }
 
-// Adds the command object to the queue which is then sent to the Zilla.
-func (this *Zilla) writeCommand(cmd *zillaCommand) {
-	this.queue <- cmd
-	this.writeLog = false
-	<-cmd.done
+// Sends the given bytes directly to the Zilla.
+func (this *Zilla) writeBytes(b []byte) {
+	if this.closed {
+		log.Print("Connection to Zilla has been closed.")
+		return
+	}
+	_, e := this.serialPort.Write(b)
+	if e != nil {
+		log.Println(e)
+	}
 }
 
-// Sends the given bytes directly to the Zilla.
-func (this *Zilla) writeBytes(b []byte) []byte {
+// Reads bytes directly from the Zilla up to EOF.
+func (this *Zilla) readBytes() []byte {
+	return this.readBytesTo(0)
+}
+
+// Reads bytes directly from the Zilla up to the given byte or EOF.
+func (this *Zilla) readBytesTo(to byte) []byte {
 	if this.closed {
 		log.Print("Connection to Zilla has been closed.")
 		return nil
 	}
-	var e error
-	_, e = this.serialPort.Write(b)
-	if e != nil {
-		log.Println(e)
-		return nil
-	}
-	// TODO: Cannot keep sleeping. Need a better solution here.
-	// We wait here because the real Zilla needs time to startup (unlike the mock).
-	if reflect.TypeOf(this.serialPort).String() != "*main.MockPort" {
-		time.Sleep(500 * time.Millisecond)
-	}
-	data := make([]byte, 1000)
-	_, e = this.serialPort.Read(data)
-	if e != nil {
-		log.Println(e)
-		return nil
+	buff := make([]byte, 1)
+	data := make([]byte, 0)
+	for {
+		i, _ := this.serialPort.Read(buff)
+		data = append(data, buff[0])
+		if to == buff[0] || i == 0 {
+			break
+		}
 	}
 	data = bytes.TrimSpace(data)
 	// log.Println(string(data))
@@ -148,32 +152,26 @@ func (this *Zilla) writeBytes(b []byte) []byte {
 
 // Blocks while writing log file.
 func (this *Zilla) writeLogToFile() {
-	this.serialPort.Write([]byte{27})  // Esc
-	this.serialPort.Write([]byte{27})  // Esc
-	this.serialPort.Write([]byte{27})  // Esc
-	this.serialPort.Write([]byte("p")) // Menu Special
-	_, readError := this.serialPort.Write([]byte("Q1\r"))
-	if readError != nil {
-		log.Println("Could not read logs from Hairball.")
-		return
-	}
-	input := bufio.NewReader(this.serialPort)
+	// We have to write and read each command to be sure the Zilla is responding.
+	this.writeBytes([]byte{27})
+	this.readBytes()
+	this.writeBytes([]byte{27})
+	this.readBytes()
+	this.writeBytes([]byte{27})
+	this.readBytes()
+	this.writeBytes([]byte("p")) // Menu Special
+	this.readBytes()
+	this.writeBytes([]byte("Q1\r")) // Start logs
+	this.writeLog = true
 	for this.writeLog {
-		// This could be the real world problem.
-		// The code could be waiting here for bytes and get the ones meant for the menu change.
-		line, readLineError := input.ReadBytes('\n')
-		if readLineError != nil {
-			log.Println("Could read log line from Hairball.")
-			log.Println(readLineError)
-			return
-		}
+		line := this.readBytesTo('\n')
+		// log.Print(string(line))
 		logLine := ParseQ1LineFromHairball(line)
 		if logLine == nil {
-			log.Println("Could not parse Hairball log line.")
-			return
+			continue
 		}
 		if _, err := this.writeLogFile.Write(logLine.ToBytes()); err != nil {
-			// If there is a write error it means the file has been closed.
+			// If there is a write error it means the log file has been closed.
 			this.writeLog = false
 			return
 		}
@@ -215,7 +213,6 @@ func (this *Zilla) Close() {
 		time.Sleep(time.Millisecond)
 	}
 	this.closed = true
-	this.writeLog = false
 	this.readLogFile.Close()
 	this.writeLogFile.Close()
 }

@@ -69,11 +69,11 @@
     }
 
     // Create a graphs.
-    makeGraph('MotorKilowattsVis', 0, 1000);
+    makeGraph('MotorKilowattsVis', 0, 100);
     makeGraph('MotorVoltageVis', 0, 300);
-    makeGraph('BatteryVoltageVis', 0, 300);
-    makeGraph('AverageCurrentOnMotorVis', 0, 2000);
-    makeGraph('AvailableCurrentFromControllerVis', 0, 2000);
+    makeGraph('BatteryVoltageVis', 0, 400);
+    makeGraph('AverageCurrentOnMotorVis', 0, 2200);
+    makeGraph('AvailableCurrentFromControllerVis', 0, 2200);
     makeGraph('ControllerTempVis', 0, 200);
 
     // Update the graphs data every second.
