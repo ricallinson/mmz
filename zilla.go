@@ -53,6 +53,7 @@ type ZillaSettings struct {
 }
 
 type Zilla struct {
+	closed       bool
 	serialPort   SerialPort
 	queue        chan *zillaCommand
 	logFile      string
@@ -67,7 +68,7 @@ func NewZilla(p SerialPort) (*Zilla, error) {
 		queue:      make(chan *zillaCommand, 100),
 	}
 	// Open log file for reading and writing.
-	if err := this.openLogFile(); err != nil {
+	if err := this.createLogFile(); err != nil {
 		return nil, err
 	}
 	// Start listening on the queue.
@@ -92,6 +93,7 @@ func (this *Zilla) start() {
 	}
 }
 
+// Takes a list of commands and sends them to the Zilla in the order recived.
 func (this *Zilla) writeCommands(types ...interface{}) []byte {
 	cmd := newZillaCommand()
 	for _, t := range types {
@@ -109,21 +111,27 @@ func (this *Zilla) writeCommands(types ...interface{}) []byte {
 	return cmd.data
 }
 
+// Adds the command object to the queue which is then sent to the Zilla.
 func (this *Zilla) writeCommand(cmd *zillaCommand) {
 	this.queue <- cmd
 	this.writeLog = false
 	<-cmd.done
 }
 
+// Sends the given bytes directly to the Zilla.
 func (this *Zilla) writeBytes(b []byte) []byte {
+	if this.closed {
+		log.Print("Connection to Zilla has been closed.")
+		return nil
+	}
 	var e error
 	_, e = this.serialPort.Write(b)
-	// log.Println(string(b))
 	if e != nil {
 		log.Println(e)
 		return nil
 	}
-	// Cannot keep sleeping. Need a better solution here.
+	// TODO: Cannot keep sleeping. Need a better solution here.
+	// We wait here because the real Zilla needs time to startup (unlike the mock).
 	if reflect.TypeOf(this.serialPort).String() != "*main.MockPort" {
 		time.Sleep(500 * time.Millisecond)
 	}
@@ -174,7 +182,8 @@ func (this *Zilla) writeLogToFile() {
 	}
 }
 
-func (this *Zilla) openLogFile() error {
+// Creates a new log file for this instance to write to.
+func (this *Zilla) createLogFile() error {
 	// Set the log file for this session.
 	this.logFile = "./logs/" + strconv.FormatInt(time.Now().Unix(), 10) + ".dat"
 	// Make sure the directory is created.
@@ -197,11 +206,15 @@ func (this *Zilla) openLogFile() error {
 	return nil
 }
 
-func (this *Zilla) CloseLogFile() {
+// Ends the connection to the Zilla and stops all logging.
+// It's good practice to call Close() once the instance is no longer needed.
+// Once called the Zilla instance can no longer be use to send commands.
+func (this *Zilla) Close() {
 	// Wait for the queue to drain before closing.
 	if len(this.queue) > 0 {
 		time.Sleep(time.Millisecond)
 	}
+	this.closed = true
 	this.writeLog = false
 	this.readLogFile.Close()
 	this.writeLogFile.Close()

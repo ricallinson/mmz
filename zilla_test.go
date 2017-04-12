@@ -21,12 +21,12 @@ func TestZilla(t *testing.T) {
 		})
 
 		AfterEach(func() {
-			zilla.CloseLogFile()
+			zilla.Close()
 		})
 
 		It("should return a Zilla object", func() {
 			zilla, err := NewZilla(NewMockPort())
-			zilla.CloseLogFile()
+			zilla.Close()
 			AssertEqual(err, nil)
 			AssertNotEqual(zilla, nil)
 		})
