@@ -55,15 +55,16 @@ type Zilla struct {
 	serialPort   SerialPort
 	queue        chan *zillaCommand
 	logFile      string
-	writeLog     bool
+	stopLogging  chan bool
 	readLogFile  *os.File
 	writeLogFile *os.File
 }
 
 func NewZilla(p SerialPort) (*Zilla, error) {
 	this := &Zilla{
-		serialPort: p,
-		queue:      make(chan *zillaCommand, 100),
+		serialPort:  p,
+		queue:       make(chan *zillaCommand, 1),
+		stopLogging: make(chan bool, 1),
 	}
 	// Open log file for reading and writing.
 	if err := this.createLogFile(); err != nil {
@@ -77,6 +78,7 @@ func NewZilla(p SerialPort) (*Zilla, error) {
 
 // Loop on the queue channel sending commands from the queue to the Hairball.
 // If there are no commands in the queue log data until a command appears.
+// This is the go routine function that handles all reading and writing with the Zilla.
 func (this *Zilla) start() {
 	for {
 		select {
@@ -111,7 +113,7 @@ func (this *Zilla) writeCommands(types ...interface{}) []byte {
 		}
 	}
 	// We have to stop logging so the command can be picked up from the queue.
-	this.writeLog = false
+	this.stopLogging <- true
 	this.queue <- cmd
 	<-cmd.done
 	return cmd.data
@@ -140,17 +142,15 @@ func (this *Zilla) readBytesToByte(to byte) []byte {
 		log.Print("Read connection to Zilla has been closed.")
 		return nil
 	}
-	// TODO: The mock only returns a byte array not single bytes.
 	buff := make([]byte, 1)
 	data := make([]byte, 0)
 	for {
 		i, _ := this.serialPort.Read(buff)
 		data = append(data, buff[0])
-		if to == buff[0] || i == 0 {
+		if buff[0] == to || i == 0 {
 			break
 		}
-		time.Sleep(time.Microsecond)
-		// log.Print(buff[0])
+		// log.Println(i, string(buff[0]))
 	}
 	data = bytes.TrimSpace(data)
 	// log.Println(string(data))
@@ -159,8 +159,6 @@ func (this *Zilla) readBytesToByte(to byte) []byte {
 
 // Blocks while writing log file.
 func (this *Zilla) writeLogToFile() {
-	// Before anything else happens tell the world we are now logging.
-	this.writeLog = true
 	// We have to write and read each command to be sure the Zilla is responding.
 	// The writeCommands() function is not used as it creates a circular dependency.
 	this.writeBytes([]byte{27})
@@ -172,23 +170,40 @@ func (this *Zilla) writeLogToFile() {
 	this.writeBytes([]byte("p")) // Menu Special
 	this.readBytes()
 	this.writeBytes([]byte("Q1\r")) // Start logs
-	for this.writeLog && !this.closed {
-		line := this.readBytesToByte('\n')
-		// log.Print(string(line))
-		logLine := ParseQ1LineFromHairball(line)
-		if logLine == nil {
-			log.Print("Log line could not be parsed.")
-			this.writeLog = false
+	for !this.closed {
+		select {
+		case <-this.stopLogging:
+			// log.Print("Stopped Logging.")
 			return
+		default:
+			// log.Print("Logging.")
+			// Read the log line from the Zilla.
+			this.readWriteLogLine()
+			// Sleep for 100ms as the logs are only written 10 times a second.
+			time.Sleep(100 * time.Millisecond)
 		}
-		if _, err := this.writeLogFile.Write(logLine.ToBytes()); err != nil {
-			// If there is a write error it means the log file has been closed.
-			log.Print("Log file has been closed.")
-			this.writeLog = false
-			return
-		}
-		// Sleep for 100ms as the logs are only written 10 times a second.
-		time.Sleep(100 * time.Millisecond)
+	}
+}
+
+func (this *Zilla) readWriteLogLine() {
+	// Read in the log line from the Zilla.
+	line := bytes.TrimSpace(this.readBytesToByte('\n'))
+	// If the line is too short we can't read it so just return (20 is a arbitrary number).
+	// log.Print(len(line))
+	if len(line) < 20 {
+		return
+	}
+	// log.Print(string(line))
+	logLine := ParseQ1LineFromHairball(line)
+	// log.Print(logLine)
+	if logLine == nil {
+		log.Print("Log line [", string(line), "] could not be parsed.")
+		return
+	}
+	if _, err := this.writeLogFile.Write(logLine.ToBytes()); err != nil {
+		// If there is a write error it means the log file has been closed.
+		log.Print("Log file has been closed.")
+		return
 	}
 }
 
