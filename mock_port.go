@@ -7,7 +7,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type MockPort struct {
@@ -72,9 +71,6 @@ func (this *MockPort) Read(b []byte) (int, error) {
 	}
 	i := copyIntoArray(this.buffer, b)
 	this.buffer = this.buffer[i:]
-	if len(this.buffer) == 0 {
-		b = append(b, 0)
-	}
 	return i, nil
 }
 
@@ -190,7 +186,6 @@ func (this *MockPort) changeSettingsToggleValue(option string) {
 }
 
 func (this *MockPort) q1() (int, error) {
-	time.Sleep(100 * time.Millisecond)
 	this.updateMockData()
 	averageCurrentOnMotor := strconv.FormatUint(this.averageCurrentOnMotor, 32)
 	availableCurrentFromController := strconv.FormatUint(this.availableCurrentFromController, 32)

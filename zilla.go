@@ -131,11 +131,11 @@ func (this *Zilla) writeBytes(b []byte) {
 
 // Reads bytes directly from the Zilla up to EOF.
 func (this *Zilla) readBytes() []byte {
-	return this.readBytesTo(0)
+	return this.readBytesToByte(0)
 }
 
 // Reads bytes directly from the Zilla up to the given byte or EOF.
-func (this *Zilla) readBytesTo(to byte) []byte {
+func (this *Zilla) readBytesToByte(to byte) []byte {
 	if this.closed {
 		log.Print("Read connection to Zilla has been closed.")
 		return nil
@@ -149,6 +149,7 @@ func (this *Zilla) readBytesTo(to byte) []byte {
 		if to == buff[0] || i == 0 {
 			break
 		}
+		time.Sleep(time.Microsecond)
 		// log.Print(buff[0])
 	}
 	data = bytes.TrimSpace(data)
@@ -172,11 +173,13 @@ func (this *Zilla) writeLogToFile() {
 	this.readBytes()
 	this.writeBytes([]byte("Q1\r")) // Start logs
 	for this.writeLog && !this.closed {
-		line := this.readBytesTo('\n')
+		line := this.readBytesToByte('\n')
 		// log.Print(string(line))
 		logLine := ParseQ1LineFromHairball(line)
 		if logLine == nil {
-			continue
+			log.Print("Log line could not be parsed.")
+			this.writeLog = false
+			return
 		}
 		if _, err := this.writeLogFile.Write(logLine.ToBytes()); err != nil {
 			// If there is a write error it means the log file has been closed.

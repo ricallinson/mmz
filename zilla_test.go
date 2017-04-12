@@ -25,12 +25,12 @@ func TestZilla(t *testing.T) {
 			AssertEqual(reflect.TypeOf(zilla).String(), "*main.Zilla")
 		})
 
-		// It("should execute a command in the Zilla.queue", func() {
-		// 	cmd := newZillaCommand()
-		// 	cmd.sendBytes([]byte{27})
-		// 	zilla.queue <- cmd
-		// 	AssertEqual(<-cmd.done, true)
-		// })
+		It("should execute a command in the Zilla.queue", func() {
+			cmd := newZillaCommand()
+			cmd.sendBytes([]byte{27})
+			zilla.queue <- cmd
+			AssertEqual(<-cmd.done, true)
+		})
 
 		// Set
 
@@ -197,11 +197,11 @@ func TestZilla(t *testing.T) {
 		})
 
 		It("should start logging and then show settings", func() {
-			time.Sleep(1000 * time.Millisecond)
+			time.Sleep(100 * time.Millisecond)
 			zilla.GetLiveData()
-			time.Sleep(1000 * time.Millisecond)
+			time.Sleep(100 * time.Millisecond)
 			zilla.GetSettings()
-			time.Sleep(1000 * time.Millisecond)
+			time.Sleep(100 * time.Millisecond)
 			zilla.GetLiveData()
 			AssertEqual(true, true)
 		})
