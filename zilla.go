@@ -70,8 +70,8 @@ func NewZilla(p SerialPort) (*Zilla, error) {
 	if err := this.createLogFile(); err != nil {
 		return nil, err
 	}
-	// Start listening on the queue for commands.
-	go this.start()
+	// Listen on the queue for commands and log data when there are none.
+	go this.run()
 	// Return the Zilla instance.
 	return this, nil
 }
@@ -79,13 +79,13 @@ func NewZilla(p SerialPort) (*Zilla, error) {
 // Loop on the queue channel sending commands from the queue to the Hairball.
 // If there are no commands in the queue log data until a command appears.
 // This is the go routine function that handles all reading and writing with the Zilla.
-func (this *Zilla) start() {
+func (this *Zilla) run() {
 	for {
 		select {
 		case cmd := <-this.queue:
 			for _, b := range cmd.bytes {
 				this.writeBytes(b)
-				cmd.data = this.readBytes()
+				cmd.data = this.readAllBytes()
 			}
 			cmd.done <- true
 		default:
@@ -93,13 +93,13 @@ func (this *Zilla) start() {
 			if this.closed {
 				return
 			}
-			this.writeLogToFile()
+			this.logData()
 		}
 	}
 }
 
 // Takes a list of commands and sends them to the Zilla in the order received.
-func (this *Zilla) writeCommands(types ...interface{}) []byte {
+func (this *Zilla) sendCommands(types ...interface{}) []byte {
 	cmd := newZillaCommand()
 	for _, t := range types {
 		switch t.(type) {
@@ -108,7 +108,7 @@ func (this *Zilla) writeCommands(types ...interface{}) []byte {
 		case int:
 			cmd.sendInt(t.(int))
 		default:
-			log.Println("Cannot only write types string or int")
+			log.Println("Can only write types 'string' or 'int'")
 			return nil
 		}
 	}
@@ -132,12 +132,12 @@ func (this *Zilla) writeBytes(b []byte) {
 }
 
 // Reads bytes directly from the Zilla up to EOF.
-func (this *Zilla) readBytes() []byte {
-	return this.readBytesToByte(0)
+func (this *Zilla) readAllBytes() []byte {
+	return this.readBytes(0)
 }
 
-// Reads bytes directly from the Zilla up to the given byte or EOF.
-func (this *Zilla) readBytesToByte(to byte) []byte {
+// Reads bytes directly from the Zilla up to the given 'delim' or EOF.
+func (this *Zilla) readBytes(delim byte) []byte {
 	if this.closed {
 		log.Print("Read connection to Zilla has been closed.")
 		return nil
@@ -147,7 +147,7 @@ func (this *Zilla) readBytesToByte(to byte) []byte {
 	for {
 		i, _ := this.serialPort.Read(buff)
 		data = append(data, buff[0])
-		if buff[0] == to || i == 0 {
+		if buff[0] == delim || i == 0 {
 			break
 		}
 		// log.Println(i, string(buff[0]))
@@ -158,17 +158,17 @@ func (this *Zilla) readBytesToByte(to byte) []byte {
 }
 
 // Blocks while writing log file.
-func (this *Zilla) writeLogToFile() {
+func (this *Zilla) logData() {
 	// We have to write and read each command to be sure the Zilla is responding.
-	// The writeCommands() function is not used as it creates a circular dependency.
+	// The sendCommands() function is not used as it creates a circular dependency.
 	this.writeBytes([]byte{27})
-	this.readBytes()
+	this.readAllBytes()
 	this.writeBytes([]byte{27})
-	this.readBytes()
+	this.readAllBytes()
 	this.writeBytes([]byte{27})
-	this.readBytes()
+	this.readAllBytes()
 	this.writeBytes([]byte("p")) // Menu Special
-	this.readBytes()
+	this.readAllBytes()
 	this.writeBytes([]byte("Q1\r")) // Start logs
 	for !this.closed {
 		select {
@@ -178,24 +178,21 @@ func (this *Zilla) writeLogToFile() {
 		default:
 			// log.Print("Logging.")
 			// Read the log line from the Zilla.
-			this.readWriteLogLine()
+			line := bytes.TrimSpace(this.readBytes('\n'))
+			// log.Print(string(line))
+			this.appendLineToLog(line)
 			// Sleep for 100ms as the logs are only written 10 times a second.
 			time.Sleep(100 * time.Millisecond)
 		}
 	}
 }
 
-func (this *Zilla) readWriteLogLine() {
-	// Read in the log line from the Zilla.
-	line := bytes.TrimSpace(this.readBytesToByte('\n'))
+func (this *Zilla) appendLineToLog(line []byte) {
 	// If the line is too short we can't read it so just return (20 is a arbitrary number).
-	// log.Print(len(line))
 	if len(line) < 20 {
 		return
 	}
-	// log.Print(string(line))
 	logLine := ParseQ1LineFromHairball(line)
-	// log.Print(logLine)
 	if logLine == nil {
 		log.Print("Log line [", string(line), "] could not be parsed.")
 		return
@@ -266,7 +263,7 @@ func (this *Zilla) GetLiveData() *LiveData {
 
 // Refreshes all attributes by reading them from the Zilla Controller.
 func (this *Zilla) GetSettings() *ZillaSettings {
-	data := this.writeCommands("d")
+	data := this.sendCommands("d")
 	settings := &ZillaSettings{}
 	// Read all the settings line by line.
 	lines := bytes.Split(data, []byte{10})
@@ -327,7 +324,7 @@ func (this *Zilla) GetSettings() *ZillaSettings {
 
 func (this *Zilla) SetBatteryAmpLimit(val int) bool {
 	v := this.GetSettings().BatteryAmpLimit
-	this.writeCommands("b", "a", val)
+	this.sendCommands("b", "a", val)
 	n := this.GetSettings().BatteryAmpLimit
 	log.Println("SetBatteryAmpLimit", n)
 	return n != v
@@ -335,7 +332,7 @@ func (this *Zilla) SetBatteryAmpLimit(val int) bool {
 
 func (this *Zilla) SetLowBatteryVoltageLimit(val int) bool {
 	v := this.GetSettings().LowBatteryVoltageLimit
-	this.writeCommands("b", "v", val)
+	this.sendCommands("b", "v", val)
 	n := this.GetSettings().LowBatteryVoltageLimit
 	log.Println("SetLowBatteryVoltageLimit", n)
 	return n != v
@@ -343,7 +340,7 @@ func (this *Zilla) SetLowBatteryVoltageLimit(val int) bool {
 
 func (this *Zilla) SetLowBatteryVoltageIndicator(val int) bool {
 	v := this.GetSettings().LowBatteryVoltageIndicator
-	this.writeCommands("b", "i", val)
+	this.sendCommands("b", "i", val)
 	n := this.GetSettings().LowBatteryVoltageIndicator
 	log.Println("SetLowBatteryVoltageIndicator", n)
 	return n != v
@@ -353,7 +350,7 @@ func (this *Zilla) SetLowBatteryVoltageIndicator(val int) bool {
 
 func (this *Zilla) SetNormalMotorAmpLimit(val int) bool {
 	v := this.GetSettings().NormalMotorAmpLimit
-	this.writeCommands("m", "a", val)
+	this.sendCommands("m", "a", val)
 	n := this.GetSettings().NormalMotorAmpLimit
 	log.Println("SetNormalMotorAmpLimit", n)
 	return n != v
@@ -361,7 +358,7 @@ func (this *Zilla) SetNormalMotorAmpLimit(val int) bool {
 
 func (this *Zilla) SetSeriesMotorVoltageLimit(val int) bool {
 	v := this.GetSettings().SeriesMotorVoltageLimit
-	this.writeCommands("m", "v", val)
+	this.sendCommands("m", "v", val)
 	n := this.GetSettings().SeriesMotorVoltageLimit
 	log.Println("SetSeriesMotorVoltageLimit", n)
 	return n != v
@@ -369,7 +366,7 @@ func (this *Zilla) SetSeriesMotorVoltageLimit(val int) bool {
 
 func (this *Zilla) SetReverseMotorAmpLimit(val int) bool {
 	v := this.GetSettings().ReverseMotorAmpLimit
-	this.writeCommands("m", "i", val)
+	this.sendCommands("m", "i", val)
 	n := this.GetSettings().ReverseMotorAmpLimit
 	log.Println("SetReverseMotorAmpLimit", n)
 	return n != v
@@ -377,7 +374,7 @@ func (this *Zilla) SetReverseMotorAmpLimit(val int) bool {
 
 func (this *Zilla) SetReverseMotorVoltageLimit(val int) bool {
 	v := this.GetSettings().ReverseMotorVoltageLimit
-	this.writeCommands("m", "r", val)
+	this.sendCommands("m", "r", val)
 	n := this.GetSettings().ReverseMotorVoltageLimit
 	log.Println("SetReverseMotorVoltageLimit", n)
 	return n != v
@@ -385,7 +382,7 @@ func (this *Zilla) SetReverseMotorVoltageLimit(val int) bool {
 
 func (this *Zilla) SetParallelMotorAmpLimit(val int) bool {
 	v := this.GetSettings().ParallelMotorAmpLimit
-	this.writeCommands("m", "c", val)
+	this.sendCommands("m", "c", val)
 	n := this.GetSettings().ParallelMotorAmpLimit
 	log.Println("SetParallelMotorAmpLimit", n)
 	return n != v
@@ -393,7 +390,7 @@ func (this *Zilla) SetParallelMotorAmpLimit(val int) bool {
 
 func (this *Zilla) SetParallelMotorVoltageLimit(val int) bool {
 	v := this.GetSettings().ParallelMotorVoltageLimit
-	this.writeCommands("m", "p", val)
+	this.sendCommands("m", "p", val)
 	n := this.GetSettings().ParallelMotorVoltageLimit
 	log.Println("SetParallelMotorVoltageLimit", n)
 	return n != v
@@ -402,21 +399,21 @@ func (this *Zilla) SetParallelMotorVoltageLimit(val int) bool {
 // Speed Menu
 
 func (this *Zilla) SetForwardRpmLimit(val int) bool {
-	this.writeCommands("s", "l", val)
+	this.sendCommands("s", "l", val)
 	n := this.GetSettings().ForwardRpmLimit
 	log.Println("SetForwardRpmLimit", n)
 	return n == val
 }
 
 func (this *Zilla) SetReverseRpmLimit(val int) bool {
-	this.writeCommands("s", "r", val)
+	this.sendCommands("s", "r", val)
 	n := this.GetSettings().ReverseRpmLimit
 	log.Println("SetReverseRpmLimit", n)
 	return n == val
 }
 
 func (this *Zilla) SetMaxRpmLimit(val int) bool {
-	this.writeCommands("s", "x", val)
+	this.sendCommands("s", "x", val)
 	n := this.GetSettings().MaxRpmLimit
 	log.Println("SetMaxRpmLimit", n)
 	return n == val
@@ -426,7 +423,7 @@ func (this *Zilla) SetMaxRpmLimit(val int) bool {
 
 func (this *Zilla) ToggleRpmSensorMotorOne() bool {
 	v := this.GetSettings().RpmSensorMotorOne
-	this.writeCommands("o", "a")
+	this.sendCommands("o", "a")
 	n := this.GetSettings().RpmSensorMotorOne
 	log.Println("ToggleRpmSensorMotorOne", n)
 	return n != v
@@ -434,7 +431,7 @@ func (this *Zilla) ToggleRpmSensorMotorOne() bool {
 
 func (this *Zilla) ToggleRpmSensorMotorTwo() bool {
 	v := this.GetSettings().RpmSensorMotorTwo
-	this.writeCommands("o", "b")
+	this.sendCommands("o", "b")
 	n := this.GetSettings().RpmSensorMotorTwo
 	log.Println("ToggleRpmSensorMotorTwo", n)
 	return n != v
@@ -442,7 +439,7 @@ func (this *Zilla) ToggleRpmSensorMotorTwo() bool {
 
 func (this *Zilla) ToggleAutoShiftingSeriesToParallel() bool {
 	v := this.GetSettings().AutoShiftingSeriesToParallel
-	this.writeCommands("o", "c")
+	this.sendCommands("o", "c")
 	n := this.GetSettings().AutoShiftingSeriesToParallel
 	log.Println("ToggleAutoShiftingSeriesToParallel", n)
 	return n != v
@@ -450,7 +447,7 @@ func (this *Zilla) ToggleAutoShiftingSeriesToParallel() bool {
 
 func (this *Zilla) ToggleStallDetectOn() bool {
 	v := this.GetSettings().StallDetectOn
-	this.writeCommands("o", "d")
+	this.sendCommands("o", "d")
 	n := this.GetSettings().StallDetectOn
 	log.Println("ToggleStallDetectOn", n)
 	return n != v
@@ -458,7 +455,7 @@ func (this *Zilla) ToggleStallDetectOn() bool {
 
 func (this *Zilla) ToggleBatteryLightPolarity() bool {
 	v := this.GetSettings().BatteryLightPolarity
-	this.writeCommands("o", "e")
+	this.sendCommands("o", "e")
 	n := this.GetSettings().BatteryLightPolarity
 	log.Println("ToggleBatteryLightPolarity", n)
 	return n != v
@@ -466,7 +463,7 @@ func (this *Zilla) ToggleBatteryLightPolarity() bool {
 
 func (this *Zilla) ToggleCheckEngineLightPolarity() bool {
 	v := this.GetSettings().CheckEngineLightPolarity
-	this.writeCommands("o", "f")
+	this.sendCommands("o", "f")
 	n := this.GetSettings().CheckEngineLightPolarity
 	log.Println("ToggleCheckEngineLightPolarity", n)
 	return n != v
@@ -474,7 +471,7 @@ func (this *Zilla) ToggleCheckEngineLightPolarity() bool {
 
 func (this *Zilla) ToggleReversingContactors() bool {
 	v := this.GetSettings().ReversingContactors
-	this.writeCommands("o", "g")
+	this.sendCommands("o", "g")
 	n := this.GetSettings().ReversingContactors
 	log.Println("ToggleReversingContactors", n)
 	return n != v
@@ -482,7 +479,7 @@ func (this *Zilla) ToggleReversingContactors() bool {
 
 func (this *Zilla) ToggleSeriesParallelContactors() bool {
 	v := this.GetSettings().SeriesParallelContactors
-	this.writeCommands("o", "h")
+	this.sendCommands("o", "h")
 	n := this.GetSettings().SeriesParallelContactors
 	log.Println("ToggleSeriesParallelContactors", n)
 	return n != v
@@ -490,7 +487,7 @@ func (this *Zilla) ToggleSeriesParallelContactors() bool {
 
 func (this *Zilla) ToggleForceParallelInReverse() bool {
 	v := this.GetSettings().ForceParallelInReverse
-	this.writeCommands("o", "i")
+	this.sendCommands("o", "i")
 	n := this.GetSettings().ForceParallelInReverse
 	log.Println("ToggleForceParallelInReverse", n)
 	return n != v
@@ -498,7 +495,7 @@ func (this *Zilla) ToggleForceParallelInReverse() bool {
 
 func (this *Zilla) ToggleInhibitSeriesParallelShifting() bool {
 	v := this.GetSettings().InhibitSeriesParallelShifting
-	this.writeCommands("o", "j")
+	this.sendCommands("o", "j")
 	n := this.GetSettings().InhibitSeriesParallelShifting
 	log.Println("ToggleInhibitSeriesParallelShifting", n)
 	return n != v
@@ -506,7 +503,7 @@ func (this *Zilla) ToggleInhibitSeriesParallelShifting() bool {
 
 func (this *Zilla) ToggleTachometerDisplayMotorAmps() bool {
 	v := this.GetSettings().TachometerDisplayMotorAmps
-	this.writeCommands("o", "k")
+	this.sendCommands("o", "k")
 	n := this.GetSettings().TachometerDisplayMotorAmps
 	log.Println("ToggleTachometerDisplayMotorAmps", n)
 	return n != v
@@ -514,7 +511,7 @@ func (this *Zilla) ToggleTachometerDisplayMotorAmps() bool {
 
 func (this *Zilla) ToggleTachometerSixCylinders() bool {
 	v := this.GetSettings().TachometerSixCylinders
-	this.writeCommands("o", "l")
+	this.sendCommands("o", "l")
 	n := this.GetSettings().TachometerSixCylinders
 	log.Println("ToggleTachometerSixCylinders", n)
 	return n != v
@@ -522,7 +519,7 @@ func (this *Zilla) ToggleTachometerSixCylinders() bool {
 
 func (this *Zilla) ToggleReversesPlugInInputPolarity() bool {
 	v := this.GetSettings().ReversesPlugInInputPolarity
-	this.writeCommands("o", "m")
+	this.sendCommands("o", "m")
 	n := this.GetSettings().ReversesPlugInInputPolarity
 	log.Println("ToggleReversesPlugInInputPolarity", n)
 	return n != v
@@ -530,7 +527,7 @@ func (this *Zilla) ToggleReversesPlugInInputPolarity() bool {
 
 func (this *Zilla) ToggleActivateHEPI() bool {
 	v := this.GetSettings().ActivateHEPI
-	this.writeCommands("o", "n")
+	this.sendCommands("o", "n")
 	n := this.GetSettings().ActivateHEPI
 	log.Println("ToggleActivateHEPI", n)
 	return n != v
@@ -538,7 +535,7 @@ func (this *Zilla) ToggleActivateHEPI() bool {
 
 func (this *Zilla) ToggleIsZ2k() bool {
 	v := this.GetSettings().IsZ2k
-	this.writeCommands("o", "p")
+	this.sendCommands("o", "p")
 	n := this.GetSettings().IsZ2k
 	log.Println("ToggleIsZ2k", n)
 	return n != v
