@@ -84,8 +84,10 @@ func (this *Zilla) run() {
 		select {
 		case cmd := <-this.queue:
 			for _, b := range cmd.bytes {
+				// log.Print(string(b))
 				this.writeBytes(b)
 				cmd.data = this.readAllBytes()
+				// log.Print(string(cmd.data))
 			}
 			cmd.done <- true
 		default:
@@ -142,15 +144,19 @@ func (this *Zilla) readBytes(delim byte) []byte {
 		log.Print("Read connection to Zilla has been closed.")
 		return nil
 	}
+	limit := 1000
 	buff := make([]byte, 1)
 	data := make([]byte, 0)
-	for {
+	for limit > 0 {
 		i, _ := this.serialPort.Read(buff)
-		data = append(data, buff[0])
+		// log.Println(i, buff[0], delim)
 		if buff[0] == delim || i == 0 {
 			break
 		}
+		data = append(data, buff[0])
 		// log.Println(i, string(buff[0]))
+		// log.Println(string(data))
+		limit--
 	}
 	data = bytes.TrimSpace(data)
 	// log.Println(string(data))
