@@ -22,6 +22,10 @@ In a browser now open http://[raspberry-pi-ip-address]:8080/ to see the interfac
 
 ## Usage
 
+You have to be in the directory where Go installed mmz;
+
+    cd $GOPATH/src/github.com/ricallinson/mmz
+
 Start the application with the following command;
 
     mmz -hairball /path/to/zilla/serial
