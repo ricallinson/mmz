@@ -1,7 +1,6 @@
 language: go
 go:
-    - 1.3.3 # Pi version
-    - 1.8 # Latest stable
+    - "1.10"
     - tip
 install:
     - go get github.com/goforgery/forgery2
