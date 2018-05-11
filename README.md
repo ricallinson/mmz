@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/ricallinson/mmz.svg?branch=master)](https://travis-ci.org/ricallinson/mmz)
 
+[![Build status](https://ci.appveyor.com/api/projects/status/6v17dsgd08n8ieq7/branch/master?svg=true)](https://ci.appveyor.com/project/ricallinson/mmz/branch/master)
+
 __UNSTABLE__
 
 Interface for configuring, logging and visualizing data for a Manzanita Micro Zilla controller.
