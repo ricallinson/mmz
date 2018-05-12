@@ -52,10 +52,11 @@ type ZillaSettings struct {
 
 type Zilla struct {
 	closed       bool
+	executing    chan bool
+	stopLogging  chan bool
 	serialPort   SerialPort
 	queue        chan *zillaCommand
 	logFile      string
-	stopLogging  chan bool
 	readLogFile  *os.File
 	writeLogFile *os.File
 }
@@ -95,7 +96,7 @@ func (this *Zilla) run() {
 			cmd.done <- true
 		default:
 			// Once Close() has been called there is nothing more to do.
-			if this.closed && len(this.queue) <= 0 {
+			if this.closed {
 				return
 			}
 			this.logData()
@@ -248,7 +249,7 @@ func (this *Zilla) createLogFile() error {
 // Once called the Zilla instance can no longer be use to send commands.
 func (this *Zilla) Close() {
 	// Wait for the queue to drain before closing.
-	if len(this.queue) > 0 {
+	for len(this.queue) > 0 {
 		time.Sleep(time.Millisecond)
 	}
 	this.closed = true

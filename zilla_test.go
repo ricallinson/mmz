@@ -34,10 +34,10 @@ func TestZilla(t *testing.T) {
 
 		// Set
 
-		It("should SetBatteryAmpLimit to 999", func() {
-			AssertEqual(zilla.SetBatteryAmpLimit(999), true)
-			AssertEqual(zilla.GetSettings().BatteryAmpLimit, 999)
-		})
+		// It("should SetBatteryAmpLimit to 999", func() {
+		// 	AssertEqual(zilla.SetBatteryAmpLimit(999), true)
+		// 	AssertEqual(zilla.GetSettings().BatteryAmpLimit, 999)
+		// })
 
 		// It("should SetLowBatteryVoltageLimit to 999", func() {
 		// 	AssertEqual(zilla.SetLowBatteryVoltageLimit(999), true)
@@ -94,7 +94,7 @@ func TestZilla(t *testing.T) {
 		// 	AssertEqual(zilla.GetSettings().MaxRpmLimit, 999)
 		// })
 
-		// // Toggle
+		// Toggle
 
 		// It("should ToggleRpmSensorMotorOne", func() {
 		// 	AssertEqual(zilla.ToggleRpmSensorMotorOne(), true)
