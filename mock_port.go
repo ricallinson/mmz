@@ -104,7 +104,7 @@ func (this *MockPort) Close() error {
 
 func (this *MockPort) changeSettingsValue(value string) {
 	if this.menu == 'o' {
-		this.changeSettingsToggleValue(value)
+		this.changeSettingsSetValue(value)
 	} else if this.update != "" {
 		this.changeSettingsIntValue(string(this.menu), this.update, strings.TrimSpace(value))
 		this.update = ""
@@ -175,7 +175,7 @@ func (this *MockPort) changeSettingsIntValue(menu string, option string, value s
 	this.mocks['d'] = bytes.Replace(b, oldLine, newLine, 1)
 }
 
-func (this *MockPort) changeSettingsToggleValue(option string) {
+func (this *MockPort) changeSettingsSetValue(option string) {
 	b := this.mocks['d']
 	if bytes.Contains(b, []byte(option+") On")) {
 		b = bytes.Replace(b, []byte(option+") On"), []byte(option+") Off"), 1)

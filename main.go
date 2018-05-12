@@ -42,7 +42,7 @@ func main() {
 	}
 	// If logging is requested keep running until the process is ended.
 	for logging || logFile != "" {
-		if logging && logFile == "" {
+		if logFile == "" {
 			logFile = "./logs/" + strconv.FormatInt(time.Now().Unix(), 10) + ".dat"
 		}
 		zilla.StartLogging(logFile)

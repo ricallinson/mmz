@@ -10595,7 +10595,7 @@ return /******/ (function(modules) { // webpackBootstrap
   };
 
   /**
-   * Toggle start or stop playing
+   * Set start or stop playing
    */
   Slider.prototype.togglePlay = function () {
     if (this.playTimeout === undefined) {
