@@ -97,107 +97,107 @@ func TestZilla(t *testing.T) {
 		// Set
 
 		It("should SetRpmSensorMotorOne", func() {
-			AssertEqual(zilla.SetRpmSensorMotorOne(false), false)
+			AssertEqual(zilla.SetRpmSensorMotorOne(false), true)
 			AssertEqual(zilla.SetRpmSensorMotorOne(true), true)
-			AssertEqual(zilla.SetRpmSensorMotorOne(false), false)
+			AssertEqual(zilla.SetRpmSensorMotorOne(false), true)
 			AssertEqual(zilla.SetRpmSensorMotorOne(true), true)
 		})
 
 		It("should SetRpmSensorMotorTwo", func() {
-			AssertEqual(zilla.SetRpmSensorMotorTwo(false), false)
+			AssertEqual(zilla.SetRpmSensorMotorTwo(false), true)
 			AssertEqual(zilla.SetRpmSensorMotorTwo(true), true)
-			AssertEqual(zilla.SetRpmSensorMotorTwo(false), false)
+			AssertEqual(zilla.SetRpmSensorMotorTwo(false), true)
 			AssertEqual(zilla.SetRpmSensorMotorTwo(true), true)
 		})
 
 		It("should SetAutoShiftingSeriesToParallel", func() {
-			AssertEqual(zilla.SetAutoShiftingSeriesToParallel(false), false)
+			AssertEqual(zilla.SetAutoShiftingSeriesToParallel(false), true)
 			AssertEqual(zilla.SetAutoShiftingSeriesToParallel(true), true)
-			AssertEqual(zilla.SetAutoShiftingSeriesToParallel(false), false)
+			AssertEqual(zilla.SetAutoShiftingSeriesToParallel(false), true)
 			AssertEqual(zilla.SetAutoShiftingSeriesToParallel(true), true)
 		})
 
 		It("should SetStallDetectOn", func() {
-			AssertEqual(zilla.SetStallDetectOn(false), false)
+			AssertEqual(zilla.SetStallDetectOn(false), true)
 			AssertEqual(zilla.SetStallDetectOn(true), true)
-			AssertEqual(zilla.SetStallDetectOn(false), false)
+			AssertEqual(zilla.SetStallDetectOn(false), true)
 			AssertEqual(zilla.SetStallDetectOn(true), true)
 		})
 
 		It("should SetBatteryLightPolarity", func() {
-			AssertEqual(zilla.SetBatteryLightPolarity(false), false)
+			AssertEqual(zilla.SetBatteryLightPolarity(false), true)
 			AssertEqual(zilla.SetBatteryLightPolarity(true), true)
-			AssertEqual(zilla.SetBatteryLightPolarity(false), false)
+			AssertEqual(zilla.SetBatteryLightPolarity(false), true)
 			AssertEqual(zilla.SetBatteryLightPolarity(true), true)
 		})
 
 		It("should SetCheckEngineLightPolarity", func() {
-			AssertEqual(zilla.SetCheckEngineLightPolarity(false), false)
+			AssertEqual(zilla.SetCheckEngineLightPolarity(false), true)
 			AssertEqual(zilla.SetCheckEngineLightPolarity(true), true)
-			AssertEqual(zilla.SetCheckEngineLightPolarity(false), false)
+			AssertEqual(zilla.SetCheckEngineLightPolarity(false), true)
 			AssertEqual(zilla.SetCheckEngineLightPolarity(true), true)
 		})
 
 		It("should SetReversingContactors", func() {
-			AssertEqual(zilla.SetReversingContactors(false), false)
+			AssertEqual(zilla.SetReversingContactors(false), true)
 			AssertEqual(zilla.SetReversingContactors(true), true)
-			AssertEqual(zilla.SetReversingContactors(false), false)
+			AssertEqual(zilla.SetReversingContactors(false), true)
 			AssertEqual(zilla.SetReversingContactors(true), true)
 		})
 
 		It("should SetSeriesParallelContactors", func() {
-			AssertEqual(zilla.SetSeriesParallelContactors(false), false)
+			AssertEqual(zilla.SetSeriesParallelContactors(false), true)
 			AssertEqual(zilla.SetSeriesParallelContactors(true), true)
-			AssertEqual(zilla.SetSeriesParallelContactors(false), false)
+			AssertEqual(zilla.SetSeriesParallelContactors(false), true)
 			AssertEqual(zilla.SetSeriesParallelContactors(true), true)
 		})
 
 		It("should SetForceParallelInReverse", func() {
-			AssertEqual(zilla.SetForceParallelInReverse(false), false)
+			AssertEqual(zilla.SetForceParallelInReverse(false), true)
 			AssertEqual(zilla.SetForceParallelInReverse(true), true)
-			AssertEqual(zilla.SetForceParallelInReverse(false), false)
+			AssertEqual(zilla.SetForceParallelInReverse(false), true)
 			AssertEqual(zilla.SetForceParallelInReverse(true), true)
 		})
 
 		It("should SetInhibitSeriesParallelShifting", func() {
-			AssertEqual(zilla.SetInhibitSeriesParallelShifting(false), false)
+			AssertEqual(zilla.SetInhibitSeriesParallelShifting(false), true)
 			AssertEqual(zilla.SetInhibitSeriesParallelShifting(true), true)
-			AssertEqual(zilla.SetInhibitSeriesParallelShifting(false), false)
+			AssertEqual(zilla.SetInhibitSeriesParallelShifting(false), true)
 			AssertEqual(zilla.SetInhibitSeriesParallelShifting(true), true)
 		})
 
 		It("should SetTachometerDisplayMotorAmps", func() {
-			AssertEqual(zilla.SetTachometerDisplayMotorAmps(false), false)
+			AssertEqual(zilla.SetTachometerDisplayMotorAmps(false), true)
 			AssertEqual(zilla.SetTachometerDisplayMotorAmps(true), true)
-			AssertEqual(zilla.SetTachometerDisplayMotorAmps(false), false)
+			AssertEqual(zilla.SetTachometerDisplayMotorAmps(false), true)
 			AssertEqual(zilla.SetTachometerDisplayMotorAmps(true), true)
 		})
 
 		It("should SetTachometerSixCylinders", func() {
-			AssertEqual(zilla.SetTachometerSixCylinders(false), false)
+			AssertEqual(zilla.SetTachometerSixCylinders(false), true)
 			AssertEqual(zilla.SetTachometerSixCylinders(true), true)
-			AssertEqual(zilla.SetTachometerSixCylinders(false), false)
+			AssertEqual(zilla.SetTachometerSixCylinders(false), true)
 			AssertEqual(zilla.SetTachometerSixCylinders(true), true)
 		})
 
 		It("should SetReversesPlugInInputPolarity", func() {
-			AssertEqual(zilla.SetReversesPlugInInputPolarity(false), false)
+			AssertEqual(zilla.SetReversesPlugInInputPolarity(false), true)
 			AssertEqual(zilla.SetReversesPlugInInputPolarity(true), true)
-			AssertEqual(zilla.SetReversesPlugInInputPolarity(false), false)
+			AssertEqual(zilla.SetReversesPlugInInputPolarity(false), true)
 			AssertEqual(zilla.SetReversesPlugInInputPolarity(true), true)
 		})
 
 		It("should SetActivateHEPI", func() {
-			AssertEqual(zilla.SetActivateHEPI(false), false)
+			AssertEqual(zilla.SetActivateHEPI(false), true)
 			AssertEqual(zilla.SetActivateHEPI(true), true)
-			AssertEqual(zilla.SetActivateHEPI(false), false)
+			AssertEqual(zilla.SetActivateHEPI(false), true)
 			AssertEqual(zilla.SetActivateHEPI(true), true)
 		})
 
 		It("should SetIsZ2k", func() {
-			AssertEqual(zilla.SetIsZ2k(false), false)
+			AssertEqual(zilla.SetIsZ2k(false), true)
 			AssertEqual(zilla.SetIsZ2k(true), true)
-			AssertEqual(zilla.SetIsZ2k(false), false)
+			AssertEqual(zilla.SetIsZ2k(false), true)
 			AssertEqual(zilla.SetIsZ2k(true), true)
 		})
 
