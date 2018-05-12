@@ -51,56 +51,26 @@ type ZillaSettings struct {
 }
 
 type Zilla struct {
-	closed       bool
-	executing    chan bool
-	stopLogging  chan bool
 	serialPort   SerialPort
-	queue        chan *zillaCommand
-	logFile      string
+	closed       bool
 	readLogFile  *os.File
 	writeLogFile *os.File
 }
 
-func NewZilla(p SerialPort, logFile string) (*Zilla, error) {
+func NewZilla(p SerialPort) (*Zilla, error) {
 	this := &Zilla{
-		serialPort:  p,
-		logFile:     logFile,
-		queue:       make(chan *zillaCommand),
-		stopLogging: make(chan bool, 1),
+		serialPort: p,
 	}
-	if logFile != "" {
-		// Open log file for reading and writing.
-		if err := this.createLogFile(); err != nil {
-			return nil, err
-		}
-	}
-	// Listen on the queue for commands and log data when there are none.
-	go this.run()
 	// Return the Zilla instance.
 	return this, nil
 }
 
-// Loop on the queue channel sending commands from the queue to the Hairball.
-// If there are no commands in the queue log data until a command appears.
-// This is the go routine function that handles all reading and writing with the Zilla.
-func (this *Zilla) run() {
-	for {
-		select {
-		case cmd := <-this.queue:
-			for _, b := range cmd.bytes {
-				// log.Println("Command:", string(b))
-				this.writeBytes(b)
-				cmd.data = this.readAllBytes()
-				// log.Print(string(cmd.data))
-			}
-			cmd.done <- true
-		default:
-			// Once Close() has been called there is nothing more to do.
-			if this.closed {
-				return
-			}
-			this.logData()
-		}
+func (this *Zilla) sendCommand(cmd *zillaCommand) {
+	for _, b := range cmd.bytes {
+		// log.Println("Command:", string(b))
+		this.writeBytes(b)
+		cmd.data = this.readAllBytes()
+		// log.Print(string(cmd.data))
 	}
 }
 
@@ -118,10 +88,7 @@ func (this *Zilla) sendCommands(types ...interface{}) []byte {
 			return nil
 		}
 	}
-	// We have to stop logging so the command can be picked up from the queue.
-	this.stopLogging <- true
-	this.queue <- cmd
-	<-cmd.done
+	this.sendCommand(cmd)
 	// log.Println("Read data: ", string(cmd.data))
 	return cmd.data
 }
@@ -172,37 +139,26 @@ func (this *Zilla) readBytes(delim byte) []byte {
 	return data
 }
 
-// Blocks while writing log file.
-func (this *Zilla) logData() {
-	if this.logFile != "" {
-		return
+// Creates a new log file for this instance to write to.
+func (this *Zilla) createLogFile(logFile string) error {
+	// Make sure the directory is created.
+	if err := os.MkdirAll(path.Dir(logFile), 0777); err != nil {
+		log.Println(err)
+		return errors.New("Could not create directory for logs.")
 	}
-	// We have to write and read each command to be sure the Zilla is responding.
-	// The sendCommands() function is not used as it creates a circular dependency.
-	this.writeBytes([]byte{27})
-	this.readAllBytes()
-	this.writeBytes([]byte{27})
-	this.readAllBytes()
-	this.writeBytes([]byte{27})
-	this.readAllBytes()
-	this.writeBytes([]byte("p")) // Menu Special
-	this.readAllBytes()
-	this.writeBytes([]byte("Q1\r")) // Start logs
-	for !this.closed {
-		select {
-		case <-this.stopLogging:
-			// log.Print("Stopped Logging.")
-			return
-		default:
-			// log.Print("Logging.")
-			// Read the log line from the Zilla.
-			line := bytes.TrimSpace(this.readBytes('\n'))
-			// log.Print(string(line))
-			this.appendLineToLog(line)
-			// Sleep for 100ms as the logs are only written 10 times a second.
-			time.Sleep(100 * time.Millisecond)
-		}
+	var openFileError error
+	this.writeLogFile, openFileError = os.OpenFile(logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+	if openFileError != nil {
+		log.Println(openFileError)
+		return errors.New("Could not open log file for writing.")
 	}
+	this.readLogFile, openFileError = os.Open(logFile)
+	if openFileError != nil {
+		log.Println(openFileError)
+		return errors.New("Could not open log file for reading.")
+	}
+	log.Print("Created log file:", logFile)
+	return nil
 }
 
 func (this *Zilla) appendLineToLog(line []byte) {
@@ -222,49 +178,51 @@ func (this *Zilla) appendLineToLog(line []byte) {
 	}
 }
 
-// Creates a new log file for this instance to write to.
-func (this *Zilla) createLogFile() error {
-	// Make sure the directory is created.
-	if err := os.MkdirAll(path.Dir(this.logFile), 0777); err != nil {
-		log.Println(err)
-		return errors.New("Could not create directory for logs.")
+// Blocks while writing log file.
+func (this *Zilla) Log(logFile string) {
+	// Open log file for reading and writing.
+	if err := this.createLogFile(logFile); err != nil {
+		return
 	}
-	var openFileError error
-	this.writeLogFile, openFileError = os.OpenFile(this.logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
-	if openFileError != nil {
-		log.Println(openFileError)
-		return errors.New("Could not open log file for writing.")
+	// We have to write and read each command to be sure the Zilla is responding.
+	// The sendCommands() function is not used as it creates a circular dependency.
+	this.writeBytes([]byte{27})
+	this.readAllBytes()
+	this.writeBytes([]byte{27})
+	this.readAllBytes()
+	this.writeBytes([]byte{27})
+	this.readAllBytes()
+	this.writeBytes([]byte("p")) // Menu Special
+	this.readAllBytes()
+	this.writeBytes([]byte("Q1\r")) // Start logs
+	for !this.closed {
+		// log.Print("Logging.")
+		// Read the log line from the Zilla.
+		line := bytes.TrimSpace(this.readBytes('\n'))
+		// log.Print(string(line))
+		this.appendLineToLog(line)
+		// Sleep for 100ms as the logs are only written 10 times a second.
+		time.Sleep(100 * time.Millisecond)
 	}
-	this.readLogFile, openFileError = os.Open(this.logFile)
-	if openFileError != nil {
-		log.Println(openFileError)
-		return errors.New("Could not open log file for reading.")
-	}
-	log.Print("Created log file:", this.logFile)
-	return nil
 }
 
 // Ends the connection to the Zilla and stops all logging.
 // It's good practice to call Close() once the instance is no longer needed.
 // Once called the Zilla instance can no longer be use to send commands.
 func (this *Zilla) Close() {
-	// Wait for the queue to drain before closing.
-	for len(this.queue) > 0 {
-		time.Sleep(time.Millisecond)
-	}
 	this.closed = true
 	this.readLogFile.Close()
 	this.writeLogFile.Close()
 }
 
 func (this *Zilla) GetLiveData() *LiveData {
-	if this.logFile == "" {
+	if this.writeLogFile == nil {
 		log.Println("No log file available.")
 		return nil
 	}
 	bufSize := 1000
 	buf := make([]byte, bufSize)
-	stat, _ := os.Stat(this.logFile)
+	stat, _ := this.readLogFile.Stat()
 	start := stat.Size() - int64(bufSize)
 	i, err := this.readLogFile.ReadAt(buf, start)
 	if err != nil {

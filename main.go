@@ -35,10 +35,7 @@ func main() {
 		log.Println(serialError)
 		return
 	}
-	if logging && logFile == "" {
-		logFile = "./logs/" + strconv.FormatInt(time.Now().Unix(), 10) + ".dat"
-	}
-	zilla, zillaError := NewZilla(serialPort, logFile)
+	zilla, zillaError := NewZilla(serialPort)
 	if zillaError != nil {
 		log.Println(zillaError)
 		return
@@ -46,7 +43,11 @@ func main() {
 	defer zilla.Close()
 	// If logging is requested keep running until the process is ended.
 	for logging || logFile != "" {
-		time.Sleep(100 * time.Millisecond)
+		if logging && logFile == "" {
+			logFile = "./logs/" + strconv.FormatInt(time.Now().Unix(), 10) + ".dat"
+		}
+		zilla.Log(logFile)
+		return
 	}
 	// Process CLI Options.
 	if raw != "" {
