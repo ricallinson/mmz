@@ -6,8 +6,6 @@ go:
     - "1.10"
     - tip
 install:
-    - go get github.com/goforgery/forgery2
     - go get github.com/tarm/serial
+    - go get gopkg.in/yaml.v2
     - go get github.com/ricallinson/simplebdd
-    - go get github.com/goforgery/mustache
-    - go get github.com/goforgery/static

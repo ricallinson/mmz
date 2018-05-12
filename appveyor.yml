@@ -19,11 +19,8 @@ install:
   - msiexec /i go%GOVERSION%.windows-amd64.msi /q
   - go version
   # Install the dependencies.
-  - go get github.com/goforgery/forgery2
   - go get github.com/tarm/serial
   - go get github.com/ricallinson/simplebdd
-  - go get github.com/goforgery/mustache
-  - go get github.com/goforgery/static
 
 build: false
 deploy: false

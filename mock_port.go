@@ -89,7 +89,7 @@ func (this *MockPort) Write(b []byte) (int, error) {
 		this.menu = b[0]
 		this.buffer = append(this.buffer, this.mocks[this.menu]...)
 		this.update = ""
-		return 1, nil
+		return len(b), nil
 	}
 	return 0, nil
 }
