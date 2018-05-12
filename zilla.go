@@ -179,7 +179,7 @@ func (this *Zilla) appendLineToLog(line []byte) {
 }
 
 // Blocks while writing log file.
-func (this *Zilla) Log(logFile string) {
+func (this *Zilla) StartLogging(logFile string) {
 	// Open log file for reading and writing.
 	if err := this.createLogFile(logFile); err != nil {
 		return
@@ -209,10 +209,8 @@ func (this *Zilla) Log(logFile string) {
 // Ends the connection to the Zilla and stops all logging.
 // It's good practice to call Close() once the instance is no longer needed.
 // Once called the Zilla instance can no longer be use to send commands.
-func (this *Zilla) Close() {
+func (this *Zilla) StopLogging() {
 	this.closed = true
-	this.readLogFile.Close()
-	this.writeLogFile.Close()
 }
 
 func (this *Zilla) GetLiveData() *LiveData {

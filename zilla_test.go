@@ -18,7 +18,7 @@ func TestZilla(t *testing.T) {
 		})
 
 		AfterEach(func() {
-			zilla.Close()
+
 		})
 
 		It("should return a Zilla object", func() {
@@ -197,11 +197,9 @@ func TestZilla(t *testing.T) {
 		})
 
 		It("should start logging and then show settings", func() {
-			time.Sleep(100 * time.Millisecond)
-			zilla.GetLiveData()
-			time.Sleep(100 * time.Millisecond)
-			zilla.GetSettings()
-			time.Sleep(100 * time.Millisecond)
+			go zilla.StartLogging("./logs/testing.dat")
+			time.Sleep(1 * time.Second)
+			zilla.StopLogging()
 			zilla.GetLiveData()
 			AssertEqual(true, true)
 		})

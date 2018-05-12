@@ -40,13 +40,12 @@ func main() {
 		log.Println(zillaError)
 		return
 	}
-	defer zilla.Close()
 	// If logging is requested keep running until the process is ended.
 	for logging || logFile != "" {
 		if logging && logFile == "" {
 			logFile = "./logs/" + strconv.FormatInt(time.Now().Unix(), 10) + ".dat"
 		}
-		zilla.Log(logFile)
+		zilla.StartLogging(logFile)
 		return
 	}
 	// Process CLI Options.

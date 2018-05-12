@@ -43,10 +43,6 @@ func NewExecutor(zilla *Zilla) *Executor {
 	return this
 }
 
-func (this *Executor) Close() {
-	this.zilla.Close()
-}
-
 func (this *Executor) ExecuteCommands() *ZillaSettings {
 	if this.Commands.SetBatteryAmpLimit > 0 {
 		this.zilla.SetBatteryAmpLimit(this.Commands.SetBatteryAmpLimit)
