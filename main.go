@@ -10,8 +10,8 @@ import (
 )
 
 func main() {
-	var hairball string
-	flag.StringVar(&hairball, "hairball", "", "Serial port that's connected to the Zilla Hairball.")
+	var dongle string
+	flag.StringVar(&dongle, "dongle", "", "Serial port that's connected to the Zilla Hairball (required).")
 	var raw string
 	flag.StringVar(&raw, "raw", "", "Send a raw command to the Hairball.")
 	var commands string
@@ -23,10 +23,10 @@ func main() {
 	flag.Parse()
 	var serialPort SerialPort
 	var serialError error
-	if hairball == "" {
+	if dongle == "" {
 		serialPort = NewMockPort()
 	} else {
-		serialError, serialPort = connectToHairball(hairball)
+		serialError, serialPort = connectToHairball(dongle)
 	}
 	if serialError != nil {
 		log.Println(serialError)
