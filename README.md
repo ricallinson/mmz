@@ -58,37 +58,44 @@ Prints a YAML object of showing the current state of the controller every 100ms.
 
 Requires a [Go](https://golang.org/dl/) environment.
 
+    git clone git@github.com:ricallinson/mmz.git $GOPATH/src/git@github.com/ricallinson/mmz
     go get github.com/tarm/serial
     go get gopkg.in/yaml.v2
     go get github.com/ricallinson/simplebdd
+    cd $GOPATH/src/git@github.com/ricallinson/mmz
     go install
 
 ## Test
 
+    cd $GOPATH/src/git@github.com/ricallinson/mmz
     go test
 
 ## Code Coverage Report
 
+    cd $GOPATH/src/git@github.com/ricallinson/mmz
     go test -covermode=count -coverprofile=count.out; go tool cover -html=count.out
-
-## Links
-
-* https://www.stewright.me/2013/05/install-and-run-raspbian-from-a-usb-flash-drive/
 
 ## Help
 
 ### Connect to Hairball
 
+On a UNIX based system (OSX, Linux) you can directly connect to the hairball from a terminal session.
+
     screen /dev/tty.usbserial
 
 Exit from Hairball `CTRL + A + \`.
 
-## Install and Run on Raspberry Pi
+### Install and Run on Raspberry Pi
+
+Still testing this...
 
     sudo apt-get install go
     export GOPATH=$HOME/Library/Go/gocode
     go install github.com/ricallinson/mmz
-    $HOME/Library/Go/gocode/src/github.com/ricallinson/mmz
-    $HOME/Library/Go/gocode/bin/mmz -hairball /dev/tty.usbserial
+    $HOME/Library/Go/gocode/bin/mmz -dongle /dev/tty.usbserial -realtime
 
 Where `/dev/tty.usbserial` is the location of your USB to RS-232 serial port adapter.
+
+### Links
+
+* https://www.stewright.me/2013/05/install-and-run-raspbian-from-a-usb-flash-drive/
