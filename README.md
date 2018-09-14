@@ -4,7 +4,7 @@
 
 __UNSTABLE__
 
-Command line interface for configuring and logging data from a Manzanita Micro Zilla controller.
+Command line interface to configure and log data for a Manzanita Micro Zilla controller.
 
 
 ## Usage
