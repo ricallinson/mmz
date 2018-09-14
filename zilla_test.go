@@ -4,7 +4,6 @@ import (
 	. "github.com/ricallinson/simplebdd"
 	"reflect"
 	"testing"
-	"time"
 )
 
 func TestZilla(t *testing.T) {
@@ -249,19 +248,11 @@ func TestZilla(t *testing.T) {
 			AssertEqual(settings.notUsed, false)
 			AssertEqual(settings.IsZ2k, true)
 			AssertEqual(settings.CurrentState, "1311")
-			AssertEqual(settings.Errors[0], "1111")
-			AssertEqual(settings.Errors[1], "1111")
-			AssertEqual(settings.Errors[2], "1111")
-			AssertEqual(settings.Errors[3], "1111")
-			AssertEqual(settings.Errors[4], "1111")
-		})
-
-		It("should start logging and then show settings", func() {
-			go zilla.StartLogging("./logs/testing.dat")
-			time.Sleep(1 * time.Second)
-			zilla.StopLogging()
-			zilla.GetLiveData()
-			AssertEqual(true, true)
+			AssertEqual(settings.Errors[0], "1131: Shorted/Loaded Controller during precharge.")
+			AssertEqual(settings.Errors[1], "1221: Major over-speed, either motor over red line.")
+			AssertEqual(settings.Errors[2], "1233: Hall effect pedal input invalid.")
+			AssertEqual(settings.Errors[3], "1324: Motor current limit active.")
+			AssertEqual(settings.Errors[4], "1111: Unknown mode, no error.")
 		})
 	})
 

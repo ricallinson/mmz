@@ -4,7 +4,7 @@
 
 __UNSTABLE__
 
-Interface for configuring, logging and visualizing data for a Manzanita Micro Zilla controller.
+Command line interface for configuring and logging data from a Manzanita Micro Zilla controller.
 
 ## Install and Run on Raspberry Pi
 
@@ -16,34 +16,17 @@ Interface for configuring, logging and visualizing data for a Manzanita Micro Zi
 
 Where `/dev/tty.usbserial` is the location of your USB to RS-232 serial port adapter.
 
-You should then see `The Manzanita Micro Zilla interface is now running on port '8080'.` printed to the console.
-
-In a browser now open http://[raspberry-pi-ip-address]:8080/ to see the interface. For example http://192.168.0.98:8080/.
-
 ## Usage
 
 You have to be in the directory where Go installed mmz;
 
     cd $GOPATH/src/github.com/ricallinson/mmz
 
-Start the application with the following command;
-
-    mmz -hairball /path/to/zilla/serial
-
-For my setup the actual command is;
-
-    mmz -hairball /dev/tty.usbserial
-
-Then open a browser to http://localhost:8080/.
-
 ## Setup Development Environment
 
 Requires a [Go](https://golang.org/dl/) environment.
 
     go get github.com/ricallinson/mmz
-    go get github.com/goforgery/forgery2
-    go get github.com/goforgery/mustache
-    go get github.com/goforgery/static
     go get github.com/tarm/serial
     go get github.com/ricallinson/simplebdd
     go install github.com/ricallinson/mmz

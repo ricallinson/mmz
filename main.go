@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/tarm/serial"
 	"log"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -19,10 +18,8 @@ func main() {
 	flag.StringVar(&commands, "cmd", "", "Path to the YAML configuration file of commands to execute.")
 	var settings bool
 	flag.BoolVar(&settings, "settings", false, "List all settings and their current values.")
-	var logging bool
-	flag.BoolVar(&logging, "log", false, "Log live Zilla data.")
-	var logFile string
-	flag.StringVar(&logFile, "log-file", "", "Log live Zilla data to give file.")
+	var realtime bool
+	flag.BoolVar(&realtime, "realtime", false, "Log live Zilla data.")
 	flag.Parse()
 	var serialPort SerialPort
 	var serialError error
@@ -40,12 +37,9 @@ func main() {
 		log.Println(zillaError)
 		return
 	}
-	// If logging is requested keep running until the process is ended.
-	for logging || logFile != "" {
-		if logFile == "" {
-			logFile = "./logs/" + strconv.FormatInt(time.Now().Unix(), 10) + ".dat"
-		}
-		zilla.StartLogging(logFile)
+	// If realtime is requested keep running until the process is ended.
+	for realtime {
+		zilla.RealtimeValues()
 		return
 	}
 	// Process CLI Options.

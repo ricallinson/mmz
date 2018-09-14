@@ -2,10 +2,8 @@ package main
 
 import (
 	"bytes"
-	"errors"
+	"fmt"
 	"log"
-	"os"
-	"path"
 	"strconv"
 	"time"
 )
@@ -51,10 +49,8 @@ type ZillaSettings struct {
 }
 
 type Zilla struct {
-	serialPort   SerialPort
-	closed       bool
-	readLogFile  *os.File
-	writeLogFile *os.File
+	serialPort SerialPort
+	closed     bool
 }
 
 func NewZilla(p SerialPort) (*Zilla, error) {
@@ -139,51 +135,8 @@ func (this *Zilla) readBytes(delim byte) []byte {
 	return data
 }
 
-// Creates a new log file for this instance to write to.
-func (this *Zilla) createLogFile(logFile string) error {
-	// Make sure the directory is created.
-	if err := os.MkdirAll(path.Dir(logFile), 0777); err != nil {
-		log.Println(err)
-		return errors.New("Could not create directory for logs.")
-	}
-	var openFileError error
-	this.writeLogFile, openFileError = os.OpenFile(logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
-	if openFileError != nil {
-		log.Println(openFileError)
-		return errors.New("Could not open log file for writing.")
-	}
-	this.readLogFile, openFileError = os.Open(logFile)
-	if openFileError != nil {
-		log.Println(openFileError)
-		return errors.New("Could not open log file for reading.")
-	}
-	log.Print("Created log file:", logFile)
-	return nil
-}
-
-func (this *Zilla) appendLineToLog(line []byte) {
-	// If the line is too short we can't read it so just return (20 is a arbitrary number).
-	if len(line) < 20 {
-		return
-	}
-	logLine := ParseQ1LineFromHairball(line)
-	if logLine == nil {
-		log.Print("Log line [", string(line), "] could not be parsed.")
-		return
-	}
-	if _, err := this.writeLogFile.Write(logLine.ToBytes()); err != nil {
-		// If there is a write error it means the log file has been closed.
-		// log.Print("Log file has been closed.")
-		return
-	}
-}
-
-// Blocks while writing log file.
-func (this *Zilla) StartLogging(logFile string) {
-	// Open log file for reading and writing.
-	if err := this.createLogFile(logFile); err != nil {
-		return
-	}
+// Blocks while writing console out.
+func (this *Zilla) RealtimeValues() {
 	// We have to write and read each command to be sure the Zilla is responding.
 	// The sendCommands() function is not used as it creates a circular dependency.
 	this.writeBytes([]byte{27})
@@ -199,38 +152,10 @@ func (this *Zilla) StartLogging(logFile string) {
 		// log.Print("Logging.")
 		// Read the log line from the Zilla.
 		line := bytes.TrimSpace(this.readBytes('\n'))
-		// log.Print(string(line))
-		this.appendLineToLog(line)
+		fmt.Println(string(interfaceToYaml(GetRealtimeValues(line))))
 		// Sleep for 100ms as the logs are only written 10 times a second.
 		time.Sleep(100 * time.Millisecond)
 	}
-}
-
-// Ends the connection to the Zilla and stops all logging.
-// It's good practice to call Close() once the instance is no longer needed.
-// Once called the Zilla instance can no longer be use to send commands.
-func (this *Zilla) StopLogging() {
-	this.closed = true
-}
-
-func (this *Zilla) GetLiveData() *LiveData {
-	if this.writeLogFile == nil {
-		log.Println("No log file available.")
-		return nil
-	}
-	bufSize := 1000
-	buf := make([]byte, bufSize)
-	stat, _ := this.readLogFile.Stat()
-	start := stat.Size() - int64(bufSize)
-	i, err := this.readLogFile.ReadAt(buf, start)
-	if err != nil {
-		log.Println("Could not read last line from live data.")
-		return nil
-	}
-	buf = buf[:i]                              // Get the bytes written to the buffer.
-	buf = buf[bytes.Index(buf, []byte{10})+1:] // Remove all bytes before the first line feed.
-	buf = buf[:bytes.Index(buf, []byte{10})]   // Remove all bytes after the next line feed.
-	return CreateLiveData(buf)
 }
 
 // Refreshes all attributes by reading them from the Zilla Controller.
@@ -286,6 +211,9 @@ func (this *Zilla) GetSettings() *ZillaSettings {
 	settings.IsZ2k = truthy(values[3])
 	// Values for errors
 	settings.Errors = split(string(lines[14]), " ")
+	for i := range settings.Errors {
+		settings.Errors[i] = settings.Errors[i] + ": " + Codes[settings.Errors[i]]
+	}
 	// Values for current state
 	values = split(string(lines[15]), " ")
 	settings.CurrentState = values[1]

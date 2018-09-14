@@ -23,5 +23,5 @@ e) Off	f) On 	g) On 	h) On
 i) Off	j) Off	k) Off	l) Off
 m) Off	n) Off	o) Off	p) On
 Errors, Old-New:
-1111 1111 1111 1111 1111
+1131 1221 1233 1324 1111
 State: 1311 Return for menu

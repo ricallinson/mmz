@@ -47,7 +47,7 @@ func getIntFromHex(s string) int {
 	return int(v)
 }
 
-func ParseQ1LineFromHairball(b []byte) *LiveData {
+func GetRealtimeValues(b []byte) *LiveData {
 	values := strings.Split(string(b), " ")
 	if len(values) < 9 {
 		return nil
