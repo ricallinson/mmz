@@ -44,13 +44,13 @@ Send a command as detailed in the [Zilla DC Motor Controller and Hairball 2 Manu
 
 ### Settings
 
-Prints a YAML object of showing the current settings applied to the controller.
+Prints a YAML object showing the current settings applied to the controller.
 
     mmz -dongle /dev/tty.usbserial-A904RBQ7 -settings
 
 ### Realtime
 
-Prints a YAML object of showing the current state of the controller every 100ms.
+Prints a YAML object showing the current state of the controller every 100ms.
 
     mmz -dongle /dev/tty.usbserial-A904RBQ7 -realtime
 
