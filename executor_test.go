@@ -53,7 +53,7 @@ func TestExecutor(t *testing.T) {
 			AssertEqual(e.Commands.SetTachometerSixCylinders, false)
 			AssertEqual(e.Commands.SetReversesPlugInInputPolarity, false)
 			AssertEqual(e.Commands.SetActivateHEPI, false)
-			AssertEqual(e.Commands.SetIsZ2k, true)
+			AssertEqual(e.Commands.SetIsZ1k, true)
 		})
 
 		It("should return given value from SetBatteryAmpLimit", func() {
@@ -212,10 +212,10 @@ func TestExecutor(t *testing.T) {
 			AssertEqual(r.ActivateHEPI, false)
 		})
 
-		It("should return given value from SetIsZ2k", func() {
-			e.Commands.SetIsZ2k = false
+		It("should return given value from SetIsZ1k", func() {
+			e.Commands.SetIsZ1k = false
 			r := e.ExecuteCommands()
-			AssertEqual(r.IsZ2k, false)
+			AssertEqual(r.IsZ1k, false)
 		})
 
 	})

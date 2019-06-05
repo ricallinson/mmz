@@ -32,7 +32,7 @@ type ExecutorCommands struct {
 	SetTachometerSixCylinders        bool `yaml:"SetTachometerSixCylinders"`
 	SetReversesPlugInInputPolarity   bool `yaml:"SetReversesPlugInInputPolarity"`
 	SetActivateHEPI                  bool `yaml:"SetActivateHEPI"`
-	SetIsZ2k                         bool `yaml:"SetIsZ2k"`
+	SetIsZ1k                         bool `yaml:"SetIsZ1k"`
 }
 
 func NewExecutor(zilla *Zilla) *Executor {
@@ -94,6 +94,6 @@ func (this *Executor) ExecuteCommands() *ZillaSettings {
 	this.zilla.SetTachometerSixCylinders(this.Commands.SetTachometerSixCylinders)
 	this.zilla.SetReversesPlugInInputPolarity(this.Commands.SetReversesPlugInInputPolarity)
 	this.zilla.SetActivateHEPI(this.Commands.SetActivateHEPI)
-	this.zilla.SetIsZ2k(this.Commands.SetIsZ2k)
+	this.zilla.SetIsZ1k(this.Commands.SetIsZ1k)
 	return this.zilla.GetSettings()
 }

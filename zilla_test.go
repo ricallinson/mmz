@@ -207,12 +207,12 @@ func TestZilla(t *testing.T) {
 			AssertEqual(zilla.SetActivateHEPI(true), true)
 		})
 
-		It("should SetIsZ2k", func() {
-			AssertEqual(zilla.SetIsZ2k(false), true)
-			AssertEqual(zilla.SetIsZ2k(false), true)
-			AssertEqual(zilla.SetIsZ2k(true), true)
-			AssertEqual(zilla.SetIsZ2k(false), true)
-			AssertEqual(zilla.SetIsZ2k(true), true)
+		It("should SetIsZ1k", func() {
+			AssertEqual(zilla.SetIsZ1k(false), true)
+			AssertEqual(zilla.SetIsZ1k(false), true)
+			AssertEqual(zilla.SetIsZ1k(true), true)
+			AssertEqual(zilla.SetIsZ1k(false), true)
+			AssertEqual(zilla.SetIsZ1k(true), true)
 		})
 
 		// // Get
@@ -246,7 +246,7 @@ func TestZilla(t *testing.T) {
 			AssertEqual(settings.ReversesPlugInInputPolarity, false)
 			AssertEqual(settings.ActivateHEPI, false)
 			AssertEqual(settings.notUsed, false)
-			AssertEqual(settings.IsZ2k, true)
+			AssertEqual(settings.IsZ1k, true)
 			AssertEqual(settings.CurrentState, "1311")
 			AssertEqual(settings.Errors[0], "1131: Shorted/Loaded Controller during precharge.")
 			AssertEqual(settings.Errors[1], "1221: Major over-speed, either motor over red line.")

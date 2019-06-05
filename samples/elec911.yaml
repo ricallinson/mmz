@@ -24,4 +24,4 @@ SetTachometerDisplayMotorAmps: false
 SetTachometerSixCylinders: true
 SetReversesPlugInInputPolarity: false
 SetActivateHEPI: false
-SetIsZ2k: true
+SetIsZ1k: true

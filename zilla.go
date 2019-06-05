@@ -43,7 +43,7 @@ type ZillaSettings struct {
 	ReversesPlugInInputPolarity   bool     // m) Off
 	ActivateHEPI                  bool     // n) Off
 	notUsed                       bool     // o) Off
-	IsZ2k                         bool     // p) Off
+	IsZ1k                         bool     // p) Off
 	CurrentState                  string   // 1311
 	Errors                        []string // 1111, 1111, ...
 }
@@ -208,7 +208,7 @@ func (this *Zilla) GetSettings() *ZillaSettings {
 	settings.ReversesPlugInInputPolarity = truthy(values[0])
 	settings.ActivateHEPI = truthy(values[1])
 	settings.notUsed = truthy(values[2])
-	settings.IsZ2k = truthy(values[3])
+	settings.IsZ1k = truthy(values[3])
 	// Values for errors
 	settings.Errors = split(string(lines[14]), " ")
 	for i := range settings.Errors {
@@ -466,13 +466,13 @@ func (this *Zilla) SetActivateHEPI(b bool) bool {
 	return n == b
 }
 
-func (this *Zilla) SetIsZ2k(b bool) bool {
-	v := this.GetSettings().IsZ2k
+func (this *Zilla) SetIsZ1k(b bool) bool {
+	v := this.GetSettings().IsZ1k
 	if b == v {
 		return true
 	}
 	this.sendCommands("o", "p")
-	n := this.GetSettings().IsZ2k
-	// log.Println("SetIsZ2k", n)
+	n := this.GetSettings().IsZ1k
+	// log.Println("SetIsZ1k", n)
 	return n == b
 }
