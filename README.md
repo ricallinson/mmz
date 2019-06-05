@@ -2,8 +2,6 @@
 
 [![Build Status](https://travis-ci.org/ricallinson/mmz.svg?branch=master)](https://travis-ci.org/ricallinson/mmz) [![Build status](https://ci.appveyor.com/api/projects/status/6v17dsgd08n8ieq7/branch/master?svg=true)](https://ci.appveyor.com/project/ricallinson/mmz/branch/master)
 
-__UNSTABLE__
-
 Command line interface to configure and log data for a Manzanita Micro Zilla controller.
 
 ## Usage
@@ -12,7 +10,7 @@ Download the executable for your chosen platform from the [releases](https://git
 
 You will need to know the location of the USB serial port which the dongle is plugged into. The [MK3 Digital Perl Scanner Software](http://www.manzanitamicro.com/downloads/category/5-bms2?download=93%3Aperlscanner) documentation describes how to find this for Windows as a COM port number. For Unix based systems you can use [dmesg | grep tty](https://www.cyberciti.biz/faq/find-out-linux-serial-ports-with-setserial/) as described in the link.
 
-## Examples
+### Examples
 
     mmz -dongle /dev/tty.usbserial-A904RBQ7 -settings
 
