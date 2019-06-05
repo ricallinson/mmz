@@ -14,12 +14,12 @@ script:
 - diff -u <(echo -n) <(gofmt -d .)
 - go vet $(go list ./... | grep -v /vendor/)
 - go test -v -race ./...
-- if [ "${LATEST}" = "true" ]; then gox -os="linux windows" -output="builds/{{.Dir}}.{{.OS}}_{{.Arch}}" -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose ./...; fi
+- if [ "${LATEST}" = "true" ]; then gox -os="linux windows" -output="builds/{{.Dir}}.{{.OS}}_{{.Arch}}"
+  -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose ./...; fi
 deploy:
-  overwrite: true
   provider: releases
   api_key:
-    secure: G4wG5EllIA+2Uz+FALRXL/RRouF21HXP3bxA+DDSnnNuvaIUONJk/UgIWtQP9hGhVPj8QRZW/33yNGpzEvs7K752tY6NiKYUfbZGj++6OrJqx77Qfe8uC5jfFAkFPfrd2YYV7len91VMGUA+YKrhkzrE7FliWDE7nJTjCsmIQFMlm5EH/sGZtblHIv53P3IlD1WaoenRedACIJVC6gDXvJ1ToJvzW81WjPSVjC5bhQtoupWIYVsCPkx1hFujtmRKfyaKcf4B3LCb6WNT3rAfuYZ1tCM7ABId5oOe65wzNnaOKKBeyD9AV64s3sKAVWYu0HYQGxrrIPCWB99gnemiM7M1LT4oe6q8diuDJD3A53i2wiFWezGX6pto6yApqvmNiTIG8xmGvReOzta64Jwt965nGldaWG7Z5QjMYGzDP0GbWTcPAS1U4nC5l9PkpZfRkRI69NbLRukhUMmHKCpXFsexZIPVyYvj28sf1oDyJiYui0OYAB0A1gbc2DdujWSUa8H3RIGBNXspBh7sRrDyRIOwWuOnwPB+ZvEeR0OvXFxzqB5PhyhNxVOrgFelrii5AxhfcxeJd791hoKlI7N7ZmSZHdhyDeOpcXv/EXTcKCXmf2KDCZplePAdXQUzWcO1e+y/xlNg9w5QzL7B86nWMUgobzJrentBqYjb+G4N6ik=
+    secure: QYvkQg8xFoSZ3bgCseYjKM0lzv9bcEAui3pAmR8oMpf3K9G8J2hCzGpvyNGpO1jBHOSg46GFGByEUTfZ9hyXabqkEIrQcnhungKbRTM3wKpKZ7zGoaNnQOUK+Az00XUcqC/1gDI0+ir8R+3CEuJQrjA+VGAI/aDeJOHgiqYa4OauJNuRdLenf3UrDkLUkxmR5josHiEmf5WoY2r5k8O5GkhN1eyBB/P09RWiMGkKbYysNdLjMKKF2QqmUx+yXKqMm+v22iJ3K30/9TNq80W3yYK6ugT/eNy/qJhvBc3h8ZQufHCmJrmDdulbpq5GvT0wCDc4QwvhFLlAsBp3amsIBUwgmFhinRkc3e2HLolpLfk7TPcD2YhsJW9tfTSuWE8F1mo8Lo81GgSHL+cpaIdwhwJZggCffvSqCgpmPyf+P31ynoz1p+NPxSc66dh/yK+ziIUng+RrHy3ReTik5m5HAqmlz/CF/G43YtoGkEI2EOOco9ncryL027cHFcMPAxL6hHon+U5ew/qfMxu+1ZSapeMnFAyynHk8eC1Oii3mHggufD0zIoMtBss9OoBXP/J/pdyYBHM8xYz7yO4Vviul5qaPLfeAYmhrorPzKqmI0DFhNDjqAdNAAxY4nUZ8dzAkPp/lCfuXtpzA8UN4wpOt+q5EWAH2v2BNtulalq9DmEQ=
   file:
     - builds/mmz.darwin_amd64
     - builds/mmz.windows_386.exe
@@ -28,10 +28,5 @@ deploy:
     - builds/mmz.linux_amd64
     - builds/mmz.linux_arm
     - builds/mmz.linux_arm64
-
   on:
     repo: ricallinson/mmz
-    branches:
-      only:
-        - master
-    tags: true
