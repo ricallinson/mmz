@@ -14,9 +14,9 @@ script:
 - diff -u <(echo -n) <(gofmt -d .)
 - go vet $(go list ./... | grep -v /vendor/)
 - go test -v -race ./...
-- if [ "${LATEST}" = "true" ]; then gox -os="linux windows" -output="builds/{{.Dir}}.{{.OS}}_{{.Arch}}"
-  -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose ./...; fi
+- if [ "${LATEST}" = "true" ]; then gox -os="linux windows" -output="builds/{{.Dir}}.{{.OS}}_{{.Arch}}" -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose ./...; fi
 deploy:
+  overwrite: true
   provider: releases
   api_key:
     secure: QYvkQg8xFoSZ3bgCseYjKM0lzv9bcEAui3pAmR8oMpf3K9G8J2hCzGpvyNGpO1jBHOSg46GFGByEUTfZ9hyXabqkEIrQcnhungKbRTM3wKpKZ7zGoaNnQOUK+Az00XUcqC/1gDI0+ir8R+3CEuJQrjA+VGAI/aDeJOHgiqYa4OauJNuRdLenf3UrDkLUkxmR5josHiEmf5WoY2r5k8O5GkhN1eyBB/P09RWiMGkKbYysNdLjMKKF2QqmUx+yXKqMm+v22iJ3K30/9TNq80W3yYK6ugT/eNy/qJhvBc3h8ZQufHCmJrmDdulbpq5GvT0wCDc4QwvhFLlAsBp3amsIBUwgmFhinRkc3e2HLolpLfk7TPcD2YhsJW9tfTSuWE8F1mo8Lo81GgSHL+cpaIdwhwJZggCffvSqCgpmPyf+P31ynoz1p+NPxSc66dh/yK+ziIUng+RrHy3ReTik5m5HAqmlz/CF/G43YtoGkEI2EOOco9ncryL027cHFcMPAxL6hHon+U5ew/qfMxu+1ZSapeMnFAyynHk8eC1Oii3mHggufD0zIoMtBss9OoBXP/J/pdyYBHM8xYz7yO4Vviul5qaPLfeAYmhrorPzKqmI0DFhNDjqAdNAAxY4nUZ8dzAkPp/lCfuXtpzA8UN4wpOt+q5EWAH2v2BNtulalq9DmEQ=
@@ -30,3 +30,7 @@ deploy:
     - builds/mmz.linux_arm64
   on:
     repo: ricallinson/mmz
+    branches:
+      only:
+        - master
+    tags: true
