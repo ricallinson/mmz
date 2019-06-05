@@ -32,7 +32,7 @@ The path to the USB port where the Hairball is connected.
 
 ### Path to Commands File
 
-The path to the file containing the commands to execute against the bus.
+The path to the file containing the commands to execute against the Zilla.
 
     mmz -dongle /dev/tty.usbserial-A904RBQ7 -cmd ./samples/set_settings.yaml
 
@@ -44,13 +44,46 @@ Send a command as detailed in the [Zilla DC Motor Controller and Hairball 2 Manu
 
 ### Settings
 
-Prints a YAML object showing the current settings applied to the controller.
+Prints the current setting values applied to the controller.
 
     mmz -dongle /dev/tty.usbserial-A904RBQ7 -settings
 
+Outputs YAML to `stdout` with the following structure;
+
+    BatteryAmpLimit               int      // a) BA
+    LowBatteryVoltageLimit        int      // v) LBV
+    LowBatteryVoltageIndicator    int      // i) LBVI
+    NormalMotorAmpLimit           int      // a) Amp
+    SeriesMotorVoltageLimit       int      // v) Volt
+    ReverseMotorAmpLimit          int      // i) RA
+    ReverseMotorVoltageLimit      int      // r) RV
+    ParallelMotorAmpLimit         int      // c) PA
+    ParallelMotorVoltageLimit     int      // p) PV
+    ForwardRpmLimit               int      // l) Norm
+    ReverseRpmLimit               int      // r) Rev
+    MaxRpmLimit                   int      // x) Max
+    RpmSensorMotorOne             bool     // a) On
+    RpmSensorMotorTwo             bool     // b) On
+    AutoShiftingSeriesToParallel  bool     // c) On
+    StallDetectOn                 bool     // d) On
+    BatteryLightPolarity          bool     // e) Off
+    CheckEngineLightPolarity      bool     // f) On
+    ReversingContactors           bool     // g) On
+    SeriesParallelContactors      bool     // h) On
+    ForceParallelInReverse        bool     // i) Off
+    InhibitSeriesParallelShifting bool     // j) Off
+    TachometerDisplayMotorAmps    bool     // k) Off
+    TachometerSixCylinders        bool     // l) Off
+    ReversesPlugInInputPolarity   bool     // m) Off
+    ActivateHEPI                  bool     // n) Off
+    notUsed                       bool     // o) Off
+    IsZ1k                         bool     // p) Off
+    CurrentState                  string   // 1311
+    Errors                        []string // 1111, 1111, ...
+
 ### Realtime
 
-Prints a YAML object showing the current state of the controller every 100ms.
+Prints the current state of the controller every 100ms.
 
     mmz -dongle /dev/tty.usbserial-A904RBQ7 -realtime
 
