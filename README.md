@@ -6,13 +6,11 @@ __UNSTABLE__
 
 Command line interface to configure and log data for a Manzanita Micro Zilla controller.
 
-
 ## Usage
 
-Requires a [Go](https://golang.org/dl/) environment.
+Download the executable for your chosen platform from the [releases](https://github.com/ricallinson/mmz/releases/tag/v1.0) page. Feel free to rename the executable to `mmz` or `mmz.exe` depending on your chosen platform.
 
-    go get github.com/ricallinson/mmz
-    go install github.com/ricallinson/mmz
+You will need to know the location of the USB serial port which the dongle is plugged into. The [MK3 Digital Perl Scanner Software](http://www.manzanitamicro.com/downloads/category/5-bms2?download=93%3Aperlscanner) documentation describes how to find this for Windows as a COM port number. For Unix based systems you can use [dmesg | grep tty](https://www.cyberciti.biz/faq/find-out-linux-serial-ports-with-setserial/) as described in the link.
 
 ## Examples
 
@@ -116,10 +114,8 @@ Outputs YAML to `stdout` with the following structure;
 Requires a [Go](https://golang.org/dl/) environment.
 
     git clone git@github.com:ricallinson/mmz.git $GOPATH/src/git@github.com/ricallinson/mmz
-    go get github.com/tarm/serial
-    go get gopkg.in/yaml.v2
-    go get github.com/ricallinson/simplebdd
     cd $GOPATH/src/git@github.com/ricallinson/mmz
+    go get ./...
     go install
 
 ## Test
@@ -134,25 +130,10 @@ Requires a [Go](https://golang.org/dl/) environment.
 
 ## Help
 
-### Connect to Hairball
+### Connecting to Hairball Directly
 
-On a UNIX based system (OSX, Linux) you can directly connect to the hairball from a terminal session.
+On a UNIX based system you can directly connect to the hairball from a terminal session.
 
     screen /dev/tty.usbserial
 
 Exit from Hairball `CTRL + A + \`.
-
-### Install and Run on Raspberry Pi
-
-Still testing this...
-
-    sudo apt-get install go
-    export GOPATH=$HOME/Library/Go/gocode
-    go install github.com/ricallinson/mmz
-    $HOME/Library/Go/gocode/bin/mmz -dongle /dev/tty.usbserial -realtime
-
-Where `/dev/tty.usbserial` is the location of your USB to RS-232 serial port adapter.
-
-### Links
-
-* https://www.stewright.me/2013/05/install-and-run-raspbian-from-a-usb-flash-drive/
