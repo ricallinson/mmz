@@ -54,6 +54,30 @@ Prints a YAML object showing the current state of the controller every 100ms.
 
     mmz -dongle /dev/tty.usbserial-A904RBQ7 -realtime
 
+Outputs YAML to `stdout` with the following structure;
+
+    Timestamp                      int64
+    RxCtrlFlagByte                 int
+    AverageCurrentOnMotor          int
+    AvailableCurrentFromController int
+    ArmDC                          int
+    BatteryVoltage                 int
+    MotorVoltage                   int
+    ControllerTemp                 int
+    SpiErrorCount                  int
+    CurrentError                   string
+    OperatingStatus                int
+    MotorKilowatts                 float64
+    StoppedState                   bool
+    ShiftingInProgress             bool
+    MainContactorIsOn              bool
+    MotorContactorsAreOn           bool
+    DirectionIsReverse             bool
+    DirectionIsForward             bool
+    MotorsAreInParallel            bool
+    MotorsAreInSeries              bool
+    MainContactorHasVoltageDrop    bool
+
 ## Setup Development Environment
 
 Requires a [Go](https://golang.org/dl/) environment.
