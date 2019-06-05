@@ -28,7 +28,7 @@ The path to the USB port where the Hairball is connected.
 
 ### Path to Commands File
 
-The path to the file containing the commands to execute against the Zilla.
+The path to the file containing the commands to execute against the Zilla. Available commands are listed in the [all_commands.yaml](https://github.com/ricallinson/mmz/blob/master/samples/all_commands.yaml) file.
 
     mmz -dongle /dev/tty.usbserial-A904RBQ7 -cmd ./samples/set_settings.yaml
 

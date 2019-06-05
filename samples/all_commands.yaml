@@ -1,0 +1,136 @@
+# Set the battery amp limit.
+# Default: 1800
+SetBatteryAmpLimit: 1800
+
+# Set the low battery voltage limit.
+# Default: 119
+SetLowBatteryVoltageLimit: 119
+
+# Set the low battery voltage indicator.
+# Default: 145
+SetLowBatteryVoltageIndicator: 145
+
+# Set the normal motor amp limit.
+# Default: 1600
+SetNormalMotorAmpLimit: 1600
+
+# Set the series motor voltage limit.
+# Default: 429
+SetSeriesMotorVoltageLimit: 429
+
+# Set the reverse motor amp limit.
+# Default: 700
+SetReverseMotorAmpLimit: 700
+
+# Set the reverse motor voltage limit.
+# Default: 106
+SetReverseMotorVoltageLimit: 106
+
+# Set the parallel motor amp limit.
+# Default: 2000
+SetParallelMotorAmpLimit: 2000
+
+# Set the parallel motor voltage limit.
+# Default: 180
+SetParallelMotorVoltageLimit: 180
+
+# Set the forward RPM limit.
+# Must have "SetRpmSensorMotorOne" (and "SetRpmSensorMotorTwo" if two motors are present) set to true.
+# Default: 7000
+SetForwardRpmLimit: 7000
+
+# Set the reverse RPM limit.
+# Must have "SetRpmSensorMotorOne" (and "SetRpmSensorMotorTwo" if two motors are present) set to true.
+# Default: 1500
+SetReverseRpmLimit: 1500
+
+# Set the maximum RPM limit.
+# An error will be logged if this is exceeded.
+# Must have "SetRpmSensorMotorOne" (and "SetRpmSensorMotorTwo" if two motors are present) set to true.
+# Default: 8000
+SetMaxRpmLimit: 8000
+
+# Turn on the RPM sensor for motor one.
+# Must be true if a motor speed sensor is present on motor one.
+# Motor speed is used for stall detect and rev limit functions as well as limiting changing power direction over a minimum speed.
+# Default: true
+SetRpmSensorMotorOne: true
+
+# Turn on the RPM sensor for motor two.
+# Must be true if a motor speed sensor is present on motor two.
+# Motor speed is used for stall detect and rev limit functions as well as limiting changing power direction over a minimum speed.
+# Default: false
+SetRpmSensorMotorTwo: true
+
+# Enables auto shifting from series to parallel of two motors.
+# This is setup to shift from series to parallel any times these condition are met;
+#    Full throttle requested,
+#    No current limits active,
+#    Average motor current is less than half of the the available current from the controller.
+#
+# It will shift back to series if the duty cycle is below 50% for 3 seconds.
+# If this flag is not set shifting is achieved via manually through the "S/P In" pin.
+# Default: false
+SetAutoShiftingSeriesToParallel: true
+
+# Activate stall detect.
+# This will cut power if current is flowing for too long without the motor turning.
+# The time period varies from about 0.5 seconds at high current to 12 seconds at 50 amps.
+# If the stall detect has tripped is is reset by lifting and reapplying the accelerator pedal.
+# Must have "SetRpmSensorMotorOne" (and "SetRpmSensorMotorTwo" if two motors are present) set to true.
+# Default: true
+SetStallDetectOn: true
+
+# Change the output polarity of the battery indicator light.
+# Required for some makes of dashboard.
+# Default: false
+SetBatteryLightPolarity: false
+
+# Change the output polarity of the check engine indicator light.
+# Required for some makes of dashboard.
+# Default: false
+SetCheckEngineLightPolarity: true
+
+# Enable wiring for a reversing contactor.
+# Hairball must support this option.
+# Default: false
+SetReversingContactors: true
+
+# Enable wiring for series and parallel contactors.
+# Hairball must support this option.
+# Default: false
+SetSeriesParallelContactors: true
+
+# Force using parallel motors when in reverse.
+# This can help with traction in certain configurations.
+# Default: false
+SetForceParallelInReverse: false
+
+# Inhibit shifting when "SetAutoShiftingSeriesToParallel" and "SetSeriesParallelContactors" are true, and "S/P In" pin input is on.
+# This is useful to inhibit shifting when during in a burnout.
+# Default: false
+SetInhibitSeriesParallelShifting: false
+
+# Switch the tachometer to display motor amps multiplied by 10.
+# When set to false the tachometer will display RPM as measured by "SetRpmSensorMotorOne" (and "SetRpmSensorMotorTwo" if available).
+# Default: false
+SetTachometerDisplayMotorAmps: false
+
+# Set the tachometer to display output from a six cylinder motor.
+# When set to false it displays output from a four cylinder motor.
+# Default: false
+SetTachometerSixCylinders: false
+
+# Reverse the polarity of the "Plug In" input.
+# Default: false
+SetReversesPlugInInputPolarity: false
+
+# Activate the HEPI input.
+# This must only be set to true if the Hairball is a -P model.
+# Default: false
+SetActivateHEPI: false
+
+# Sets the amp display scaling to fit the Z1K instead of the Z2K.
+# This should be false for Z2Ks.
+# Default: true
+SetIsZ1k: true
