@@ -13,24 +13,30 @@ script:
 - go get -t -v ./...
 - diff -u <(echo -n) <(gofmt -d .)
 - go vet $(go list ./... | grep -v /vendor/)
-- go test -v -race ./...
-- if [ "${LATEST}" = "true" ]; then gox -os="linux windows" -output="builds/{{.Dir}}.{{.OS}}_{{.Arch}}" -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose ./...; fi
+- go test -v -race -covermode=count -coverprofile=coverage.out ./...
+- "$HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken
+  $COVERALLS_TOKEN"
+- if [ "${LATEST}" = "true" ]; then gox -os="linux windows" -output="builds/{{.Dir}}.{{.OS}}_{{.Arch}}"
+  -ldflags "-X main.Rev=`git rev-parse --short HEAD`" -verbose ./...; fi
 deploy:
   overwrite: true
   provider: releases
   api_key:
     secure: QYvkQg8xFoSZ3bgCseYjKM0lzv9bcEAui3pAmR8oMpf3K9G8J2hCzGpvyNGpO1jBHOSg46GFGByEUTfZ9hyXabqkEIrQcnhungKbRTM3wKpKZ7zGoaNnQOUK+Az00XUcqC/1gDI0+ir8R+3CEuJQrjA+VGAI/aDeJOHgiqYa4OauJNuRdLenf3UrDkLUkxmR5josHiEmf5WoY2r5k8O5GkhN1eyBB/P09RWiMGkKbYysNdLjMKKF2QqmUx+yXKqMm+v22iJ3K30/9TNq80W3yYK6ugT/eNy/qJhvBc3h8ZQufHCmJrmDdulbpq5GvT0wCDc4QwvhFLlAsBp3amsIBUwgmFhinRkc3e2HLolpLfk7TPcD2YhsJW9tfTSuWE8F1mo8Lo81GgSHL+cpaIdwhwJZggCffvSqCgpmPyf+P31ynoz1p+NPxSc66dh/yK+ziIUng+RrHy3ReTik5m5HAqmlz/CF/G43YtoGkEI2EOOco9ncryL027cHFcMPAxL6hHon+U5ew/qfMxu+1ZSapeMnFAyynHk8eC1Oii3mHggufD0zIoMtBss9OoBXP/J/pdyYBHM8xYz7yO4Vviul5qaPLfeAYmhrorPzKqmI0DFhNDjqAdNAAxY4nUZ8dzAkPp/lCfuXtpzA8UN4wpOt+q5EWAH2v2BNtulalq9DmEQ=
   file:
-    - builds/mmz.darwin_amd64
-    - builds/mmz.windows_386.exe
-    - builds/mmz.windows_amd64.exe
-    - builds/mmz.linux_386
-    - builds/mmz.linux_amd64
-    - builds/mmz.linux_arm
-    - builds/mmz.linux_arm64
+  - builds/mmz.darwin_amd64
+  - builds/mmz.windows_386.exe
+  - builds/mmz.windows_amd64.exe
+  - builds/mmz.linux_386
+  - builds/mmz.linux_amd64
+  - builds/mmz.linux_arm
+  - builds/mmz.linux_arm64
   on:
     repo: ricallinson/mmz
     branches:
       only:
-        - master
+      - master
     tags: true
+env:
+  global:
+    secure: tom7PPaSC4MLg6KnBNqIKuU6vMKg7jTj1hY+HsdIbiSiL8NBC2+CKnhKvBLQul2TfiZd5tQ6Bb6XYbtCYjEUFzJBN/MB+hhKxw11MDVw/gESm0YXLq/XZaZWalrbypDhN4suxTlxeTTsvV+o13jhRXKUHyrE2QQLQ76S9cviPd33rdTIY0mGF+s/t4dGECi26dQk+KQLW3pFJHielMyDWBSt2WUrkkc7hHlochGiYPNfjbrK2luUbTxFFEN/pp1rfi2/cRPSvvV0IGp4EzVzA5AVAs6TqD+yiHIRBEELUzIufvRdN48Luncctek99Fb+RMHn4DjgoIeWdbGGNfXKerhRALPMuvYctu9eHT1TW01o13U7MrwxRloAfFHOYnQYCwiLfqJtRpN4tesNEVpxSL4pyjRgXwlw3Om16CXNUTnvpWIFfkj5ww5JVEXpiFzbSEZOZWTfpuTt4ATamftWaA5h/mPVL2Fy2T6nZsD8Ql3JKi+qlSQ6Gv1eZfQFi114qLfMRPpUuXH/AA0o1Wim5rklQrZoiqRCH2An2mYF7Zdkj8VDYt1cpBTmXPUh2I46gZZkUhGwyG6s3fdlOvfR2XMLSKYV6GLKKrb8olB9ZhJ2jFoXZfgGlugBfRZtvD3nPTcT1tST3c1fdnG9VqrcwGjga+DL5B6vBhFk+I9gYIE=

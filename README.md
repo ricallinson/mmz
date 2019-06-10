@@ -1,6 +1,6 @@
 # mmz
 
-[![Build Status](https://travis-ci.org/ricallinson/mmz.svg?branch=master)](https://travis-ci.org/ricallinson/mmz) [![Build status](https://ci.appveyor.com/api/projects/status/6v17dsgd08n8ieq7/branch/master?svg=true)](https://ci.appveyor.com/project/ricallinson/mmz/branch/master)
+[![Build Status](https://travis-ci.org/ricallinson/mmz.svg?branch=master)](https://travis-ci.org/ricallinson/mmz) [![Build status](https://ci.appveyor.com/api/projects/status/6v17dsgd08n8ieq7/branch/master?svg=true)](https://ci.appveyor.com/project/ricallinson/mmz/branch/master) [![Coverage Status](https://coveralls.io/repos/github/ricallinson/mmz/badge.svg?branch=master)](https://coveralls.io/github/ricallinson/mmz?branch=master)
 
 Command line interface to configure and log data for a Manzanita Micro Zilla controller.
 
