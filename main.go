@@ -39,7 +39,7 @@ func main() {
 	}
 	// If realtime is requested keep running until the process is ended.
 	for realtime {
-		zilla.RealtimeValues()
+		zilla.RealtimeValues("Q1")
 		return
 	}
 	// Process CLI Options.

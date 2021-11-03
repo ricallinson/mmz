@@ -135,8 +135,8 @@ func (this *Zilla) readBytes(delim byte) []byte {
 	return data
 }
 
-// Blocks while writing console out.
-func (this *Zilla) RealtimeValues() {
+// Blocks while writing to console out.
+func (this *Zilla) RealtimeValues(queue string) {
 	// We have to write and read each command to be sure the Zilla is responding.
 	// The sendCommands() function is not used as it creates a circular dependency.
 	this.writeBytes([]byte{27})
@@ -147,12 +147,18 @@ func (this *Zilla) RealtimeValues() {
 	this.readAllBytes()
 	this.writeBytes([]byte("p")) // Menu Special
 	this.readAllBytes()
-	this.writeBytes([]byte("Q1\r")) // Start logs
+	this.writeBytes([]byte(queue + "\r")) // Start data acquisition.
 	for !this.closed {
-		// log.Print("Logging.")
 		// Read the log line from the Zilla.
 		line := bytes.TrimSpace(this.readBytes('\n'))
-		fmt.Println(string(interfaceToYaml(GetRealtimeValues(line))))
+		// Select which data acquisition queue to read from.
+		switch queue {
+		case "Q4":
+			fmt.Println(string(interfaceToYaml(GetRealtimeValuesQ4(line))))
+		default:
+			fmt.Println(string(interfaceToYaml(GetRealtimeValuesQ1(line))))
+			return
+		}
 		// Sleep for 100ms as the logs are only written 10 times a second.
 		time.Sleep(100 * time.Millisecond)
 	}
