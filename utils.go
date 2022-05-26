@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
@@ -69,6 +70,18 @@ func readYamlFileToExecutorCommands(p string) *ExecutorCommands {
 		}
 	}
 	return r
+}
+
+func interfaceToBytes(i interface{}) []byte {
+	return i.([]byte)
+}
+
+func interfaceToJson(i interface{}) []byte {
+	d, err := json.Marshal(i)
+	if err != nil {
+		log.Fatalf("YAML Write Error: %v", err)
+	}
+	return d
 }
 
 func interfaceToYaml(i interface{}) []byte {

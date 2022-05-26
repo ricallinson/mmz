@@ -44,57 +44,13 @@ func CreateLiveData(b []byte) *LiveData {
 	return &d
 }
 
+func convertFahrenheitToCelsius(i int) int {
+	return (i - 32) * 5 / 9
+}
+
 func getIntFromHex(s string) int {
-	v, _ := strconv.ParseUint(s, 32, 32)
+	v, _ := strconv.ParseInt(s, 32, 32)
 	return int(v)
-}
-
-func GetRealtimeValuesQ1(b []byte) *LiveData {
-	values := strings.Split(string(b), " ")
-	if len(values) < 9 {
-		return nil
-	}
-	ld := &LiveData{
-		Timestamp:                      time.Now().Unix(),
-		RxCtrlFlagByte:                 0,
-		AverageCurrentOnMotor:          getIntFromHex(values[1]),
-		AvailableCurrentFromController: getIntFromHex(values[2]),
-		ArmDC:                          0,
-		BatteryVoltage:                 getIntFromHex(values[4]),
-		MotorVoltage:                   getIntFromHex(values[5]),
-		ControllerTemp:                 getIntFromHex(values[6]),
-		SpiErrorCount:                  0,
-		CurrentError:                   strconv.Itoa(int(getIntFromHex(values[8]))),
-		OperatingStatus:                0,
-	}
-	// States
-	setStates(values[10], ld)
-	ld.MotorKilowatts = float64(ld.MotorVoltage*ld.AverageCurrentOnMotor) / 1000
-	ld.CurrentError = ld.CurrentError + ": " + Codes[ld.CurrentError]
-	return ld
-}
-
-func GetRealtimeValuesQ4(b []byte) *LiveData {
-	values := strings.Split(string(b), " ")
-	if len(values) < 9 {
-		return nil
-	}
-	ld := &LiveData{
-		Timestamp:                      time.Now().Unix(),
-		DrivePot:                       getIntFromHex(values[0]),
-		SpeedOne:                       getIntFromHex(values[1]),
-		AverageCurrentOnMotor:          getIntFromHex(values[2]),
-		AvailableCurrentFromController: getIntFromHex(values[3]),
-		ArmDC:                          0,
-		BatteryVoltage:                 getIntFromHex(values[5]),
-		MotorVoltage:                   getIntFromHex(values[6]),
-		ControllerTemp:                 getIntFromHex(values[7]),
-		OperatingStatus:                0,
-	}
-	// States
-	setStates(values[10], ld)
-	ld.MotorKilowatts = float64(ld.MotorVoltage*ld.AverageCurrentOnMotor) / 1000
-	return ld
 }
 
 func setStates(s string, ld *LiveData) {
@@ -122,4 +78,52 @@ func setStates(s string, ld *LiveData) {
 			ld.MainContactorHasVoltageDrop = true
 		}
 	}
+}
+
+func GetRealtimeValuesQ1(b []byte) *LiveData {
+	values := strings.Split(string(b), " ")
+	if len(values) < 9 {
+		return nil
+	}
+	ld := &LiveData{
+		Timestamp:                      time.Now().Unix(),
+		RxCtrlFlagByte:                 0,
+		AverageCurrentOnMotor:          getIntFromHex(values[1]),
+		AvailableCurrentFromController: getIntFromHex(values[2]),
+		ArmDC:                          getIntFromHex(values[3]),
+		BatteryVoltage:                 getIntFromHex(values[4]),
+		MotorVoltage:                   getIntFromHex(values[5]),
+		ControllerTemp:                 convertFahrenheitToCelsius(getIntFromHex(values[6])),
+		SpiErrorCount:                  getIntFromHex(values[7]),
+		CurrentError:                   strconv.Itoa(int(getIntFromHex(values[8]))),
+		OperatingStatus:                getIntFromHex(values[9]),
+	}
+	// States
+	setStates(values[10], ld)
+	ld.MotorKilowatts = float64(ld.MotorVoltage*ld.AverageCurrentOnMotor) / 1000
+	ld.CurrentError = ld.CurrentError + ": " + Codes[ld.CurrentError]
+	return ld
+}
+
+func GetRealtimeValuesQ4(b []byte) *LiveData {
+	values := strings.Split(string(b), " ")
+	if len(values) < 9 {
+		return nil
+	}
+	ld := &LiveData{
+		Timestamp:                      time.Now().Unix(),
+		DrivePot:                       getIntFromHex(values[0]),
+		SpeedOne:                       getIntFromHex(values[1]),
+		AverageCurrentOnMotor:          getIntFromHex(values[2]),
+		AvailableCurrentFromController: getIntFromHex(values[3]),
+		ArmDC:                          0,
+		BatteryVoltage:                 getIntFromHex(values[5]),
+		MotorVoltage:                   getIntFromHex(values[6]),
+		ControllerTemp:                 convertFahrenheitToCelsius(getIntFromHex(values[7])),
+		OperatingStatus:                0,
+	}
+	// States
+	setStates(values[10], ld)
+	ld.MotorKilowatts = float64(ld.MotorVoltage*ld.AverageCurrentOnMotor) / 1000
+	return ld
 }

@@ -76,7 +76,7 @@ SetAutoShiftingSeriesToParallel: true
 # Activate stall detect.
 # This will cut power if current is flowing for too long without the motor turning.
 # The time period varies from about 0.5 seconds at high current to 12 seconds at 50 amps.
-# If the stall detect has tripped is is reset by lifting and reapplying the accelerator pedal.
+# If the stall detect has tripped this is reset by lifting and reapplying the accelerator pedal.
 # Must have "SetRpmSensorMotorOne" (and "SetRpmSensorMotorTwo" if two motors are present) set to true.
 # Default: true
 SetStallDetectOn: true
@@ -94,12 +94,12 @@ SetCheckEngineLightPolarity: true
 # Enable wiring for a reversing contactor.
 # Hairball must support this option.
 # Default: false
-SetReversingContactors: true
+SetReversingContactors: false
 
 # Enable wiring for series and parallel contactors.
 # Hairball must support this option.
 # Default: false
-SetSeriesParallelContactors: true
+SetSeriesParallelContactors: false
 
 # Force using parallel motors when in reverse.
 # This can help with traction in certain configurations.

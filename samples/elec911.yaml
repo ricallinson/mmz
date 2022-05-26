@@ -1,10 +1,10 @@
 SetBatteryAmpLimit: 1800
 SetLowBatteryVoltageLimit: 140
-SetLowBatteryVoltageIndicator: 145
-SetNormalMotorAmpLimit: 1800
+SetLowBatteryVoltageIndicator: 150
+SetNormalMotorAmpLimit: 400
 SetSeriesMotorVoltageLimit: 170
-SetReverseMotorAmpLimit: 100
-SetReverseMotorVoltageLimit: 100
+SetReverseMotorAmpLimit: 400
+SetReverseMotorVoltageLimit: 170
 SetParallelMotorAmpLimit: 0
 SetParallelMotorVoltageLimit: 0
 SetForwardRpmLimit: 5000
