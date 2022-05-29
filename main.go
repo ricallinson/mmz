@@ -21,7 +21,7 @@ func main() {
 	var realtime bool
 	flag.BoolVar(&realtime, "realtime", false, "Log live Zilla data.")
 	var realtimeFormat string
-	flag.StringVar(&realtimeFormat, "realtime", "yaml", "The format to output logs in for live Zilla data.")
+	flag.StringVar(&realtimeFormat, "format", "yaml", "The format to output logs in for live Zilla data.")
 	flag.Parse()
 	var serialPort SerialPort
 	var serialError error
@@ -41,7 +41,7 @@ func main() {
 	}
 	// If "realtime" is requested keep running until the process is ended.
 	for realtime {
-		zilla.RealtimeValues("Q1", realtimeFormat)
+		zilla.RealtimeValues(realtimeFormat)
 		return
 	}
 	// Process CLI Options.

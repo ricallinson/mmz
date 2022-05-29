@@ -72,10 +72,6 @@ func readYamlFileToExecutorCommands(p string) *ExecutorCommands {
 	return r
 }
 
-func interfaceToBytes(i interface{}) []byte {
-	return i.([]byte)
-}
-
 func interfaceToJson(i interface{}) []byte {
 	d, err := json.Marshal(i)
 	if err != nil {
