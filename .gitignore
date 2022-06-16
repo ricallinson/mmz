@@ -8,3 +8,6 @@ count.*
 # App files
 logs
 mmz
+
+# Testing output files
+/output
